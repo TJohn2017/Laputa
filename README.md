@@ -1,5 +1,8 @@
 # Laputa
-
+<p align="center">
+  <img src="https://github.com/StanfordCS194/Team6/blob/main/imgs/laputa_logo.png" width="300"/>
+ </p>
+ 
 ## Project Synopsis
 Laputa is an ssh client built for the iPad that allows a user to connect remotely to another computer while taking advantage of the interaction capabilities of the iPad. Laputa allows the user to handwrite or type out the commands they want to execute on a central “canvas,” while also enabling them to add annotations, organize outputs in a visual and spatial way, and generally take advantage of the iPad’s touch interface.
 
