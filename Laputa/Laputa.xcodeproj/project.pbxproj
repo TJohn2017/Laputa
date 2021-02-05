@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -126,6 +126,10 @@
 		1A64C88A25CA2EE50082FEA7 /* Laputa */ = {
 			isa = PBXGroup;
 			children = (
+				1A84751A25CCF6EB004169AC /* Services */,
+				1A84751925CCF6E3004169AC /* Resources */,
+				1A84751825CCF6DF004169AC /* View */,
+				1A84751725CCF6D7004169AC /* Model */,
 				1A64C88B25CA2EE50082FEA7 /* LaputaApp.swift */,
 				1A64C88D25CA2EE50082FEA7 /* ContentView.swift */,
 				1A64C88F25CA2EE80082FEA7 /* Assets.xcassets */,
@@ -163,6 +167,34 @@
 			path = LaputaUITests;
 			sourceTree = "<group>";
 		};
+		1A84751725CCF6D7004169AC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1A84751825CCF6DF004169AC /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		1A84751925CCF6E3004169AC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1A84751A25CCF6EB004169AC /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		6F275419BE29A3178A353E96 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,7 +205,6 @@
 				1885B847BB6F440203E7D156 /* Pods-LaputaTests.debug.xcconfig */,
 				0DEE2E78EBFD028EA3C6DDF6 /* Pods-LaputaTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
