@@ -1,16 +1,20 @@
 PODS:
-  - NMSSH (2.3.1)
+  - SwiftSH (0.1.2):
+    - SwiftSH/Libssh2 (= 0.1.2)
+  - SwiftSH/Core (0.1.2)
+  - SwiftSH/Libssh2 (0.1.2):
+    - SwiftSH/Core
 
 DEPENDENCIES:
-  - NMSSH
+  - SwiftSH
 
 SPEC REPOS:
   trunk:
-    - NMSSH
+    - SwiftSH
 
 SPEC CHECKSUMS:
-  NMSSH: cd689ae535a1581a6dd9fd4600ff71247df510a6
+  SwiftSH: 5d3c95b23093106d18c527ce9c175a5733e3e86e
 
-PODFILE CHECKSUM: ae23e1a2e4dbc695769d653ed7eca4858928216a
+PODFILE CHECKSUM: 95c39e672d20fecbae129fc4b7a9adea42be48d2
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1

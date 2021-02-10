@@ -6,7 +6,7 @@ target 'Laputa' do
   use_frameworks!
 
   # Pods for Laputa
-  pod 'NMSSH'
+  pod 'SwiftSH'
 
   target 'LaputaTests' do
     inherit! :search_paths

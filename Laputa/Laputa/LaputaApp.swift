@@ -10,11 +10,13 @@ import SwiftUI
 @main
 struct LaputaApp: App {
     let persistenceController = PersistenceController.shared
-
+    var host:Host = Host(alias: "Claire MacPro", hostname: "192.168.1.11", usePassword: true, username: "clairemai", password: "macaron", lastUsed: Date ())
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            SwiftUITerminal(host: host, createNew: true, interactive: true).navigationBarTitle (Text (host.alias), displayMode: .inline)
+           // ContentView()
+              //  .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }
