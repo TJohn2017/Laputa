@@ -35,7 +35,7 @@ public class SshTerminalView: AppTerminalView, TerminalViewDelegate {
     var data_sent: Bool // added this boolean
     var is_prompt: Bool // added this
     var host: Host
-    var shell: SSHShell<Libssh2>?
+    var shell: SSHShell?
     var authenticationChallenge: AuthenticationChallenge!
     var sshQueue: DispatchQueue
     
