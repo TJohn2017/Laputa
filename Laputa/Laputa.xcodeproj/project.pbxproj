@@ -16,9 +16,8 @@
 		1A64C89825CA2EE80082FEA7 /* Laputa.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C89625CA2EE80082FEA7 /* Laputa.xcdatamodeld */; };
 		1A64C8A325CA2EE80082FEA7 /* LaputaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C8A225CA2EE80082FEA7 /* LaputaTests.swift */; };
 		1A64C8AE25CA2EE80082FEA7 /* LaputaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C8AD25CA2EE80082FEA7 /* LaputaUITests.swift */; };
-		750088A925D3A37600DD2347 /* SwiftSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 750088A825D3A37600DD2347 /* SwiftSH.xcframework */; };
-		750088B025D3A3EF00DD2347 /* SwiftSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 750088A825D3A37600DD2347 /* SwiftSH.xcframework */; };
 		7507615925D0C61600F37E7D /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 7507615825D0C61600F37E7D /* SwiftTerm */; };
+		75C35C2925D3A7200071DAA3 /* SwiftSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C35C2825D3A7200071DAA3 /* SwiftSH.xcframework */; };
 		75EA7ADC25D384E4007B7EAE /* AppTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EA7ADB25D384E4007B7EAE /* AppTerminalView.swift */; };
 		75EA7AE225D38549007B7EAE /* Connections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EA7AE125D38549007B7EAE /* Connections.swift */; };
 		75EA7AE725D38586007B7EAE /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EA7AE625D38586007B7EAE /* DataStore.swift */; };
@@ -68,7 +67,7 @@
 		1F7A9745EB48293FC97314FC /* Pods-Laputa-LaputaUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa-LaputaUITests.release.xcconfig"; path = "Target Support Files/Pods-Laputa-LaputaUITests/Pods-Laputa-LaputaUITests.release.xcconfig"; sourceTree = "<group>"; };
 		3259B6C9970937CC594AFB72 /* Pods-Laputa-LaputaUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa-LaputaUITests.debug.xcconfig"; path = "Target Support Files/Pods-Laputa-LaputaUITests/Pods-Laputa-LaputaUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		61108AB43C8309C2D6B93A5B /* Pods_Laputa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		750088A825D3A37600DD2347 /* SwiftSH.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftSH.xcframework; path = ../../SwiftSH.xcframework; sourceTree = "<group>"; };
+		75C35C2825D3A7200071DAA3 /* SwiftSH.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftSH.xcframework; path = Frameworks/SwiftSH.xcframework; sourceTree = "<group>"; };
 		75EA7ADB25D384E4007B7EAE /* AppTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTerminalView.swift; sourceTree = "<group>"; };
 		75EA7AE125D38549007B7EAE /* Connections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connections.swift; sourceTree = "<group>"; };
 		75EA7AE625D38586007B7EAE /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
@@ -86,7 +85,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				750088B025D3A3EF00DD2347 /* SwiftSH.xcframework in Frameworks */,
 				7507615925D0C61600F37E7D /* SwiftTerm in Frameworks */,
 				7FC419740E95700AB1FA65E6 /* Pods_Laputa.framework in Frameworks */,
 			);
@@ -96,7 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				750088A925D3A37600DD2347 /* SwiftSH.xcframework in Frameworks */,
+				75C35C2925D3A7200071DAA3 /* SwiftSH.xcframework in Frameworks */,
 				EB7669F731F1FA915C241458 /* Pods_LaputaTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -237,10 +235,10 @@
 		75FEC74816BA9561324729E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				75C35C2825D3A7200071DAA3 /* SwiftSH.xcframework */,
 				61108AB43C8309C2D6B93A5B /* Pods_Laputa.framework */,
 				E135C5E62F6BDDDBB87E1DC2 /* Pods_Laputa_LaputaUITests.framework */,
 				88D9ED4FDA9987AE00E8B699 /* Pods_LaputaTests.framework */,
-				750088A825D3A37600DD2347 /* SwiftSH.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
