@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A24CDC025D4B15F0044044F /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 1A24CDBF25D4B15F0044044F /* SwiftTerm */; };
+		1A24CDCD25D4CE130044044F /* SSHConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A24CDCC25D4CE130044044F /* SSHConnection.swift */; };
 		1A64C88C25CA2EE50082FEA7 /* LaputaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C88B25CA2EE50082FEA7 /* LaputaApp.swift */; };
 		1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C88D25CA2EE50082FEA7 /* ContentView.swift */; };
 		1A64C89025CA2EE80082FEA7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A64C88F25CA2EE80082FEA7 /* Assets.xcassets */; };
@@ -17,6 +19,10 @@
 		1A64C8AE25CA2EE80082FEA7 /* LaputaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C8AD25CA2EE80082FEA7 /* LaputaUITests.swift */; };
 		23F192D5AE739BB2FDEBB3D4 /* Pods_LaputaTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F5EBF63A92A5021A9EE7A6F /* Pods_LaputaTests.framework */; };
 		2BA672215609DFF0D9069934 /* Pods_Laputa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */; };
+		759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */; };
+		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
+		759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */; };
+		75ECADEF25D65F3600CB4D9D /* TerminalComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */; };
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +48,7 @@
 		0DEE2E78EBFD028EA3C6DDF6 /* Pods-LaputaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaputaTests.release.xcconfig"; path = "Target Support Files/Pods-LaputaTests/Pods-LaputaTests.release.xcconfig"; sourceTree = "<group>"; };
 		13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa_LaputaUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1885B847BB6F440203E7D156 /* Pods-LaputaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaputaTests.debug.xcconfig"; path = "Target Support Files/Pods-LaputaTests/Pods-LaputaTests.debug.xcconfig"; sourceTree = "<group>"; };
+		1A24CDCC25D4CE130044044F /* SSHConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnection.swift; sourceTree = "<group>"; };
 		1A64C88825CA2EE50082FEA7 /* Laputa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Laputa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A64C88B25CA2EE50082FEA7 /* LaputaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaputaApp.swift; sourceTree = "<group>"; };
 		1A64C88D25CA2EE50082FEA7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -59,6 +66,10 @@
 		1F7A9745EB48293FC97314FC /* Pods-Laputa-LaputaUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa-LaputaUITests.release.xcconfig"; path = "Target Support Files/Pods-Laputa-LaputaUITests/Pods-Laputa-LaputaUITests.release.xcconfig"; sourceTree = "<group>"; };
 		3259B6C9970937CC594AFB72 /* Pods-Laputa-LaputaUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa-LaputaUITests.debug.xcconfig"; path = "Target Support Files/Pods-Laputa-LaputaUITests/Pods-Laputa-LaputaUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		3F5EBF63A92A5021A9EE7A6F /* Pods_LaputaTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LaputaTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
+		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStructs.swift; sourceTree = SOURCE_ROOT; };
+		759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHTerminalView.swift; sourceTree = SOURCE_ROOT; };
+		75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalComponentView.swift; sourceTree = "<group>"; };
 		97B18099E4EC517DEE7D561E /* Pods-Laputa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa.debug.xcconfig"; path = "Target Support Files/Pods-Laputa/Pods-Laputa.debug.xcconfig"; sourceTree = "<group>"; };
 		9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -68,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A24CDC025D4B15F0044044F /* SwiftTerm in Frameworks */,
 				2BA672215609DFF0D9069934 /* Pods_Laputa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -99,6 +111,14 @@
 				3F5EBF63A92A5021A9EE7A6F /* Pods_LaputaTests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1A24CDCB25D4CDCA0044044F /* SSH */ = {
+			isa = PBXGroup;
+			children = (
+				1A24CDCC25D4CE130044044F /* SSHConnection.swift */,
+			);
+			path = SSH;
 			sourceTree = "<group>";
 		};
 		1A64C87F25CA2EE50082FEA7 = {
@@ -170,6 +190,7 @@
 		1A84751725CCF6D7004169AC /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				759EA50025D4C68400560D98 /* DataStructs.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -177,6 +198,9 @@
 		1A84751825CCF6DF004169AC /* View */ = {
 			isa = PBXGroup;
 			children = (
+				75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */,
+				759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */,
+				759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -191,6 +215,7 @@
 		1A84751A25CCF6EB004169AC /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1A24CDCB25D4CDCA0044044F /* SSH */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -226,6 +251,9 @@
 			dependencies = (
 			);
 			name = Laputa;
+			packageProductDependencies = (
+				1A24CDBF25D4B15F0044044F /* SwiftTerm */,
+			);
 			productName = Laputa;
 			productReference = 1A64C88825CA2EE50082FEA7 /* Laputa.app */;
 			productType = "com.apple.product-type.application";
@@ -300,6 +328,9 @@
 				Base,
 			);
 			mainGroup = 1A64C87F25CA2EE50082FEA7;
+			packageReferences = (
+				1A24CDBE25D4B15F0044044F /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+			);
 			productRefGroup = 1A64C88925CA2EE50082FEA7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -445,10 +476,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */,
 				1A64C89525CA2EE80082FEA7 /* Persistence.swift in Sources */,
 				1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */,
 				1A64C89825CA2EE80082FEA7 /* Laputa.xcdatamodeld in Sources */,
+				759EA50125D4C68400560D98 /* DataStructs.swift in Sources */,
+				75ECADEF25D65F3600CB4D9D /* TerminalComponentView.swift in Sources */,
 				1A64C88C25CA2EE50082FEA7 /* LaputaApp.swift in Sources */,
+				759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */,
+				1A24CDCD25D4CE130044044F /* SSHConnection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -608,6 +644,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Laputa/Preview Content\"";
+				DEVELOPMENT_TEAM = NHNAHB2493;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Laputa/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -630,6 +667,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Laputa/Preview Content\"";
+				DEVELOPMENT_TEAM = NHNAHB2493;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Laputa/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -768,6 +806,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1A24CDBE25D4B15F0044044F /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1A24CDBF25D4B15F0044044F /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A24CDBE25D4B15F0044044F /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		1A64C89625CA2EE80082FEA7 /* Laputa.xcdatamodeld */ = {
