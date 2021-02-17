@@ -17,6 +17,15 @@
 		1A64C8AE25CA2EE80082FEA7 /* LaputaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C8AD25CA2EE80082FEA7 /* LaputaUITests.swift */; };
 		23F192D5AE739BB2FDEBB3D4 /* Pods_LaputaTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F5EBF63A92A5021A9EE7A6F /* Pods_LaputaTests.framework */; };
 		2BA672215609DFF0D9069934 /* Pods_Laputa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */; };
+		584E47B325D39A49005EDC0E /* MainPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47B225D39A49005EDC0E /* MainPageView.swift */; };
+		584E47BE25D39EAF005EDC0E /* MainPageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47BD25D39EAF005EDC0E /* MainPageList.swift */; };
+		584E47C325D63214005EDC0E /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47C225D63214005EDC0E /* TestView.swift */; };
+		584E47C825D6382C005EDC0E /* MainPageColumnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47C725D6382C005EDC0E /* MainPageColumnView.swift */; };
+		584E47CD25D8BCD8005EDC0E /* MainPagePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47CC25D8BCD8005EDC0E /* MainPagePreview.swift */; };
+		584E47D225D8CA48005EDC0E /* MainPageDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47D125D8CA48005EDC0E /* MainPageDetail.swift */; };
+		584E47DA25DCDC0A005EDC0E /* MainPageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */; };
+		584E47E225DCEFEC005EDC0E /* MainPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */; };
+		584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */; };
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +68,15 @@
 		1F7A9745EB48293FC97314FC /* Pods-Laputa-LaputaUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa-LaputaUITests.release.xcconfig"; path = "Target Support Files/Pods-Laputa-LaputaUITests/Pods-Laputa-LaputaUITests.release.xcconfig"; sourceTree = "<group>"; };
 		3259B6C9970937CC594AFB72 /* Pods-Laputa-LaputaUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa-LaputaUITests.debug.xcconfig"; path = "Target Support Files/Pods-Laputa-LaputaUITests/Pods-Laputa-LaputaUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		3F5EBF63A92A5021A9EE7A6F /* Pods_LaputaTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LaputaTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		584E47B225D39A49005EDC0E /* MainPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageView.swift; sourceTree = "<group>"; };
+		584E47BD25D39EAF005EDC0E /* MainPageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageList.swift; sourceTree = "<group>"; };
+		584E47C225D63214005EDC0E /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
+		584E47C725D6382C005EDC0E /* MainPageColumnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageColumnView.swift; sourceTree = "<group>"; };
+		584E47CC25D8BCD8005EDC0E /* MainPagePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPagePreview.swift; sourceTree = "<group>"; };
+		584E47D125D8CA48005EDC0E /* MainPageDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageDetail.swift; sourceTree = "<group>"; };
+		584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputView.swift; sourceTree = "<group>"; };
+		584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputHost.swift; sourceTree = "<group>"; };
+		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
 		97B18099E4EC517DEE7D561E /* Pods-Laputa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa.debug.xcconfig"; path = "Target Support Files/Pods-Laputa/Pods-Laputa.debug.xcconfig"; sourceTree = "<group>"; };
 		9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -126,9 +144,9 @@
 		1A64C88A25CA2EE50082FEA7 /* Laputa */ = {
 			isa = PBXGroup;
 			children = (
+				584E47B125D39A3D005EDC0E /* View */,
 				1A84751A25CCF6EB004169AC /* Services */,
 				1A84751925CCF6E3004169AC /* Resources */,
-				1A84751825CCF6DF004169AC /* View */,
 				1A84751725CCF6D7004169AC /* Model */,
 				1A64C88B25CA2EE50082FEA7 /* LaputaApp.swift */,
 				1A64C88D25CA2EE50082FEA7 /* ContentView.swift */,
@@ -174,13 +192,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		1A84751825CCF6DF004169AC /* View */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
 		1A84751925CCF6E3004169AC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -193,6 +204,22 @@
 			children = (
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		584E47B125D39A3D005EDC0E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				584E47B225D39A49005EDC0E /* MainPageView.swift */,
+				584E47BD25D39EAF005EDC0E /* MainPageList.swift */,
+				584E47C225D63214005EDC0E /* TestView.swift */,
+				584E47C725D6382C005EDC0E /* MainPageColumnView.swift */,
+				584E47CC25D8BCD8005EDC0E /* MainPagePreview.swift */,
+				584E47D125D8CA48005EDC0E /* MainPageDetail.swift */,
+				584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */,
+				584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */,
+				584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		6F275419BE29A3178A353E96 /* Pods */ = {
@@ -445,9 +472,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				584E47C325D63214005EDC0E /* TestView.swift in Sources */,
+				584E47CD25D8BCD8005EDC0E /* MainPagePreview.swift in Sources */,
 				1A64C89525CA2EE80082FEA7 /* Persistence.swift in Sources */,
+				584E47BE25D39EAF005EDC0E /* MainPageList.swift in Sources */,
+				584E47DA25DCDC0A005EDC0E /* MainPageInputView.swift in Sources */,
+				584E47D225D8CA48005EDC0E /* MainPageDetail.swift in Sources */,
 				1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */,
+				584E47B325D39A49005EDC0E /* MainPageView.swift in Sources */,
 				1A64C89825CA2EE80082FEA7 /* Laputa.xcdatamodeld in Sources */,
+				584E47C825D6382C005EDC0E /* MainPageColumnView.swift in Sources */,
+				584E47E225DCEFEC005EDC0E /* MainPageInputHost.swift in Sources */,
+				584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */,
 				1A64C88C25CA2EE50082FEA7 /* LaputaApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
