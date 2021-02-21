@@ -159,3 +159,19 @@ final class SwiftUITerminal: NSObject, UIViewControllerRepresentable {
         //
     }
 }
+
+struct SwiftUITerminal_Preview: PreviewProvider {
+    static var previews: some View {
+        PreviewWrapper()
+    }
+    
+    struct PreviewWrapper: View {
+        
+        var body: some View {
+            let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
+
+            return SwiftUITerminal(host: host)
+            
+        }
+    }
+}

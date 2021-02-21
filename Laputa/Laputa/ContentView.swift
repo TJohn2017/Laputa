@@ -15,10 +15,12 @@ import CoreData
     - TODO: Lower the starting height of the list so it doesn't start immediately from the very top.
  
  - MainPagePreview:
+    - TODO: Add "***" button to menu popup that allows to delete
+      entities or update entity in the mainPageInput[Host/Canvas]
     - TODO: Add delete functionality to remove entity optionally.
  
  - MainPageInputCanvas
-   - TODO: Merge Canvas core aata functionality.
+   - TODO: Merge Canvas core data functionality.
  */
 
 struct ContentView: View {
