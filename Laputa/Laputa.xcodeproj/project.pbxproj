@@ -33,7 +33,6 @@
 		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
 		759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */; };
 		75ECADEF25D65F3600CB4D9D /* TerminalComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */; };
-
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -88,10 +87,9 @@
 		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
 		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
 		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
-		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStructs.swift; sourceTree = SOURCE_ROOT; };
-		759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHTerminalView.swift; sourceTree = SOURCE_ROOT; };
+		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
+		759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalView.swift; path = Laputa/View/SSHTerminalView.swift; sourceTree = SOURCE_ROOT; };
 		75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalComponentView.swift; sourceTree = "<group>"; };
-
 		97B18099E4EC517DEE7D561E /* Pods-Laputa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa.debug.xcconfig"; path = "Target Support Files/Pods-Laputa/Pods-Laputa.debug.xcconfig"; sourceTree = "<group>"; };
 		9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -220,9 +218,6 @@
 		1A84751925CCF6E3004169AC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */,
-				759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */,
-				759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -230,6 +225,7 @@
 		1A84751A25CCF6EB004169AC /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1A24CDCB25D4CDCA0044044F /* SSH */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -237,9 +233,11 @@
 		584E47B125D39A3D005EDC0E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */,
+				759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */,
+				759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */,
 				584E47F125E2099C005EDC0E /* SessionPage */,
 				584E47F025E20970005EDC0E /* MainPage */,
-				1A24CDCB25D4CDCA0044044F /* SSH */,
 			);
 			path = View;
 			sourceTree = "<group>";
