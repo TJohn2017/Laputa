@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct MainPageInputHost: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    @Binding var showingInputSheet: Bool
+
+
     @State var name: String = ""
     @State var host: String = ""
     @State var port: String = "22"
@@ -40,17 +45,53 @@ struct MainPageInputHost: View {
             }
             
             Button(action: {
-                // View needs to set the startSession binding variable to true once the input is validated.
+                // Ensure that required fields are met.
+                guard self.username != "" else {return}
+                guard self.password != "" else {return}
+                guard self.port != "" else {return}
+                guard self.host != "" else {return}
+                
+                let newHost = Host(context: viewContext)
+                newHost.name = self.name
+                newHost.host = self.host
+                newHost.port = self.port
+                newHost.username = self.username
+                newHost.password = self.password
+                
+                // Save the created host.
+                do {
+                    try viewContext.save()
+                    print("Host w/ name: \(self.name) saved.")
+                    showingInputSheet.toggle()
+                } catch {
+                    print(error.localizedDescription)
+                }
+                
             }) {
                 Text("Add Host")
             }
             
         }
     }
+    
+    private func addHostEntity() {
+        
+    }
 }
 
 struct MainPageInputHost_Previews: PreviewProvider {
     static var previews: some View {
-        MainPageInputHost()
+        PreviewWrapper()
+    }
+    
+    struct PreviewWrapper: View {
+        @State var showingInputSheet = true
+
+        var body: some View {
+            
+            return MainPageInputHost(
+                showingInputSheet: $showingInputSheet
+            ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        }
     }
 }

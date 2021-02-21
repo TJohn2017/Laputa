@@ -26,6 +26,7 @@
 		584E47DA25DCDC0A005EDC0E /* MainPageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */; };
 		584E47E225DCEFEC005EDC0E /* MainPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */; };
 		584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */; };
+		584E47F325E209AF005EDC0E /* SessionPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47F225E209AF005EDC0E /* SessionPageView.swift */; };
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +78,7 @@
 		584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputView.swift; sourceTree = "<group>"; };
 		584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputHost.swift; sourceTree = "<group>"; };
 		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
+		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
 		97B18099E4EC517DEE7D561E /* Pods-Laputa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa.debug.xcconfig"; path = "Target Support Files/Pods-Laputa/Pods-Laputa.debug.xcconfig"; sourceTree = "<group>"; };
 		9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -209,6 +211,15 @@
 		584E47B125D39A3D005EDC0E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				584E47F125E2099C005EDC0E /* SessionPage */,
+				584E47F025E20970005EDC0E /* MainPage */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		584E47F025E20970005EDC0E /* MainPage */ = {
+			isa = PBXGroup;
+			children = (
 				584E47B225D39A49005EDC0E /* MainPageView.swift */,
 				584E47BD25D39EAF005EDC0E /* MainPageList.swift */,
 				584E47C225D63214005EDC0E /* TestView.swift */,
@@ -219,7 +230,15 @@
 				584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */,
 				584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */,
 			);
-			path = View;
+			path = MainPage;
+			sourceTree = "<group>";
+		};
+		584E47F125E2099C005EDC0E /* SessionPage */ = {
+			isa = PBXGroup;
+			children = (
+				584E47F225E209AF005EDC0E /* SessionPageView.swift */,
+			);
+			path = SessionPage;
 			sourceTree = "<group>";
 		};
 		6F275419BE29A3178A353E96 /* Pods */ = {
@@ -476,6 +495,7 @@
 				584E47CD25D8BCD8005EDC0E /* MainPagePreview.swift in Sources */,
 				1A64C89525CA2EE80082FEA7 /* Persistence.swift in Sources */,
 				584E47BE25D39EAF005EDC0E /* MainPageList.swift in Sources */,
+				584E47F325E209AF005EDC0E /* SessionPageView.swift in Sources */,
 				584E47DA25DCDC0A005EDC0E /* MainPageInputView.swift in Sources */,
 				584E47D225D8CA48005EDC0E /* MainPageDetail.swift in Sources */,
 				1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */,

@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct MainPageInputCanvas: View {
+    @Environment(\.managedObjectContext) private var viewContext
+
+    @Binding var showingInputSheet: Bool
+
     @State var name: String = ""
     
     var body: some View {
@@ -30,6 +34,17 @@ struct MainPageInputCanvas: View {
 
 struct MainPageInputCanvas_Previews: PreviewProvider {
     static var previews: some View {
-        MainPageInputCanvas()
+        PreviewWrapper()
+    }
+    
+    struct PreviewWrapper: View {
+        @State var showingInputSheet = true
+
+        var body: some View {
+            
+            return MainPageInputCanvas(
+                showingInputSheet: $showingInputSheet
+            ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        }
     }
 }

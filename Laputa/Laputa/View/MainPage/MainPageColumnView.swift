@@ -50,7 +50,6 @@ struct MainPageColumnView: View {
             
             // Canvases Button.
             Button(action: {
-                // Implement Canvas action.
                 if (displayHosts) {
                     withAnimation {
                         displayHosts.toggle()

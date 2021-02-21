@@ -8,10 +8,8 @@
 import SwiftUI
 
 struct MainPageList: View {
-    // TODO:
-    //  - Will need to load viewContext + FetchRequest to retrieve list of canvases and hosts.
-    // - Can add a sort predicate in sortDescriptors list.
     @Environment(\.managedObjectContext) private var viewContext
+    
     @FetchRequest(
         entity: Item.entity(),
         sortDescriptors: [],
@@ -19,22 +17,33 @@ struct MainPageList: View {
     )
     var items: FetchedResults<Item>
     
+    @FetchRequest(
+        entity: Host.entity(),
+        sortDescriptors: []
+    )
+    var hosts: FetchedResults<Host>
+    
     @Binding var displayHosts: Bool
     
     var body: some View {
-        // TODO: toggle between fetched canvases and fetched ssh hosts.
-        let listItems = displayHosts ? items : items
-        
-        
-        return ScrollView {
+
+        return AnyView(ScrollView {
             VStack {
-                ForEach(listItems) { item in
-                    NavigationLink(destination: MainPageDetail(displayHosts: $displayHosts)) {
-                        MainPagePreview(displayHosts: $displayHosts, item: item)
+                if (displayHosts) {
+                    ForEach(hosts) { host in
+                        NavigationLink(destination: SessionPageView(hostPresent: true, canvasPresent: false, host: host)) {
+                            MainPagePreview(host: host)
+                        }
+                    }
+                } else {
+                    ForEach(items) { item in
+                        NavigationLink(destination: SessionPageView(hostPresent: true, canvasPresent: false, canvas: item)) {
+                            MainPagePreview(item: item)
+                        }
                     }
                 }
             }
-        }
+        })
     }
     
 }

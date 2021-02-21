@@ -14,9 +14,18 @@ struct PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for index in 0..<10 {
+            // Instantiate preview Item entities.
             let newItem = Item(context: viewContext)
             newItem.timestamp = Date()
             newItem.id = Int32(index)
+            
+            // Instantiate preview Host entities.
+            let newHost = Host(context: viewContext)
+            newHost.host = "host_\(index)"
+            newHost.name = "Name #\(index)"
+            newHost.password = "password_\(index)"
+            newHost.port = "22"
+            newHost.username = "username_\(index)"
         }
         do {
             try viewContext.save()

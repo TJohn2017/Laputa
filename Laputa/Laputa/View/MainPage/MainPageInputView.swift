@@ -13,9 +13,9 @@ struct MainPageInputView: View {
     
     var body: some View {
         if (displayHosts) {
-            MainPageInputHost()
+            MainPageInputHost(showingInputSheet: $showingInputSheet)
         } else {
-            MainPageInputCanvas()
+            MainPageInputCanvas(showingInputSheet: $showingInputSheet)
         }
     }
 }
