@@ -10,11 +10,11 @@ import SwiftTerm
 import NMSSH
 
 public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDelegate {
-    var host: Host
+    var host: HostInfo
     var ssh_session: SSHConnection
     var command_buffer = [UInt8]()
     
-    init(host: Host, frame: CGRect) {
+    init(host: HostInfo, frame: CGRect) {
         self.host = host
         
         self.ssh_session = SSHConnection(host: host.hostname, andUsername: host.username) //create ssh session

@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct Host: Codable, Identifiable {
+
+struct HostInfo: Codable, Identifiable {
     var id = UUID()
     var alias: String = ""
     var hostname: String = ""

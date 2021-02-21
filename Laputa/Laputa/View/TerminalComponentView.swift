@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct TerminalComponentView: View {
-    var host: Host
+    var host: HostInfo
     
-    init(host: Host) {
+    init(host: HostInfo) {
         self.host = host
     }
     
@@ -23,6 +23,6 @@ struct TerminalComponentView: View {
 
 struct TerminalComponentView_Previews: PreviewProvider {
     static var previews: some View {
-        TerminalComponentView(host: Host(alias:"claire's laptop", hostname:"192.168.1.11", username:"clairemai", usePassword:true, password:"macaron"))
+        TerminalComponentView(host: HostInfo(alias:"claire's laptop", hostname:"192.168.1.11", username:"clairemai", usePassword:true, password:"macaron"))
     }
 }

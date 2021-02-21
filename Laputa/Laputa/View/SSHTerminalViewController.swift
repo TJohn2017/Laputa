@@ -11,11 +11,11 @@ import SwiftUI
 import NMSSH
 
 class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
-    var host: Host
+    var host: HostInfo
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
     
-    init(host: Host) {
+    init(host: HostInfo) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
         super.init(nibName:nil, bundle:nil)
@@ -142,10 +142,10 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 // SwiftUI Terminal Object
 final class SwiftUITerminal: NSObject, UIViewControllerRepresentable {
     var terminalView: SSHTerminalView?
-    var host_a: Host
+    var host_a: HostInfo
     typealias UIViewControllerType = SSHTerminalViewController
     
-    init (host: Host) {
+    init (host: HostInfo) {
         host_a = host
     }
     

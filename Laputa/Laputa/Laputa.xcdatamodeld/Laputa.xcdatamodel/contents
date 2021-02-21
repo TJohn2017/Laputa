@@ -12,7 +12,7 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <elements>
-        <element name="Item" positionX="-63" positionY="-18" width="128" height="73"/>
         <element name="Host" positionX="-63" positionY="0" width="128" height="118"/>
+        <element name="Item" positionX="-63" positionY="-18" width="128" height="73"/>
     </elements>
 </model>
