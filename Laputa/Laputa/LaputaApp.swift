@@ -6,15 +6,19 @@
 //
 
 import SwiftUI
+import SwiftTerm
 
 @main
 struct LaputaApp: App {
     let persistenceController = PersistenceController.shared
-
+    let host = Host(alias:"claire's laptop", hostname:"192.168.1.11", username:"clairemai", usePassword:true, password:"macaron")
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            
+            SwiftUITerminal(host: host)
+            
+           /* ContentView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)*/
         }
     }
 }
