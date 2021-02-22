@@ -102,6 +102,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     //var terminalScrollView = UIScrollView()
     // Loads terminal gui into the view
     override func viewDidLoad() {
+        print("VIEW DID LOAD CALLED")
         super.viewDidLoad()
         addKeyboard()
         orig_view_height = view.frame.height
