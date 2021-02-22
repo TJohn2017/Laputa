@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A24CDC025D4B15F0044044F /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 1A24CDBF25D4B15F0044044F /* SwiftTerm */; };
+		1A24CDCD25D4CE130044044F /* SSHConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A24CDCC25D4CE130044044F /* SSHConnection.swift */; };
 		1A64C88C25CA2EE50082FEA7 /* LaputaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C88B25CA2EE50082FEA7 /* LaputaApp.swift */; };
 		1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C88D25CA2EE50082FEA7 /* ContentView.swift */; };
 		1A64C89025CA2EE80082FEA7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A64C88F25CA2EE80082FEA7 /* Assets.xcassets */; };
@@ -31,6 +33,20 @@
 		9CEDEB8E25E2419F00F0E380 /* ColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */; };
 		9CEDEB9325E241C500F0E380 /* ColorProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9225E241C500F0E380 /* ColorProvider.swift */; };
 		9CEDEB9925E2420400F0E380 /* ColorEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9825E2420400F0E380 /* ColorEntry.swift */; };
+		584E47B325D39A49005EDC0E /* MainPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47B225D39A49005EDC0E /* MainPageView.swift */; };
+		584E47BE25D39EAF005EDC0E /* MainPageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47BD25D39EAF005EDC0E /* MainPageList.swift */; };
+		584E47C325D63214005EDC0E /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47C225D63214005EDC0E /* TestView.swift */; };
+		584E47C825D6382C005EDC0E /* MainPageColumnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47C725D6382C005EDC0E /* MainPageColumnView.swift */; };
+		584E47CD25D8BCD8005EDC0E /* MainPagePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47CC25D8BCD8005EDC0E /* MainPagePreview.swift */; };
+		584E47D225D8CA48005EDC0E /* MainPageDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47D125D8CA48005EDC0E /* MainPageDetail.swift */; };
+		584E47DA25DCDC0A005EDC0E /* MainPageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */; };
+		584E47E225DCEFEC005EDC0E /* MainPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */; };
+		584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */; };
+		584E47F325E209AF005EDC0E /* SessionPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47F225E209AF005EDC0E /* SessionPageView.swift */; };
+		759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */; };
+		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
+		759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */; };
+		75ECADEF25D65F3600CB4D9D /* TerminalComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */; };
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +72,7 @@
 		0DEE2E78EBFD028EA3C6DDF6 /* Pods-LaputaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaputaTests.release.xcconfig"; path = "Target Support Files/Pods-LaputaTests/Pods-LaputaTests.release.xcconfig"; sourceTree = "<group>"; };
 		13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa_LaputaUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1885B847BB6F440203E7D156 /* Pods-LaputaTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaputaTests.debug.xcconfig"; path = "Target Support Files/Pods-LaputaTests/Pods-LaputaTests.debug.xcconfig"; sourceTree = "<group>"; };
+		1A24CDCC25D4CE130044044F /* SSHConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnection.swift; sourceTree = "<group>"; };
 		1A64C88825CA2EE50082FEA7 /* Laputa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Laputa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A64C88B25CA2EE50082FEA7 /* LaputaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaputaApp.swift; sourceTree = "<group>"; };
 		1A64C88D25CA2EE50082FEA7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -73,6 +90,20 @@
 		1F7A9745EB48293FC97314FC /* Pods-Laputa-LaputaUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa-LaputaUITests.release.xcconfig"; path = "Target Support Files/Pods-Laputa-LaputaUITests/Pods-Laputa-LaputaUITests.release.xcconfig"; sourceTree = "<group>"; };
 		3259B6C9970937CC594AFB72 /* Pods-Laputa-LaputaUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa-LaputaUITests.debug.xcconfig"; path = "Target Support Files/Pods-Laputa-LaputaUITests/Pods-Laputa-LaputaUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		3F5EBF63A92A5021A9EE7A6F /* Pods_LaputaTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LaputaTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		584E47B225D39A49005EDC0E /* MainPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageView.swift; sourceTree = "<group>"; };
+		584E47BD25D39EAF005EDC0E /* MainPageList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageList.swift; sourceTree = "<group>"; };
+		584E47C225D63214005EDC0E /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
+		584E47C725D6382C005EDC0E /* MainPageColumnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageColumnView.swift; sourceTree = "<group>"; };
+		584E47CC25D8BCD8005EDC0E /* MainPagePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPagePreview.swift; sourceTree = "<group>"; };
+		584E47D125D8CA48005EDC0E /* MainPageDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageDetail.swift; sourceTree = "<group>"; };
+		584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputView.swift; sourceTree = "<group>"; };
+		584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputHost.swift; sourceTree = "<group>"; };
+		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
+		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
+		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
+		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
+		759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalView.swift; path = Laputa/View/SSHTerminalView.swift; sourceTree = SOURCE_ROOT; };
+		75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalComponentView.swift; sourceTree = "<group>"; };
 		97B18099E4EC517DEE7D561E /* Pods-Laputa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa.debug.xcconfig"; path = "Target Support Files/Pods-Laputa/Pods-Laputa.debug.xcconfig"; sourceTree = "<group>"; };
 		9C488E2525D0DCBA00662F1E /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		9C488E3125D1081C00662F1E /* CodeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeCardView.swift; sourceTree = "<group>"; };
@@ -96,6 +127,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A24CDC025D4B15F0044044F /* SwiftTerm in Frameworks */,
 				2BA672215609DFF0D9069934 /* Pods_Laputa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,6 +161,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		1A24CDCB25D4CDCA0044044F /* SSH */ = {
+			isa = PBXGroup;
+			children = (
+				1A24CDCC25D4CE130044044F /* SSHConnection.swift */,
+			);
+			path = SSH;
+			sourceTree = "<group>";
+		};
 		1A64C87F25CA2EE50082FEA7 = {
 			isa = PBXGroup;
 			children = (
@@ -158,9 +198,9 @@
 				9CEDEA1325E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift */,
 				9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */,
 				9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */,
+				584E47B125D39A3D005EDC0E /* View */,
 				1A84751A25CCF6EB004169AC /* Services */,
 				1A84751925CCF6E3004169AC /* Resources */,
-				1A84751825CCF6DF004169AC /* View */,
 				1A84751725CCF6D7004169AC /* Model */,
 				1A64C88B25CA2EE50082FEA7 /* LaputaApp.swift */,
 				1A64C88D25CA2EE50082FEA7 /* ContentView.swift */,
@@ -202,21 +242,15 @@
 		1A84751725CCF6D7004169AC /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				759EA50025D4C68400560D98 /* DataStructs.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		1A84751825CCF6DF004169AC /* View */ = {
-			isa = PBXGroup;
-			children = (
-				9CEDEB7025E23DD900F0E380 /* Canvas */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		1A84751925CCF6E3004169AC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9CEDEB7025E23DD900F0E380 /* Canvas */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -224,8 +258,45 @@
 		1A84751A25CCF6EB004169AC /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1A24CDCB25D4CDCA0044044F /* SSH */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		584E47B125D39A3D005EDC0E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */,
+				759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */,
+				759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */,
+				584E47F125E2099C005EDC0E /* SessionPage */,
+				584E47F025E20970005EDC0E /* MainPage */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		584E47F025E20970005EDC0E /* MainPage */ = {
+			isa = PBXGroup;
+			children = (
+				584E47B225D39A49005EDC0E /* MainPageView.swift */,
+				584E47BD25D39EAF005EDC0E /* MainPageList.swift */,
+				584E47C225D63214005EDC0E /* TestView.swift */,
+				584E47C725D6382C005EDC0E /* MainPageColumnView.swift */,
+				584E47CC25D8BCD8005EDC0E /* MainPagePreview.swift */,
+				584E47D125D8CA48005EDC0E /* MainPageDetail.swift */,
+				584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */,
+				584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */,
+				584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */,
+			);
+			path = MainPage;
+			sourceTree = "<group>";
+		};
+		584E47F125E2099C005EDC0E /* SessionPage */ = {
+			isa = PBXGroup;
+			children = (
+				584E47F225E209AF005EDC0E /* SessionPageView.swift */,
+			);
+			path = SessionPage;
 			sourceTree = "<group>";
 		};
 		6F275419BE29A3178A353E96 /* Pods */ = {
@@ -284,6 +355,9 @@
 			dependencies = (
 			);
 			name = Laputa;
+			packageProductDependencies = (
+				1A24CDBF25D4B15F0044044F /* SwiftTerm */,
+			);
 			productName = Laputa;
 			productReference = 1A64C88825CA2EE50082FEA7 /* Laputa.app */;
 			productType = "com.apple.product-type.application";
@@ -358,6 +432,9 @@
 				Base,
 			);
 			mainGroup = 1A64C87F25CA2EE50082FEA7;
+			packageReferences = (
+				1A24CDBE25D4B15F0044044F /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+			);
 			productRefGroup = 1A64C88925CA2EE50082FEA7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -521,6 +598,25 @@
 				9CEDEA1725E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift in Sources */,
 				1A64C88C25CA2EE50082FEA7 /* LaputaApp.swift in Sources */,
 				9CEDEA1825E07FCE00F0E380 /* Canvas+CoreDataClass.swift in Sources */,
+				584E47C325D63214005EDC0E /* TestView.swift in Sources */,
+				584E47CD25D8BCD8005EDC0E /* MainPagePreview.swift in Sources */,
+				759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */,
+				1A64C89525CA2EE80082FEA7 /* Persistence.swift in Sources */,
+				584E47BE25D39EAF005EDC0E /* MainPageList.swift in Sources */,
+				584E47F325E209AF005EDC0E /* SessionPageView.swift in Sources */,
+				584E47DA25DCDC0A005EDC0E /* MainPageInputView.swift in Sources */,
+				584E47D225D8CA48005EDC0E /* MainPageDetail.swift in Sources */,
+				1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */,
+				584E47B325D39A49005EDC0E /* MainPageView.swift in Sources */,
+				1A64C89825CA2EE80082FEA7 /* Laputa.xcdatamodeld in Sources */,
+				584E47C825D6382C005EDC0E /* MainPageColumnView.swift in Sources */,
+				584E47E225DCEFEC005EDC0E /* MainPageInputHost.swift in Sources */,
+				584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */,
+				759EA50125D4C68400560D98 /* DataStructs.swift in Sources */,
+				75ECADEF25D65F3600CB4D9D /* TerminalComponentView.swift in Sources */,
+				1A64C88C25CA2EE50082FEA7 /* LaputaApp.swift in Sources */,
+				759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */,
+				1A24CDCD25D4CE130044044F /* SSHConnection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,6 +776,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Laputa/Preview Content\"";
+				DEVELOPMENT_TEAM = NHNAHB2493;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Laputa/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -702,6 +799,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Laputa/Preview Content\"";
+				DEVELOPMENT_TEAM = NHNAHB2493;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Laputa/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -840,6 +938,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1A24CDBE25D4B15F0044044F /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1A24CDBF25D4B15F0044044F /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A24CDBE25D4B15F0044044F /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		1A64C89625CA2EE80082FEA7 /* Laputa.xcdatamodeld */ = {
