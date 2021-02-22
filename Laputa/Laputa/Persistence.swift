@@ -38,6 +38,14 @@ struct PersistenceController {
             newHost.port = "22"
             newHost.username = "username_\(index)"
         }
+        
+        let newHost = Host(context: viewContext)
+        newHost.name = "Laputa"
+        newHost.host = "159.65.78.184"
+        newHost.username = "laputa"
+        newHost.port = "22"
+        newHost.password = "LaputaIsAwesome"
+        
         do {
             try viewContext.save()
         } catch {

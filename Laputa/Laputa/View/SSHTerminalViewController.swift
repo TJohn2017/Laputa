@@ -14,10 +14,13 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var host: HostInfo
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
+    var addPairButton: UIButton
+    weak var delegate: SwiftUITerminalDelegate?
     
     init(host: HostInfo) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
+        self.addPairButton = UIButton(type: .custom)
         super.init(nibName:nil, bundle:nil)
     }
     
@@ -111,6 +114,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         t.frame = view.frame
         view.addSubview(t)
         
+        // initiate addPair button
+        initializeAddPairButton(t: t)
+        view.addSubview(addPairButton)
+        self.terminalView?.becomeFirstResponder()
+        
         // initiate keyboard button
         initializeKeyboardButton(t: t)
         view.addSubview(keyboardButton)
@@ -123,6 +131,20 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         CGFloat fixedWidth = terminalView?.frame.width
         
     }*/
+    private func initializeAddPairButton(t: TerminalView) {
+        addPairButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width / 15, height: t.frame.width/15)
+        addPairButton.layer.cornerRadius = 15
+        addPairButton.layer.masksToBounds = true
+        addPairButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        addPairButton.backgroundColor = UIColor.white
+        addPairButton.addTarget(self, action: #selector(showCanvasSheet), for: .touchUpInside)
+    }
+    
+    // This function tells the delegate to present the canvas sheet
+    @objc
+    func showCanvasSheet() {
+        self.delegate?.showCanvasSheet(self, showCanvas: true)
+    }
     
     private func initializeKeyboardButton(t: TerminalView) {
         keyboardButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 120, width: t.frame.width/15, height: t.frame.width/15)
@@ -140,22 +162,58 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 }
 
 // SwiftUI Terminal Object
-final class SwiftUITerminal: NSObject, UIViewControllerRepresentable {
-    var terminalView: SSHTerminalView?
-    var host_a: HostInfo
+struct SwiftUITerminal: UIViewControllerRepresentable {
+    @State var host: HostInfo
+    @Binding var showCanvasSheet: Bool
     typealias UIViewControllerType = SSHTerminalViewController
     
-    init (host: HostInfo) {
-        host_a = host
-    }
-    
-    var viewController: SSHTerminalViewController!
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        viewController = SSHTerminalViewController (host: host_a)
+        let viewController = SSHTerminalViewController (host: host)
+        viewController.delegate = context.coordinator
         return viewController
     }
     
-    func updateUIViewController(_ uiViewController: SSHTerminalViewController, context: UIViewControllerRepresentableContext<SwiftUITerminal>) {
-        //
+    // Need for conformity
+    func updateUIViewController(_ uiViewController: SSHTerminalViewController, context: UIViewControllerRepresentableContext<SwiftUITerminal>) {}
+    
+    // Coordinator will be used to share the canvas sheet toggle
+    // variable with our parent views
+    class Coordinator: NSObject, SwiftUITerminalDelegate {
+        var parent: SwiftUITerminal
+        let showCanvasSheetBinding: Binding<Bool>
+        
+        init(parent: SwiftUITerminal, showCanvasSheetBinding: Binding<Bool>) {
+            self.showCanvasSheetBinding = showCanvasSheetBinding
+            self.parent = parent
+        }
+        
+        // This function allows us to propagate a toggled value through our view controller back to our parent
+        func showCanvasSheet(_ viewController: SSHTerminalViewController, showCanvas: Bool) {
+            showCanvasSheetBinding.wrappedValue = showCanvas
+        }
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self, showCanvasSheetBinding: $showCanvasSheet)
+    }
+}
+
+protocol SwiftUITerminalDelegate: AnyObject {
+    func showCanvasSheet(_ viewController: SSHTerminalViewController, showCanvas: Bool)
+}
+
+struct SwiftUITerminal_Preview: PreviewProvider {
+    static var previews: some View {
+        PreviewWrapper()
+    }
+    
+    struct PreviewWrapper: View {
+        @State var showCanvasSheet = false
+        
+        var body: some View {
+            let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
+
+            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet)
+        }
     }
 }

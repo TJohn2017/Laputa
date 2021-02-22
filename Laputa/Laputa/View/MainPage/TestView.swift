@@ -6,7 +6,9 @@
 //
 
 import SwiftUI
+import UIKit
 
+/*
 struct DetailView: View {
     @Environment(\.presentationMode) var presentationMode
 
@@ -19,14 +21,44 @@ struct DetailView: View {
         }
     }
 }
+ */
+
+struct DetailView: View {
+
+    var body: some View {
+        
+        return ZStack {
+            Color.red
+            Text("Hello, I'm the Detail")
+                .foregroundColor(.yellow)
+        }.edgesIgnoringSafeArea(.top)
+        .navigationBarTitle("I'm the title")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
 
 struct TestView: View {
     @State private var displayHosts: Bool = false
     @State private var displayNewView: Bool = false
-
+    
     var body: some View {
         
+        return NavigationView {
+            VStack {
+                NavigationLink(destination: DetailView()) {
+                    Text("yerr")
+                }
+            }
+        }.navigationViewStyle(StackNavigationViewStyle())
         
+        /*
+        Text("Hello World")
+            .frame(width: 800, height: 1020)
+            .background(Color.blue)
+            .foregroundColor(Color.white)
+        */
+        
+        /*
         VStack(alignment: .leading, spacing: 0) {
             Button(action: {}) {
                 Text("Hosts")
@@ -48,6 +80,8 @@ struct TestView: View {
                 Text("Click me!")
             }
         }
+        */
+        
         /*
         NavigationView {
             VStack {
