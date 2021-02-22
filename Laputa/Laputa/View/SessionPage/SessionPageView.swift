@@ -12,7 +12,7 @@ struct SessionPageView: View {
     @State var hostPresent: Bool
     @State var canvasPresent: Bool
     @State var host: Host?
-    @State var canvas: Item?   // TODO: change to Canvas entity.
+    @State var canvas: Canvas?
     @State var showCanvasSheet: Bool = false
     
     // TODO: incorporate Canvas + Terminal Views.
@@ -42,7 +42,9 @@ struct SessionPageView: View {
                 }
             )
         } else if (host == nil && canvas != nil) {
-            return AnyView(Text("Canvas Session"))
+            return AnyView(
+                CanvasView()
+            )
         } else {
             let host_info = HostInfo(
                 alias:host!.name!,

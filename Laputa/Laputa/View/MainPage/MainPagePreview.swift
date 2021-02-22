@@ -11,7 +11,7 @@ struct MainPagePreview: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @State var host: Host?
-    @State var item: Item?
+    @State var canvas: Canvas?
     
     var body: some View {
         if (host != nil) {
@@ -27,13 +27,13 @@ struct MainPagePreview: View {
             }.padding()
         } else {
             return VStack {
-                Text("Canvas: \(item!.id)")
+                Text("Canvas: \(canvas!.id)")
                     .frame(width: 400.0, height: 200.0)
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(Color.black)
                     .cornerRadius(10.0)
-                Text("Canvas Name #\(item!.id)")
+                Text("Canvas Name: \(canvas!.wrappedTitle)")
                     .foregroundColor(Color.white)
             }.padding()
         }
@@ -50,11 +50,13 @@ struct MainPagePreview_Previews: PreviewProvider {
         var body: some View {
             let context = PersistenceController.preview.container.viewContext
             
-            let newItem = Item(context: context)
-            newItem.id = 100
+            let newCanvas = Canvas(context: context)
+            newCanvas.id = UUID()
+            newCanvas.dateCreated = Date()
+            newCanvas.title = "Woohoo my favorite canvas"
             
             return MainPagePreview(
-                item: newItem
+                canvas: newCanvas
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }

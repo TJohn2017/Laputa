@@ -11,13 +11,12 @@ struct SessionPageInputCanvas: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        entity: Item.entity(),
-        sortDescriptors: [],
-        predicate: NSPredicate(format: "id >= 0")
+        entity: Canvas.entity(),
+        sortDescriptors: []
     )
-    var canvases: FetchedResults<Item>
+    var canvases: FetchedResults<Canvas>
     
-    @State var canvas: Item?
+    @State var canvas: Canvas?
     @Binding var showCanvasSheet: Bool
     
     var body: some View {
@@ -49,7 +48,7 @@ struct SessionPageInputCanvas_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State var canvas: Item?
+        @State var canvas: Canvas?
         @State var showCanvasSheet: Bool = true
         
         var body: some View {

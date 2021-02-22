@@ -11,11 +11,10 @@ struct MainPageList: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        entity: Item.entity(),
-        sortDescriptors: [],
-        predicate: NSPredicate(format: "id >= 0")
+        entity: Canvas.entity(),
+        sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)]
     )
-    var items: FetchedResults<Item>
+    var canvases: FetchedResults<Canvas>
     
     @FetchRequest(
         entity: Host.entity(),
@@ -41,9 +40,14 @@ struct MainPageList: View {
                         }
                     }
                 } else {
-                    ForEach(items) { item in
-                        NavigationLink(destination: SessionPageView(hostPresent: true, canvasPresent: false, canvas: item)) {
-                            MainPagePreview(item: item)
+                    ForEach(canvases) { canvas in
+                        NavigationLink(
+                            destination: SessionPageView(
+                                hostPresent: true,
+                                canvasPresent: false,
+                                canvas: canvas
+                        )) {
+                            MainPagePreview(canvas: canvas)
                         }
                     }
                 }
