@@ -43,7 +43,13 @@ struct SessionPageView: View {
             )
         } else if (host == nil && canvas != nil) {
             return AnyView(
-                CanvasView()
+                ZStack {
+                    Color.black
+                    CanvasView(canvasId: canvas!.id)
+                }
+                .navigationBarTitle("\(canvas!.wrappedTitle)")
+                .navigationBarTitleDisplayMode(.inline)
+                .edgesIgnoringSafeArea(.top)
             )
         } else {
             let host_info = HostInfo(

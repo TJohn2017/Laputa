@@ -94,7 +94,6 @@ struct CodeCardView: View {
         }
         
         func updateCardZIndex() {
-            print(maxZIndex)
             viewContext.performAndWait {
                 codeCard.zIndex = maxZIndex
                 try? viewContext.save()

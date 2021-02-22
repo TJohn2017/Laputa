@@ -14,6 +14,10 @@ struct MainPagePreview: View {
     @State var canvas: Canvas?
     
     var body: some View {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        
         if (host != nil) {
             return VStack {
                 Text("")
@@ -27,13 +31,13 @@ struct MainPagePreview: View {
             }.padding()
         } else {
             return VStack {
-                Text("Canvas: \(canvas!.id)")
+                Text("\(canvas!.wrappedTitle)")
                     .frame(width: 400.0, height: 200.0)
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(Color.black)
                     .cornerRadius(10.0)
-                Text("Canvas Name: \(canvas!.wrappedTitle)")
+                Text("Created: \(dateFormatter.string(from: canvas!.wrappedDate))")
                     .foregroundColor(Color.white)
             }.padding()
         }

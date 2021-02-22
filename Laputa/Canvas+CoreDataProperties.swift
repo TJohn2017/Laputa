@@ -17,7 +17,7 @@ extension Canvas {
     }
 
     @NSManaged public var id: UUID
-    @NSManaged public var dateCreated: Date
+    @NSManaged public var dateCreated: Date?
     @NSManaged public var title: String?
     @NSManaged public var cards: NSSet?
     
@@ -32,6 +32,10 @@ extension Canvas {
             // TODO: investigate why the sorting seems to get messed up after a few card additions
             $0.zIndex > $1.zIndex
         })
+    }
+    
+    public var wrappedDate: Date {
+        dateCreated ?? Date()
     }
 
 }
