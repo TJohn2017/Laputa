@@ -54,7 +54,7 @@ struct SessionPageView: View {
             
             return AnyView(VStack {
                 Text("CANVAS VIEW")
-                SwiftUITerminal(host: host_info)
+                SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
             })
         }
     }
