@@ -18,6 +18,7 @@ struct SessionPageInputCanvas: View {
     var canvases: FetchedResults<Item>
     
     @State var canvas: Item?
+    @Binding var showCanvasSheet: Bool
     
     var body: some View {
         ScrollView {
@@ -25,6 +26,7 @@ struct SessionPageInputCanvas: View {
                 ForEach(canvases) { elem in
                     Button(action: {
                         self.canvas = elem
+                        showCanvasSheet.toggle()
                     }) {
                         Text("Canvas \(elem.id)")
                             .font(.title)
@@ -48,11 +50,13 @@ struct SessionPageInputCanvas_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State var canvas: Item?
+        @State var showCanvasSheet: Bool = true
         
         var body: some View {
             
             return SessionPageInputCanvas(
-                canvas: canvas
+                canvas: canvas,
+                showCanvasSheet: $showCanvasSheet
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }

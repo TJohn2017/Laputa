@@ -38,7 +38,7 @@ struct SessionPageView: View {
                 .sheet(
                     isPresented: $showCanvasSheet
                 ) {
-                    Text("Hello World!")
+                    SessionPageInputCanvas(canvas: canvas, showCanvasSheet: $showCanvasSheet)
                 }
             )
         } else if (host == nil && canvas != nil) {
