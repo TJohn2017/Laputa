@@ -14,10 +14,12 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var host: HostInfo
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
+    var addPairButton: UIButton
     
     init(host: HostInfo) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
+        self.addPairButton = UIButton(type: .custom)
         super.init(nibName:nil, bundle:nil)
     }
     
@@ -111,6 +113,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         t.frame = view.frame
         view.addSubview(t)
         
+        // initiate addPair button
+        initializeAddPairButton(t: t)
+        view.addSubview(addPairButton)
+        self.terminalView?.becomeFirstResponder()
+        
         // initiate keyboard button
         initializeKeyboardButton(t: t)
         view.addSubview(keyboardButton)
@@ -123,6 +130,16 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         CGFloat fixedWidth = terminalView?.frame.width
         
     }*/
+    private func initializeAddPairButton(t: TerminalView) {
+        addPairButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 120, width: t.frame.width / 15, height: t.frame.width/15)
+        addPairButton.layer.cornerRadius = 15
+        addPairButton.layer.masksToBounds = true
+        addPairButton.setImage(UIImage(systemName: "list"), for: .normal)
+        addPairButton.backgroundColor = UIColor.white
+        
+        // TODO: create showCanvasSheet() button and pass to addTarget below.
+        // addPairButton.addTarget()
+    }
     
     private func initializeKeyboardButton(t: TerminalView) {
         keyboardButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 120, width: t.frame.width/15, height: t.frame.width/15)
@@ -143,10 +160,16 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 final class SwiftUITerminal: NSObject, UIViewControllerRepresentable {
     var terminalView: SSHTerminalView?
     var host_a: HostInfo
+    var showCanvasSheet: Binding<Bool>?
     typealias UIViewControllerType = SSHTerminalViewController
     
     init (host: HostInfo) {
-        host_a = host
+        self.host_a = host
+    }
+    
+    init (host: HostInfo, showCanvasSheet: Binding<Bool>) {
+        self.host_a = host
+        self.showCanvasSheet = showCanvasSheet
     }
     
     var viewController: SSHTerminalViewController!
@@ -158,6 +181,18 @@ final class SwiftUITerminal: NSObject, UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: SSHTerminalViewController, context: UIViewControllerRepresentableContext<SwiftUITerminal>) {
         //
     }
+    
+    class Coordinator: NSObject, SwiftUITerminalDelegate {
+        // TODO:
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+}
+
+protocol SwiftUITerminalDelegate: AnyObject {
+    // TODO:
 }
 
 struct SwiftUITerminal_Preview: PreviewProvider {

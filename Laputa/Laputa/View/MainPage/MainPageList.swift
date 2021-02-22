@@ -31,7 +31,12 @@ struct MainPageList: View {
             VStack {
                 if (displayHosts) {
                     ForEach(hosts) { host in
-                        NavigationLink(destination: SessionPageView(hostPresent: true, canvasPresent: false, host: host)) {
+                        NavigationLink(
+                            destination: SessionPageView(
+                                hostPresent: true,
+                                canvasPresent: false,
+                                host: host
+                            )) {
                             MainPagePreview(host: host)
                         }
                     }
