@@ -13,6 +13,17 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
+        for i in 0..<10 {
+            let newItem = Item(context: viewContext)
+            newItem.timestamp = Date()
+            
+            let newCodeCard = CodeCard(context: viewContext)
+            newCodeCard.id = UUID()
+            newCodeCard.text = "Hello \(i)"
+            newCodeCard.locX = 10.0 + Double(i) * 5.0
+            newCodeCard.locY = 10.0 + Double(i) * 5.0
+        }
+        
         for index in 0..<10 {
             // Instantiate preview Item entities.
             let newItem = Item(context: viewContext)
