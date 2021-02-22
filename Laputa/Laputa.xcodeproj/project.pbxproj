@@ -19,20 +19,6 @@
 		1A64C8AE25CA2EE80082FEA7 /* LaputaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A64C8AD25CA2EE80082FEA7 /* LaputaUITests.swift */; };
 		23F192D5AE739BB2FDEBB3D4 /* Pods_LaputaTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F5EBF63A92A5021A9EE7A6F /* Pods_LaputaTests.framework */; };
 		2BA672215609DFF0D9069934 /* Pods_Laputa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */; };
-		9C488E2625D0DCBA00662F1E /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C488E2525D0DCBA00662F1E /* CanvasView.swift */; };
-		9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C488E3125D1081C00662F1E /* CodeCardView.swift */; };
-		9CEDEA1625E07FCE00F0E380 /* CodeCard+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1225E07FCE00F0E380 /* CodeCard+CoreDataClass.swift */; };
-		9CEDEA1725E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1325E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift */; };
-		9CEDEA1825E07FCE00F0E380 /* Canvas+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */; };
-		9CEDEA1925E07FCE00F0E380 /* Canvas+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */; };
-		9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */; };
-		9CEDEB7A25E2404500F0E380 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7925E2404500F0E380 /* DrawingView.swift */; };
-		9CEDEB7F25E2408A00F0E380 /* DrawingPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7E25E2408A00F0E380 /* DrawingPad.swift */; };
-		9CEDEB8425E2413D00F0E380 /* Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8325E2413D00F0E380 /* Drawing.swift */; };
-		9CEDEB8925E2417700F0E380 /* DrawingControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8825E2417700F0E380 /* DrawingControls.swift */; };
-		9CEDEB8E25E2419F00F0E380 /* ColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */; };
-		9CEDEB9325E241C500F0E380 /* ColorProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9225E241C500F0E380 /* ColorProvider.swift */; };
-		9CEDEB9925E2420400F0E380 /* ColorEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9825E2420400F0E380 /* ColorEntry.swift */; };
 		584E47B325D39A49005EDC0E /* MainPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47B225D39A49005EDC0E /* MainPageView.swift */; };
 		584E47BE25D39EAF005EDC0E /* MainPageList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47BD25D39EAF005EDC0E /* MainPageList.swift */; };
 		584E47C325D63214005EDC0E /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47C225D63214005EDC0E /* TestView.swift */; };
@@ -47,6 +33,20 @@
 		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
 		759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */; };
 		75ECADEF25D65F3600CB4D9D /* TerminalComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */; };
+		9C488E2625D0DCBA00662F1E /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C488E2525D0DCBA00662F1E /* CanvasView.swift */; };
+		9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C488E3125D1081C00662F1E /* CodeCardView.swift */; };
+		9CEDEA1625E07FCE00F0E380 /* CodeCard+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1225E07FCE00F0E380 /* CodeCard+CoreDataClass.swift */; };
+		9CEDEA1725E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1325E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift */; };
+		9CEDEA1825E07FCE00F0E380 /* Canvas+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */; };
+		9CEDEA1925E07FCE00F0E380 /* Canvas+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */; };
+		9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */; };
+		9CEDEB7A25E2404500F0E380 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7925E2404500F0E380 /* DrawingView.swift */; };
+		9CEDEB7F25E2408A00F0E380 /* DrawingPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7E25E2408A00F0E380 /* DrawingPad.swift */; };
+		9CEDEB8425E2413D00F0E380 /* Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8325E2413D00F0E380 /* Drawing.swift */; };
+		9CEDEB8925E2417700F0E380 /* DrawingControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8825E2417700F0E380 /* DrawingControls.swift */; };
+		9CEDEB8E25E2419F00F0E380 /* ColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */; };
+		9CEDEB9325E241C500F0E380 /* ColorProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9225E241C500F0E380 /* ColorProvider.swift */; };
+		9CEDEB9925E2420400F0E380 /* ColorEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9825E2420400F0E380 /* ColorEntry.swift */; };
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -200,7 +200,6 @@
 				9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */,
 				584E47B125D39A3D005EDC0E /* View */,
 				1A84751A25CCF6EB004169AC /* Services */,
-				1A84751925CCF6E3004169AC /* Resources */,
 				1A84751725CCF6D7004169AC /* Model */,
 				1A64C88B25CA2EE50082FEA7 /* LaputaApp.swift */,
 				1A64C88D25CA2EE50082FEA7 /* ContentView.swift */,
@@ -247,14 +246,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		1A84751925CCF6E3004169AC /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				9CEDEB7025E23DD900F0E380 /* Canvas */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		1A84751A25CCF6EB004169AC /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -266,6 +257,7 @@
 		584E47B125D39A3D005EDC0E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				9CEDEB7025E23DD900F0E380 /* Canvas */,
 				75ECADEE25D65F3600CB4D9D /* TerminalComponentView.swift */,
 				759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */,
 				759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */,

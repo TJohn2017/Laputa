@@ -46,7 +46,7 @@ struct CanvasView: View {
         
     @State var maxZIndex = 0.0
     var body: some View {
-        // sets max canvas size to 3 * screen height and width
+        // sets max canvas size to 2 * side length
         let canvasScale = CGFloat(2.0)
         let maxZoomIn = CGFloat(canvasScale)
         let maxZoomOut = CGFloat(1.0 / canvasScale)
@@ -86,11 +86,11 @@ struct CanvasView: View {
         return ZStack() {
             ZStack() {
                 Rectangle()
-                    .frame(width: sideLength, height: sideLength, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                    .frame(width: sideLength, height: sideLength, alignment: .center)
                     .foregroundColor(.red)
                     .zIndex(-2)
                 Rectangle()
-                    .frame(width: sideLength - 2, height: sideLength - 2, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                    .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
                     .foregroundColor(.white)
                     .zIndex(-1)
                 ForEach(cards, id: \.self) { card in
