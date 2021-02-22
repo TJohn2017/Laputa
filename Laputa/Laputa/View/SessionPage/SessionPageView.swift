@@ -14,10 +14,12 @@ struct SessionPageView: View {
     @State var host: Host?
     @State var canvas: Item?   // TODO: change to Canvas entity.
     @State var showCanvasSheet: Bool = false
+    @State var showAddCanvasButton: Bool = true
     
     // TODO: incorporate Canvas + Terminal Views.
     var body: some View {
         if (host != nil && canvas == nil) {
+            showAddCanvasButton = false
             // TODO: need to be able to handle incorrect / malformed host info.
             let host_info = HostInfo(
                 alias:host!.name!,
@@ -30,7 +32,7 @@ struct SessionPageView: View {
             return AnyView(
                 ZStack {
                     Color.black
-                    SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
+                    SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, showAddCanvasButton: $showAddCanvasButton)
                 }
                 .navigationBarTitle("\(host!.name!)")
                 .navigationBarTitleDisplayMode(.inline)
@@ -44,6 +46,7 @@ struct SessionPageView: View {
         } else if (host == nil && canvas != nil) {
             return AnyView(Text("Canvas Session"))
         } else {
+            showAddCanvasButton = true
             let host_info = HostInfo(
                 alias:host!.name!,
                 hostname:host!.host!,
@@ -54,7 +57,7 @@ struct SessionPageView: View {
             
             return AnyView(VStack {
                 Text("CANVAS VIEW")
-                SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
+                SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, showAddCanvasButton: $showAddCanvasButton)
             })
         }
     }

@@ -16,9 +16,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var keyboardButton: UIButton
     var addPairButton: UIButton
     weak var delegate: SwiftUITerminalDelegate?
+    var showAddCanvasButton: Bool
     
-    init(host: HostInfo) {
+    init(host: HostInfo, showAddCanvasButton: Bool) {
         self.host = host
+        self.showAddCanvasButton = showAddCanvasButton
         self.keyboardButton = UIButton(type: .custom)
         self.addPairButton = UIButton(type: .custom)
         super.init(nibName:nil, bundle:nil)
@@ -115,9 +117,10 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         view.addSubview(t)
         
         // initiate addPair button
-        initializeAddPairButton(t: t)
-        view.addSubview(addPairButton)
-        self.terminalView?.becomeFirstResponder()
+        if (showAddCanvasButton) {
+            initializeAddPairButton(t: t)
+            view.addSubview(addPairButton)
+        }
         
         // initiate keyboard button
         initializeKeyboardButton(t: t)
@@ -165,10 +168,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @State var host: HostInfo
     @Binding var showCanvasSheet: Bool
+    @Binding var showAddCanvasButton: Bool
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        let viewController = SSHTerminalViewController (host: host)
+        let viewController = SSHTerminalViewController (host: host, showAddCanvasButton: showAddCanvasButton)
         viewController.delegate = context.coordinator
         return viewController
     }
@@ -209,11 +213,11 @@ struct SwiftUITerminal_Preview: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State var showCanvasSheet = false
-        
+        @State var showAddCanvasButton = true
         var body: some View {
             let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
 
-            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet)
+            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet, showAddCanvasButton: $showAddCanvasButton)
         }
     }
 }
