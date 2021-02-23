@@ -231,7 +231,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     }
     
     // Setup the output catch button UI and behavior
-    private func initializeOutputCatchButton(t: TerminalView) {g
+    private func initializeOutputCatchButton(t: TerminalView) {
         outputCatchButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width/15, height: t.frame.width/15)
         outputCatchButton.layer.cornerRadius = 15
         outputCatchButton.layer.masksToBounds = true
