@@ -12,129 +12,165 @@
 import SwiftUI
 
 struct CanvasView: View {
-
-    @State var isDrawing = false
     
+    // sets max canvas size to 2 * side length
+    @State var canvasScale = CGFloat(1.0)
+    @State var maxZoomIn = CGFloat(1.0)
+    @State var maxZoomOut = CGFloat(1.0 / 1.0)
+    
+    @State var isDrawing = false
     @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(entity: CodeCard.entity(), sortDescriptors: [])
-
-    var cards: FetchedResults<CodeCard>
+    
+    @Environment(\.verticalSizeClass) var vSizeClass
+    @Environment(\.horizontalSizeClass) var hSizeClass
+    
+    var fetchRequest: FetchRequest<Canvas>
+    var isSplit: Bool
+    var canvasHeight: CGFloat
+    var canvasWidth: CGFloat
+    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width) {
+        fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
+        isSplit = isSplitView
+        canvasHeight = height!
+        canvasWidth = width!
+    }
+    var canvas: Canvas { fetchRequest.wrappedValue[0] }
+    var cards: [CodeCard] { canvas.cardArray }
+    
     
     // gesture for pinching to zoom in/out
     @State var magniScale = CGFloat(1.0)
     @GestureState var magnifyBy = CGFloat(1.0)
+    var magnification: some Gesture {
+        MagnificationGesture()
+            .onChanged { value in
+                // magni + currentState - 1.0 is because
+                // maginfication gesture resets to scale 1.0 when you restart
+                magniScale = max(min(magniScale + value - 1.0, maxZoomIn), maxZoomOut)
+            }
+    }
     
     // gesture to drag and move around
     @GestureState var panState = CGSize.zero
     @State var viewState = CGSize.zero
+    var pan: some Gesture {
+        DragGesture()
+            .updating($panState) { value, state, transaction in
+                state = value.translation
+            }
+            .onEnded() { value in
+                self.viewState.width += value.translation.width
+                self.viewState.height += value.translation.height
+            }
+    }
+    
+    // TODO: figure out if this exclusive part is actually working
+    // combines pan and magnification so that if we try to do both, only
+    // panning will work.
+    var navigate: some Gesture {
+        pan.exclusively(before: magnification)
+    }
     
     func resetView() {
         magniScale = 1.0
         viewState = CGSize.zero
     }
     
+    func toggleDrawing() {
+        self.isDrawing = !self.isDrawing
+    }
+    
+    @State var maxZIndex = 0.0
     func setMaxZIndex() {
         if !cards.isEmpty {
             self.maxZIndex = cards[0].zIndex
         }
     }
     
-    func toggleDrawing() {
-        self.isDrawing = !self.isDrawing
-    }
-        
-    @State var maxZIndex = 0.0
     var body: some View {
-        // sets max canvas size to 2 * side length
-        let canvasScale = CGFloat(2.0)
-        let maxZoomIn = CGFloat(canvasScale)
-        let maxZoomOut = CGFloat(1.0 / canvasScale)
         
         let sideLength = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) * canvasScale
         
-        var magnification: some Gesture {
-            MagnificationGesture()
-                .updating($magnifyBy) { currentState, gestureState, transaction in
-                    gestureState = currentState
-                    
-                    // magni + currentState - 1.0 is because
-                    // maginfication gesture resets to scale 1.0 when you restart
-                    magniScale = max(min(magniScale + currentState - 1.0, maxZoomIn), maxZoomOut)
-                }
-        }
-        
-        var pan: some Gesture {
-            DragGesture()
-                .updating($panState) { value, state, transaction in
-                    state = value.translation
-                }
-                .onEnded() { value in
-                    self.viewState.width += value.translation.width
-                    self.viewState.height += value.translation.height
-                }
-        }
-        
-        // TODO: figure out if this exclusive part is actually working
-        // combines pan and magnification so that if we try to do both, only
-        // panning will work.
-        var navigate: some Gesture {
-            pan.exclusively(before: magnification)
-        }
-        
-        // TODO: bring selected card to front
-        return ZStack() {
+        return
             ZStack() {
-                Rectangle()
-                    .frame(width: sideLength, height: sideLength, alignment: .center)
-                    .foregroundColor(.red)
-                    .zIndex(-2)
-                Rectangle()
-                    .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
-                    .foregroundColor(.white)
-                    .zIndex(-1)
-                ForEach(cards, id: \.self) { card in
-                    CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
-                        .zIndex(card.zIndex)
+                ZStack() {
+                    Rectangle()
+                        .frame(width: sideLength, height: sideLength, alignment: .bottom)
+                        .foregroundColor(.red)
+                        .zIndex(-2)
+                    Rectangle()
+                        .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
+                        .foregroundColor(.white)
+                        .zIndex(-1)
+                    ForEach(canvas.cardArray) { card in
+                        CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
+                    }
+                    DrawingView(isDrawing: self.isDrawing)
+                        .allowsHitTesting(isDrawing)
+                        .zIndex(maxZIndex + 1)
+                    Text("UI height: \(UIScreen.main.bounds.height), UI width: \(UIScreen.main.bounds.width)")
                 }
-                DrawingView(isDrawing: self.isDrawing)
-                    .allowsHitTesting(isDrawing)
-                    .zIndex(maxZIndex + 1)
+                .scaleEffect(magniScale)
+                .offset(
+                    x: viewState.width + panState.width,
+                    y: viewState.height + panState.height
+                )
+                .gesture(navigate)
+                
+                Button(action: resetView) {
+                    Image(systemName: "scope")
+                        .padding(10)
+                        .font(.largeTitle)
+                        .foregroundColor(Color.white)
+                        .background(Color.red)
+                }
+                .clipShape(Circle())
+                .offset(
+                    x: canvasWidth / 2 - 70,
+                    y: -canvasHeight / 2  + 150
+                )
+                Button(action: toggleDrawing) {
+                    isDrawing ?
+                        Image(systemName: "pencil.slash")
+                        .padding()
+                        .font(.largeTitle)
+                        .foregroundColor(Color.white)
+                        .background(Color.black)
+                        :
+                        Image(systemName: "pencil")
+                        .padding()
+                        .font(.largeTitle)
+                        .foregroundColor(Color.white)
+                        .background(Color.black)
+                }
+                .clipShape(Circle())
+                .offset(
+                    x: canvasWidth / 2 - 70,
+                    y: -canvasHeight / 2  + 70
+                )
             }
-            .scaleEffect(magniScale)
-            .offset(
-                x: viewState.width + panState.width,
-                y: viewState.height + panState.height
-            )
-            .gesture(navigate)
-        
-            Button(action: resetView) {
-                Text("Reset view")
-            }
-                .padding(8)
-                .foregroundColor(.white)
-                .font(.title)
-                .background(Color.red)
-                .cornerRadius(5.0)
-                .offset(x: 0, y: -UIScreen.main.bounds.height / 2  + 30)
-            Button(action: toggleDrawing) {
-                Text("Drawing: \(isDrawing ? "On" : "Off")")
-            }
-                .padding(8)
-                .foregroundColor(.white)
-                .font(.title)
-                .background(Color.black)
-                .cornerRadius(5.0)
-                .offset(x: UIScreen.main.bounds.width / 2 - 200, y: -UIScreen.main.bounds.height / 2  + 30)
-        }
-        .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-        .onAppear(perform: setMaxZIndex)
+            .onAppear(perform: setMaxZIndex)
+            .coordinateSpace(name: "Global")
     }
-        
 }
+
+
 
 struct Canvas_Previews: PreviewProvider {
     static var previews: some View {
-        CanvasView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        Group {
+            PreviewWrapper()
+        }
+    }
+    
+    struct PreviewWrapper: View {
+        var body: some View {
+            let context = PersistenceController.preview.container.viewContext
+            let newCanvas = Canvas(context: context)
+            newCanvas.id = UUID()
+            newCanvas.dateCreated = Date()
+            
+            return CanvasView(canvasId: newCanvas.id, isSplitView: false).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        }
     }
 }

@@ -14,6 +14,23 @@ struct MainPageInputCanvas: View {
 
     @State var name: String = ""
     
+    func saveCanvas() {
+        guard self.name != "" else {return}
+        let newCanvas = Canvas(context: viewContext)
+        newCanvas.id = UUID()
+        newCanvas.dateCreated = Date()
+        newCanvas.title = name
+        
+        do {
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+        
+        showingInputSheet = false
+    }
+    
     var body: some View {
         Form {
             Section(header: Text("Canvas Info")) {
@@ -23,9 +40,7 @@ struct MainPageInputCanvas: View {
                 }
             }
             
-            Button(action: {
-                // View needs to set
-            }) {
+            Button(action: saveCanvas) {
                 Text("Add Canvas")
             }
         }

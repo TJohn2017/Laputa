@@ -12,7 +12,7 @@ struct SessionPageView: View {
     @State var hostPresent: Bool
     @State var canvasPresent: Bool
     @State var host: Host?
-    @State var canvas: Item?   // TODO: change to Canvas entity.
+    @State var canvas: Canvas?
     @State var showCanvasSheet: Bool = false
     
     // TODO: incorporate Canvas + Terminal Views.
@@ -38,11 +38,21 @@ struct SessionPageView: View {
                 .sheet(
                     isPresented: $showCanvasSheet
                 ) {
-                    SessionPageInputCanvas(canvas: canvas, showCanvasSheet: $showCanvasSheet)
+                    SessionPageInputCanvas(canvas: $canvas, showCanvasSheet: $showCanvasSheet)
                 }
             )
         } else if (host == nil && canvas != nil) {
-            return AnyView(Text("Canvas Session"))
+            return AnyView(
+                GeometryReader { geometry in
+                    ZStack {
+                    Color.black
+                    CanvasView(canvasId: canvas!.id, isSplitView: false, height: geometry.size.height, width: geometry.size.width)
+                    }
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .navigationBarTitle("\(canvas!.wrappedTitle)")
+                    .navigationBarTitleDisplayMode(.inline)
+                }
+            )
         } else {
             let host_info = HostInfo(
                 alias:host!.name!,
@@ -52,10 +62,15 @@ struct SessionPageView: View {
                 password:host!.password!
             )
             
-            return AnyView(VStack {
-                Text("CANVAS VIEW")
-                SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
-            })
+            return AnyView(
+                GeometryReader { geometry in
+                    VStack {
+                        CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2)
+                            .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                        SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
+                            .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                    }
+                })
         }
     }
 }
@@ -86,10 +101,16 @@ struct SessionPageView_Previews: PreviewProvider {
             newHost.port = "22"
             newHost.password = "LaputaIsAwesome"
             
+            let newCanvas = Canvas(context: context)
+            newCanvas.id = UUID()
+            newCanvas.dateCreated = Date()
+            newCanvas.title = "Test Canvas"
+            
             return SessionPageView(
-                hostPresent: true,
-                canvasPresent: false,
-                host: newHost
+                hostPresent: false,
+                canvasPresent: true,
+//                host: newHost,
+                canvas: newCanvas
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }

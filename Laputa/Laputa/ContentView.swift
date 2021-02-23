@@ -29,18 +29,15 @@ struct ContentView: View {
         // this is not the same as manipulating the proxy directly
         let appearance = UINavigationBarAppearance()
         
-        // this overrides everything you have set up earlier.
-        appearance.configureWithTransparentBackground()
-        
         // this only applies to big titles
         appearance.largeTitleTextAttributes = [
             .font : UIFont.systemFont(ofSize: 20),
-            NSAttributedString.Key.foregroundColor : UIColor.white
+            NSAttributedString.Key.foregroundColor : UIColor.black
         ]
         // this only applies to small titles
         appearance.titleTextAttributes = [
             .font : UIFont.systemFont(ofSize: 20),
-            NSAttributedString.Key.foregroundColor : UIColor.white
+            NSAttributedString.Key.foregroundColor : UIColor.black
         ]
         
         //In the following two lines you make sure that you apply the style for good
@@ -49,7 +46,7 @@ struct ContentView: View {
         
         // This property is not present on the UINavigationBarAppearance
         // object for some reason and you have to leave it til the end
-        UINavigationBar.appearance().tintColor = .white
+        UINavigationBar.appearance().tintColor = .black
     }
     
     var body: some View {
@@ -57,8 +54,11 @@ struct ContentView: View {
     }
 }
 
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
+
+

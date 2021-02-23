@@ -94,7 +94,6 @@ struct CodeCardView: View {
         }
         
         func updateCardZIndex() {
-            print(maxZIndex)
             viewContext.performAndWait {
                 codeCard.zIndex = maxZIndex
                 try? viewContext.save()
@@ -122,6 +121,7 @@ struct CodeCardView: View {
         .animation(.linear(duration: minimumLongPressDuration))
         .gesture(longPressDrag)
         .onAppear(perform: setInitialOffset)
+        .zIndex(codeCard.zIndex)
     }
     
 }

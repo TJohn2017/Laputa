@@ -11,11 +11,10 @@ struct MainPageList: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        entity: Item.entity(),
-        sortDescriptors: [],
-        predicate: NSPredicate(format: "id >= 0")
+        entity: Canvas.entity(),
+        sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)]
     )
-    var items: FetchedResults<Item>
+    var canvases: FetchedResults<Canvas>
     
     @FetchRequest(
         entity: Host.entity(),
@@ -25,25 +24,83 @@ struct MainPageList: View {
     
     @Binding var displayHosts: Bool
     
+    @State private var showDeleteAlert = false
+
+    
     var body: some View {
 
         return AnyView(ScrollView {
             VStack {
                 if (displayHosts) {
                     ForEach(hosts) { host in
-                        NavigationLink(
-                            destination: SessionPageView(
-                                hostPresent: true,
-                                canvasPresent: false,
-                                host: host
-                            )) {
-                            MainPagePreview(host: host)
+                        HStack {
+                            NavigationLink(
+                                destination: SessionPageView(
+                                    hostPresent: true,
+                                    canvasPresent: false,
+                                    host: host
+                                )) {
+                                MainPagePreview(host: host)
+                            }
+                            Menu() {
+                                Button("Delete host", action: {
+                                    viewContext.delete(host)
+                                
+                                    do {
+                                        try viewContext.save()
+                                        showDeleteAlert = true
+                                        print("Host deleted.")
+                                    } catch {
+                                        print(error.localizedDescription)
+                                    }
+                                })
+                            } label: {
+                                Label("", systemImage: "ellipsis.circle")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.white)
+                            }
+                        }.alert(isPresented: $showDeleteAlert) {
+                            Alert(
+                                title: Text("Host deleted"),
+                                message: Text("Host will now be removed."),
+                                dismissButton: .default(Text("OK"))
+                            )
                         }
                     }
                 } else {
-                    ForEach(items) { item in
-                        NavigationLink(destination: SessionPageView(hostPresent: true, canvasPresent: false, canvas: item)) {
-                            MainPagePreview(item: item)
+                    ForEach(canvases) { canvas in
+                        HStack {
+                            NavigationLink(
+                                destination: SessionPageView(
+                                    hostPresent: true,
+                                    canvasPresent: false,
+                                    canvas: canvas
+                            )) {
+                                MainPagePreview(canvas: canvas)
+                            }
+                            Menu() {
+                                Button("Delete canvas", action: {
+                                    viewContext.delete(canvas)
+                                    
+                                    do {
+                                        try viewContext.save()
+                                        showDeleteAlert = true
+                                        print("Canvas deleted.")
+                                    } catch {
+                                        print(error.localizedDescription)
+                                    }
+                                })
+                            } label: {
+                                Label("", systemImage: "ellipsis.circle")
+                                .font(.largeTitle)
+                                .foregroundColor(.white)
+                            }
+                        }.alert(isPresented: $showDeleteAlert) {
+                            Alert(
+                                title: Text("Canvas deleted"),
+                                message: Text("Canvas will now be removed."),
+                                dismissButton: .default(Text("OK"))
+                            )
                         }
                     }
                 }

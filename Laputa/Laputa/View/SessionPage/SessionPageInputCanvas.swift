@@ -11,31 +11,36 @@ struct SessionPageInputCanvas: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        entity: Item.entity(),
-        sortDescriptors: [],
-        predicate: NSPredicate(format: "id >= 0")
+        entity: Canvas.entity(),
+        sortDescriptors: []
     )
-    var canvases: FetchedResults<Item>
+    var canvases: FetchedResults<Canvas>
     
-    @State var canvas: Item?
+    @Binding var canvas: Canvas?
     @Binding var showCanvasSheet: Bool
     
     var body: some View {
-        ScrollView {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        
+        return ScrollView {
             VStack {
-                ForEach(canvases) { elem in
+                ForEach(canvases) { canvas in
                     Button(action: {
-                        self.canvas = elem
+                        self.canvas = canvas
                         showCanvasSheet.toggle()
                     }) {
-                        Text("Canvas \(elem.id)")
-                            .font(.title)
-                            .fontWeight(.regular)
-                            .frame(width: 400.0, height: 200.0)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(Color.black)
-                            .cornerRadius(10.0)
+                        VStack {
+                            Text("\(canvas.wrappedTitle)")
+                                .frame(width: 400.0, height: 200.0)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(Color.black)
+                                .cornerRadius(10.0)
+                            Text("Created: \(dateFormatter.string(from: canvas.wrappedDate))")
+                                .foregroundColor(Color.black)
+                        }.padding()
                     }
                 }
             }
@@ -49,13 +54,13 @@ struct SessionPageInputCanvas_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State var canvas: Item?
+        @State var canvas: Canvas?
         @State var showCanvasSheet: Bool = true
         
         var body: some View {
             
             return SessionPageInputCanvas(
-                canvas: canvas,
+                canvas: $canvas,
                 showCanvasSheet: $showCanvasSheet
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }

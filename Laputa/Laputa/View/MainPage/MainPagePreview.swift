@@ -11,29 +11,35 @@ struct MainPagePreview: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @State var host: Host?
-    @State var item: Item?
+    @State var canvas: Canvas?
     
     var body: some View {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        
         if (host != nil) {
             return VStack {
-                Text("")
+                Text("\(host!.name!)")
                     .frame(width: 400.0, height: 200.0)
                     .padding()
                     .background(Color.red)
                     .foregroundColor(Color.black)
                     .cornerRadius(10.0)
-                Text("\(host!.name!) | \(host!.host!) | \(host!.username!)")
+                    .font(.largeTitle)
+                Text("\(host!.host!) | \(host!.username!)")
                     .foregroundColor(Color.white)
             }.padding()
         } else {
             return VStack {
-                Text("Canvas: \(item!.id)")
+                Text("\(canvas!.wrappedTitle)")
                     .frame(width: 400.0, height: 200.0)
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(Color.black)
                     .cornerRadius(10.0)
-                Text("Canvas Name #\(item!.id)")
+                    .font(.largeTitle)
+                Text("Created: \(dateFormatter.string(from: canvas!.wrappedDate))")
                     .foregroundColor(Color.white)
             }.padding()
         }
@@ -50,11 +56,13 @@ struct MainPagePreview_Previews: PreviewProvider {
         var body: some View {
             let context = PersistenceController.preview.container.viewContext
             
-            let newItem = Item(context: context)
-            newItem.id = 100
+            let newCanvas = Canvas(context: context)
+            newCanvas.id = UUID()
+            newCanvas.dateCreated = Date()
+            newCanvas.title = "Woohoo my favorite canvas"
             
             return MainPagePreview(
-                item: newItem
+                canvas: newCanvas
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
