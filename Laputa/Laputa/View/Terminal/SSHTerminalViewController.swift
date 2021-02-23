@@ -183,7 +183,17 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // terminal view.
     @objc
     func catchOutput() {
-        print("OUTPUT CATCHING: execute command and catch output")
+        let lastResponse = terminalView?.lastResponse()
+        if (lastResponse != nil) {
+            print("OUTPUT CATCHING: \(lastResponse!)")
+        }
+        
+        // testing our ability to run execute command below. The "cd .." doesn't persist to the next executiong, unfortunately.
+//        var response = terminalView?.ssh_session.executeCommand(command: "cd ..")
+//        response = terminalView?.ssh_session.executeCommand(command: "ls")
+//        if (response != nil) {
+//            print("RESPONSE: \(response!)")
+//        }
     }
 }
 
