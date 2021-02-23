@@ -74,8 +74,6 @@ struct CanvasView: View {
     func resetView() {
         magniScale = 1.0
         viewState = CGSize.zero
-        print("vertical size class: \(vSizeClass == .compact ? "Compact" : "Regular")")
-        print("horizontal size class: \(hSizeClass == .compact ? "Compact" : "Regular")")
     }
     
     func toggleDrawing() {
