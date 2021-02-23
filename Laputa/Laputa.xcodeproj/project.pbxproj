@@ -268,6 +268,8 @@
 			children = (
 				1A39DACE25E49D3700AAB8E0 /* Terminal */,
 				9CEDEB7025E23DD900F0E380 /* Canvas */,
+				759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */,
+				759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */,
 				584E47F125E2099C005EDC0E /* SessionPage */,
 				584E47F025E20970005EDC0E /* MainPage */,
 			);

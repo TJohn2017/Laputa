@@ -14,22 +14,30 @@ import SwiftUI
 struct CanvasView: View {
     
     // sets max canvas size to 2 * side length
-    @State var canvasScale = CGFloat(2.0)
-    @State var maxZoomIn = CGFloat(2.0)
-    @State var maxZoomOut = CGFloat(1.0 / 2.0)
-
+    @State var canvasScale = CGFloat(1.0)
+    @State var maxZoomIn = CGFloat(1.0)
+    @State var maxZoomOut = CGFloat(1.0 / 1.0)
+    
     @State var isDrawing = false
     @Environment(\.managedObjectContext) private var viewContext
-        
+    
+    @Environment(\.verticalSizeClass) var vSizeClass
+    @Environment(\.horizontalSizeClass) var hSizeClass
+    
     var fetchRequest: FetchRequest<Canvas>
     var isSplit: Bool
-    init(canvasId: UUID, isSplitView: Bool) {
+    var canvasHeight: CGFloat
+    var canvasWidth: CGFloat
+    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
         isSplit = isSplitView
+        canvasHeight = height!
+        canvasWidth = width!
     }
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
-
+    
+    
     // gesture for pinching to zoom in/out
     @State var magniScale = CGFloat(1.0)
     @GestureState var magnifyBy = CGFloat(1.0)
@@ -41,7 +49,7 @@ struct CanvasView: View {
                 magniScale = max(min(magniScale + value - 1.0, maxZoomIn), maxZoomOut)
             }
     }
-
+    
     // gesture to drag and move around
     @GestureState var panState = CGSize.zero
     @State var viewState = CGSize.zero
@@ -62,91 +70,108 @@ struct CanvasView: View {
     var navigate: some Gesture {
         pan.exclusively(before: magnification)
     }
-
+    
     func resetView() {
         magniScale = 1.0
         viewState = CGSize.zero
+        print("vertical size class: \(vSizeClass == .compact ? "Compact" : "Regular")")
+        print("horizontal size class: \(hSizeClass == .compact ? "Compact" : "Regular")")
     }
-
+    
     func toggleDrawing() {
         self.isDrawing = !self.isDrawing
     }
-
+    
     @State var maxZIndex = 0.0
     func setMaxZIndex() {
         if !cards.isEmpty {
             self.maxZIndex = cards[0].zIndex
         }
     }
-
+    
     var body: some View {
-
-        let sideLength = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) * canvasScale
-
-        return ZStack() {
-            ZStack() {
-                Rectangle()
-                    .frame(width: sideLength, height: sideLength, alignment: .center)
-                    .foregroundColor(.red)
-                    .zIndex(-2)
-                Rectangle()
-                    .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
-                    .foregroundColor(.white)
-                    .zIndex(-1)
-                ForEach(canvas.cardArray) { card in
-                    CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
-                }
-                DrawingView(isDrawing: self.isDrawing)
-                    .allowsHitTesting(isDrawing)
-                    .zIndex(maxZIndex + 1)
-            }
-            .scaleEffect(magniScale)
-            .offset(
-                x: viewState.width + panState.width,
-                y: viewState.height + panState.height
-            )
-            .gesture(navigate)
-
-            Button(action: resetView) {
-                Image(systemName: "scope")
-                .padding(10)
-                .font(.largeTitle)
-                .foregroundColor(Color.white)
-                .background(Color.red)
-            }
-            .clipShape(Circle())
-                .offset(
-                    x: UIScreen.main.bounds.width / 2 - 70,
-                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + (isSplit ? 150 : 180)
-                )
-            Button(action: toggleDrawing) {
-                isDrawing ?
-                    Image(systemName: "pencil.slash")
-                    .padding()
-                    .font(.largeTitle)
-                    .foregroundColor(Color.white)
-                    .background(Color.black)
-                    :
-                    Image(systemName: "pencil")
-                    .padding()
-                    .font(.largeTitle)
-                    .foregroundColor(Color.white)
-                    .background(Color.black)
-            }
-            .clipShape(Circle())
-                .offset(
-                    x: UIScreen.main.bounds.width / 2 - 70,
-                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + (isSplit ? 70 : 100)
-                )
-        }
-        .onAppear(perform: setMaxZIndex)
-    }
         
+        let sideLength = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) * canvasScale
+        
+        return
+            ZStack() {
+                ZStack() {
+                    Rectangle()
+                        .frame(width: sideLength, height: sideLength, alignment: .bottom)
+                        .foregroundColor(.red)
+                        .zIndex(-2)
+                    Rectangle()
+                        .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
+                        .foregroundColor(.white)
+                        .zIndex(-1)
+                    ForEach(canvas.cardArray) { card in
+                        CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
+                    }
+                    DrawingView(isDrawing: self.isDrawing)
+                        .allowsHitTesting(isDrawing)
+                        .zIndex(maxZIndex + 1)
+                    //                    Text("Geometry height: \(geometry.size.height), Geometry width: \(geometry.size.width), UI height: \(UIScreen.main.bounds.height), UI width: \(UIScreen.main.bounds.width)")
+                    Text("UI height: \(UIScreen.main.bounds.height), UI width: \(UIScreen.main.bounds.width)")
+                }
+                .scaleEffect(magniScale)
+                .offset(
+                    x: viewState.width + panState.width,
+                    y: viewState.height + panState.height
+                )
+                .gesture(navigate)
+                
+                Button(action: resetView) {
+                    Image(systemName: "scope")
+                        .padding(10)
+                        .font(.largeTitle)
+                        .foregroundColor(Color.white)
+                        .background(Color.red)
+                }
+                .clipShape(Circle())
+//                .offset(
+//                    x: UIScreen.main.bounds.width / 2 - 70,
+//                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + (isSplit ? 150 : 180)
+//                )
+                .offset(
+                    x: canvasWidth / 2 - 70,
+                    y: -canvasHeight / 2  + 150
+                )
+                Button(action: toggleDrawing) {
+                    isDrawing ?
+                        Image(systemName: "pencil.slash")
+                        .padding()
+                        .font(.largeTitle)
+                        .foregroundColor(Color.white)
+                        .background(Color.black)
+                        :
+                        Image(systemName: "pencil")
+                        .padding()
+                        .font(.largeTitle)
+                        .foregroundColor(Color.white)
+                        .background(Color.black)
+                }
+                .clipShape(Circle())
+//                .offset(
+//                    x: UIScreen.main.bounds.width / 2 - 70,
+//                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + (isSplit ? 70 : 100)
+//                )
+                .offset(
+                    x: canvasWidth / 2 - 70,
+                    y: -canvasHeight / 2  + 70
+                )
+            }
+            .onAppear(perform: setMaxZIndex)
+            .coordinateSpace(name: "Global")
+    }
 }
+
+
 
 struct Canvas_Previews: PreviewProvider {
     static var previews: some View {
-        PreviewWrapper()
+        Group {
+            PreviewWrapper()
+        }
     }
     
     struct PreviewWrapper: View {
