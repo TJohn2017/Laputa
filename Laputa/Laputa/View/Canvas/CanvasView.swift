@@ -31,18 +31,14 @@ struct CanvasView: View {
     var cards: [CodeCard] { canvas.cardArray }
 
     // gesture for pinching to zoom in/out
-//    @State var magniScale = CGFloat(1.0)
+    @State var magniScale = CGFloat(1.0)
     @GestureState var magnifyBy = CGFloat(1.0)
     var magnification: some Gesture {
         MagnificationGesture()
-            .updating($magnifyBy) { currentState, gestureState, transaction in
-                gestureState = currentState
-
+            .onChanged { value in
                 // magni + currentState - 1.0 is because
                 // maginfication gesture resets to scale 1.0 when you restart
-//                magniScale = max(min(magniScale + currentState - 1.0, maxZoomIn), maxZoomOut)
-                gestureState = max(min(gestureState + currentState - 1.0, maxZoomIn), maxZoomOut)
-                
+                magniScale = max(min(magniScale + value - 1.0, maxZoomIn), maxZoomOut)
             }
     }
 
@@ -68,9 +64,8 @@ struct CanvasView: View {
     }
 
     func resetView() {
-//        magniScale = 1.0
+        magniScale = 1.0
         viewState = CGSize.zero
-//        magnifyBy = 1.0
     }
 
     func toggleDrawing() {
@@ -100,14 +95,12 @@ struct CanvasView: View {
                     .zIndex(-1)
                 ForEach(canvas.cardArray) { card in
                     CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
-//                        .zIndex(card.zIndex)
                 }
                 DrawingView(isDrawing: self.isDrawing)
                     .allowsHitTesting(isDrawing)
                     .zIndex(maxZIndex + 1)
             }
-//            .scaleEffect(magniScale)
-            .scaleEffect(magnifyBy)
+            .scaleEffect(magniScale)
             .offset(
                 x: viewState.width + panState.width,
                 y: viewState.height + panState.height
@@ -115,16 +108,16 @@ struct CanvasView: View {
             .gesture(navigate)
 
             Button(action: resetView) {
-                Image(systemName: "arrow.counterclockwise")
-                .padding()
+                Image(systemName: "scope")
+                .padding(10)
                 .font(.largeTitle)
                 .foregroundColor(Color.white)
                 .background(Color.red)
-                .cornerRadius(40)
             }
+            .clipShape(Circle())
                 .offset(
                     x: UIScreen.main.bounds.width / 2 - 70,
-                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + 150
+                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + (isSplit ? 150 : 180)
                 )
             Button(action: toggleDrawing) {
                 isDrawing ?
@@ -133,18 +126,17 @@ struct CanvasView: View {
                     .font(.largeTitle)
                     .foregroundColor(Color.white)
                     .background(Color.black)
-                    .cornerRadius(40)
                     :
                     Image(systemName: "pencil")
                     .padding()
                     .font(.largeTitle)
                     .foregroundColor(Color.white)
                     .background(Color.black)
-                    .cornerRadius(40)
             }
+            .clipShape(Circle())
                 .offset(
                     x: UIScreen.main.bounds.width / 2 - 70,
-                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + 70
+                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + (isSplit ? 70 : 100)
                 )
         }
         .onAppear(perform: setMaxZIndex)
