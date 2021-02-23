@@ -56,7 +56,9 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
 //            shouldCatchResponse = true
 //        }
         
-        self.feed(text: message)
+        DispatchQueue.main.sync {
+            self.feed(text: message)
+        }
         
         //self.scrolled(source: self, position: <#T##Double#>)
     }
