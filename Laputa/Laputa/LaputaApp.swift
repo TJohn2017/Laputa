@@ -13,9 +13,6 @@ struct LaputaApp: App {
     let persistenceController = PersistenceController.shared
     var body: some Scene {
         WindowGroup {
-            
-            /* SwiftUITerminal(host: host)*/
-            
            ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }

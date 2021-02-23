@@ -9,6 +9,7 @@ import Foundation
 import SwiftTerm
 import SwiftUI
 import NMSSH
+import CoreData
 
 class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var host: HostInfo
@@ -24,14 +25,19 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // UI Canvas associated with this terminal. We can send our recent output to the canvas.
     var canvas: Canvas?
-    @Environment(\.managedObjectContext) private var viewContext
+    var viewContext: NSManagedObjectContext?
     
-    init(host: HostInfo, modifyTerminalHeight: Bool, canvas: Canvas? = nil) {
+    init(host: HostInfo, modifyTerminalHeight: Bool, canvas: Canvas? = nil, viewContext: NSManagedObjectContext? = nil) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
         self.addPairButton = UIButton(type: .custom)
         self.outputCatchButton = UIButton(type: .custom)
         self.modifyTerminalHeight = modifyTerminalHeight
+        self.canvas = canvas
+        self.viewContext = viewContext
+        if (canvas != nil) {
+            print("CANVAS: We have a canvas")
+        }
         super.init(nibName:nil, bundle:nil)
     }
     
@@ -245,8 +251,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
         
         // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
-        if (canvas != nil) {
-            let newCard = CodeCard(context: viewContext)
+        if (canvas != nil && viewContext != nil) {
+            print("We are attempting to create a card")
+            let newCard = CodeCard(context: viewContext!)
             newCard.id = UUID()
             newCard.origin = canvas
 
@@ -259,7 +266,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             newCard.text = "\(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)\nzIndex: \(newCard.zIndex)"
 
             do {
-                try viewContext.save()
+                try viewContext!.save()
             } catch {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
@@ -281,12 +288,13 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     @State var host: HostInfo
     @Binding var showCanvasSheet: Bool
     @Binding var canvas: Canvas?
+    @Environment(\.managedObjectContext) private var viewContext
     
     @State var modifyTerminalHeight: Bool
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight)
+        let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
         viewController.delegate = context.coordinator
         return viewController
     }
