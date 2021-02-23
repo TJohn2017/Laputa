@@ -30,7 +30,7 @@ struct SessionPageView: View {
             return AnyView(
                 ZStack {
                     Color.black
-                    SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
+                    SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, canvas: $canvas)
                 }
                 .navigationBarTitle("\(host!.name!)")
                 .navigationBarTitleDisplayMode(.inline)
@@ -67,7 +67,7 @@ struct SessionPageView: View {
                     VStack {
                         CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
+                        SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, canvas: $canvas)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
                 })

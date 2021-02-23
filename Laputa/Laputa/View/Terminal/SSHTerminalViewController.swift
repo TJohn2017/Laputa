@@ -12,13 +12,19 @@ import NMSSH
 
 class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var host: HostInfo
+    
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
     var addPairButton: UIButton
     var outputCatchButton: UIButton
+    
     weak var delegate: SwiftUITerminalDelegate?
     
-    init(host: HostInfo) {
+    // UI Canvas associated with this terminal. We can send our recent output to the canvas.
+    var canvas: Canvas?
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    init(host: HostInfo, canvas: Canvas? = nil) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
         self.addPairButton = UIButton(type: .custom)
@@ -188,6 +194,29 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             print("OUTPUT CATCHING: \(lastResponse!)")
         }
         
+        // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
+        if (canvas != nil) {
+            let newCard = CodeCard(context: viewContext)
+            newCard.id = UUID()
+            newCard.origin = canvas
+
+            var maxZIndex = 0.0
+            let cards = canvas!.cardArray
+            if !cards.isEmpty {
+                maxZIndex = cards[0].zIndex + 1.0
+            }
+            newCard.zIndex = maxZIndex
+            newCard.text = "\(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)\nzIndex: \(newCard.zIndex)"
+
+            do {
+                try viewContext.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+        
+        
         // testing our ability to run execute command below. The "cd .." doesn't persist to the next executiong, unfortunately.
 //        var response = terminalView?.ssh_session.executeCommand(command: "cd ..")
 //        response = terminalView?.ssh_session.executeCommand(command: "ls")
@@ -201,6 +230,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @State var host: HostInfo
     @Binding var showCanvasSheet: Bool
+    @Binding var canvas: Canvas?
+    
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
@@ -245,11 +276,13 @@ struct SwiftUITerminal_Preview: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State var showCanvasSheet = false
+        @State var canvas: Canvas? = nil
         
         var body: some View {
             let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
 
-            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet)
+            // TODO TJ: what should canvas value be here?
+            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet, canvas: $canvas)
         }
     }
 }
