@@ -20,11 +20,12 @@ struct CanvasView: View {
 
     @State var isDrawing = false
     @Environment(\.managedObjectContext) private var viewContext
-
-    
+        
     var fetchRequest: FetchRequest<Canvas>
-    init(canvasId: UUID) {
+    var isSplit: Bool
+    init(canvasId: UUID, isSplitView: Bool) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
+        isSplit = isSplitView
     }
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
@@ -99,7 +100,7 @@ struct CanvasView: View {
                     .zIndex(-1)
                 ForEach(canvas.cardArray) { card in
                     CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
-                        .zIndex(card.zIndex)
+//                        .zIndex(card.zIndex)
                 }
                 DrawingView(isDrawing: self.isDrawing)
                     .allowsHitTesting(isDrawing)
@@ -121,7 +122,10 @@ struct CanvasView: View {
                 .background(Color.red)
                 .cornerRadius(40)
             }
-                .offset(x: UIScreen.main.bounds.width / 2 - 100, y: -UIScreen.main.bounds.height / 2  + 200)
+                .offset(
+                    x: UIScreen.main.bounds.width / 2 - 70,
+                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + 150
+                )
             Button(action: toggleDrawing) {
                 isDrawing ?
                     Image(systemName: "pencil.slash")
@@ -138,7 +142,10 @@ struct CanvasView: View {
                     .background(Color.black)
                     .cornerRadius(40)
             }
-                .offset(x: UIScreen.main.bounds.width / 2 - 100, y: -UIScreen.main.bounds.height / 2  + 100)
+                .offset(
+                    x: UIScreen.main.bounds.width / 2 - 70,
+                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + 70
+                )
         }
         .onAppear(perform: setMaxZIndex)
     }
@@ -157,7 +164,7 @@ struct Canvas_Previews: PreviewProvider {
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasView(canvasId: newCanvas.id).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasView(canvasId: newCanvas.id, isSplitView: false).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }

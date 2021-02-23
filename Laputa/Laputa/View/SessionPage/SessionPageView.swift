@@ -38,14 +38,14 @@ struct SessionPageView: View {
                 .sheet(
                     isPresented: $showCanvasSheet
                 ) {
-                    SessionPageInputCanvas(canvas: canvas, showCanvasSheet: $showCanvasSheet)
+                    SessionPageInputCanvas(canvas: $canvas, showCanvasSheet: $showCanvasSheet)
                 }
             )
         } else if (host == nil && canvas != nil) {
             return AnyView(
                 ZStack {
                     Color.black
-                    CanvasView(canvasId: canvas!.id)
+                    CanvasView(canvasId: canvas!.id, isSplitView: false)
                 }
                 .navigationBarTitle("\(canvas!.wrappedTitle)")
                 .navigationBarTitleDisplayMode(.inline)
@@ -61,7 +61,8 @@ struct SessionPageView: View {
             )
             
             return AnyView(VStack {
-                Text("CANVAS VIEW")
+                CanvasView(canvasId: canvas!.id, isSplitView: true)
+                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 2)
                 SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
             })
         }

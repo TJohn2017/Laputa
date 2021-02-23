@@ -14,8 +14,10 @@ struct CanvasDebugView: View {
     var allCards: FetchedResults<CodeCard>
     
     var fetchRequest: FetchRequest<Canvas>
-    init(canvasId: UUID) {
+    var isSplit: Bool
+    init(canvasId: UUID, isSplitView: Bool) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
+        isSplit = isSplitView
     }
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
@@ -60,7 +62,7 @@ struct CanvasDebugView: View {
         }
         
         return ZStack {
-            CanvasView(canvasId: canvas.id)
+            CanvasView(canvasId: canvas.id, isSplitView: isSplit)
             HStack {
                 Button(action: addExampleCard) {
                     Text("Add card")
@@ -97,7 +99,7 @@ struct CanvasDebugView_Previews: PreviewProvider {
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasDebugView(canvasId: newCanvas.id).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasDebugView(canvasId: newCanvas.id, isSplitView: false).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }
