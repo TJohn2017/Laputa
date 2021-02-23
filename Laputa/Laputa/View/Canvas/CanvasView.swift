@@ -110,7 +110,7 @@ struct CanvasView: View {
                     DrawingView(isDrawing: self.isDrawing)
                         .allowsHitTesting(isDrawing)
                         .zIndex(maxZIndex + 1)
-                    //                    Text("Geometry height: \(geometry.size.height), Geometry width: \(geometry.size.width), UI height: \(UIScreen.main.bounds.height), UI width: \(UIScreen.main.bounds.width)")
+
                     Text("UI height: \(UIScreen.main.bounds.height), UI width: \(UIScreen.main.bounds.width)")
                 }
                 .scaleEffect(magniScale)
@@ -128,10 +128,6 @@ struct CanvasView: View {
                         .background(Color.red)
                 }
                 .clipShape(Circle())
-//                .offset(
-//                    x: UIScreen.main.bounds.width / 2 - 70,
-//                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + (isSplit ? 150 : 180)
-//                )
                 .offset(
                     x: canvasWidth / 2 - 70,
                     y: -canvasHeight / 2  + 150
@@ -151,10 +147,6 @@ struct CanvasView: View {
                         .background(Color.black)
                 }
                 .clipShape(Circle())
-//                .offset(
-//                    x: UIScreen.main.bounds.width / 2 - 70,
-//                    y: -UIScreen.main.bounds.height / (isSplit ? 2 : 1) / 2  + (isSplit ? 70 : 100)
-//                )
                 .offset(
                     x: canvasWidth / 2 - 70,
                     y: -canvasHeight / 2  + 70

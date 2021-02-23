@@ -67,6 +67,7 @@ struct SessionPageView: View {
                     VStack {
                         CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                        
                         SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, modifyTerminalHeight: true)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
