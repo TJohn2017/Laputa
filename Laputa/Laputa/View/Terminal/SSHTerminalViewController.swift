@@ -15,12 +15,14 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
     var addPairButton: UIButton
+    var outputCatchButton: UIButton
     weak var delegate: SwiftUITerminalDelegate?
     
     init(host: HostInfo) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
         self.addPairButton = UIButton(type: .custom)
+        self.outputCatchButton = UIButton(type: .custom)
         super.init(nibName:nil, bundle:nil)
     }
     
@@ -117,13 +119,15 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // initiate addPair button
         initializeAddPairButton(t: t)
         view.addSubview(addPairButton)
-        self.terminalView?.becomeFirstResponder()
         
         // initiate keyboard button
         initializeKeyboardButton(t: t)
         view.addSubview(keyboardButton)
         self.terminalView?.becomeFirstResponder()
         
+        // initialize output catch button
+        initializeOutputCatchButton(t: t)
+        view.addSubview(outputCatchButton)
     }
     
     
@@ -131,6 +135,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         CGFloat fixedWidth = terminalView?.frame.width
         
     }*/
+    
+    // Setup the add pair button UI and behavior
     private func initializeAddPairButton(t: TerminalView) {
         addPairButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width / 15, height: t.frame.width/15)
         addPairButton.layer.cornerRadius = 15
@@ -146,6 +152,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         self.delegate?.showCanvasSheet(self, showCanvas: true)
     }
     
+    // Setup the ketboard button UI and behavior
     private func initializeKeyboardButton(t: TerminalView) {
         keyboardButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 120, width: t.frame.width/15, height: t.frame.width/15)
         keyboardButton.layer.cornerRadius = 15
@@ -155,9 +162,28 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         keyboardButton.addTarget(self, action: #selector(showKeyboard), for: .touchUpInside)
     }
     
+    // Present the keyboard
     @objc
     func showKeyboard() {
         self.terminalView?.becomeFirstResponder()
+    }
+    
+    // Setup the output catch button UI and behavior
+    private func initializeOutputCatchButton(t: TerminalView) {
+        outputCatchButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 320, width: t.frame.width/15, height: t.frame.width/15)
+        outputCatchButton.layer.cornerRadius = 15
+        outputCatchButton.layer.masksToBounds = true
+        outputCatchButton.setImage(UIImage(systemName: "arrow.triangle.branch"), for: .normal)
+        outputCatchButton.backgroundColor = UIColor.white
+        outputCatchButton.addTarget(self, action: #selector(catchOutput), for: .touchUpInside)
+    }
+    
+    // Attempt to execute the current command prompt and catch the output
+    // so that it can be displayed in its own canvas card instead of in the
+    // terminal view.
+    @objc
+    func catchOutput() {
+        print("OUTPUT CATCHING: execute command and catch output")
     }
 }
 
