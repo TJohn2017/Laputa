@@ -121,6 +121,7 @@ struct CodeCardView: View {
         .animation(.linear(duration: minimumLongPressDuration))
         .gesture(longPressDrag)
         .onAppear(perform: setInitialOffset)
+        .zIndex(codeCard.zIndex)
     }
     
 }
