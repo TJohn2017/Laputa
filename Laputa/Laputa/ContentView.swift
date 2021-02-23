@@ -47,7 +47,7 @@ struct ContentView: View {
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
         UINavigationBar.appearance().standardAppearance = appearance
         
-//        // Sets the bar color to opaque black
+//        // Attempts to set the bar color to opaque black
 //        UINavigationBar.appearance().barStyle = UIBarStyle.black
 //        UINavigationBar.appearance().barTintColor = .black
         
@@ -61,8 +61,11 @@ struct ContentView: View {
     }
 }
 
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
+
+
