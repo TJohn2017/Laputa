@@ -30,7 +30,7 @@ struct SessionPageView: View {
             return AnyView(
                 ZStack {
                     Color.black
-                    SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
+                    SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, modifyTerminalHeight: false)
                 }
                 .navigationBarTitle("\(host!.name!)")
                 .navigationBarTitleDisplayMode(.inline)
@@ -38,7 +38,7 @@ struct SessionPageView: View {
                 .sheet(
                     isPresented: $showCanvasSheet
                 ) {
-                    SessionPageInputCanvas(canvas: canvas, showCanvasSheet: $showCanvasSheet)
+                    SessionPageInputCanvas(canvas: $canvas, showCanvasSheet: $showCanvasSheet)
                 }
             )
         } else if (host == nil && canvas != nil) {
@@ -59,11 +59,14 @@ struct SessionPageView: View {
                 usePassword:true,
                 password:host!.password!
             )
-            
-            return AnyView(VStack {
-                Text("CANVAS VIEW")
-                SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet)
-            })
+                        
+            return AnyView(
+                VStack {
+                    // CanvasView(canvasId: canvas!.id)
+                    DrawingView(isDrawing: true)
+                    SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, modifyTerminalHeight: true)
+                }
+            )
         }
     }
 }

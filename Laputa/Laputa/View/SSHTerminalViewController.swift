@@ -15,12 +15,14 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
     var addPairButton: UIButton
+    var modifyTerminalHeight: Bool
     weak var delegate: SwiftUITerminalDelegate?
     
-    init(host: HostInfo) {
+    init(host: HostInfo, modifyTerminalHeight: Bool) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
         self.addPairButton = UIButton(type: .custom)
+        self.modifyTerminalHeight = modifyTerminalHeight
         super.init(nibName:nil, bundle:nil)
     }
     
@@ -96,6 +98,55 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
+    override func loadView() {
+        super.loadView()
+        if (self.modifyTerminalHeight) {
+            self.view.frame = CGRect(
+                x: self.view.bounds.origin.x,
+                y: self.view.bounds.origin.y,
+                width: self.view.bounds.width,
+                height: self.view.bounds.height * 0.49
+            )
+        }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        print("transitioning --- ")
+        print("transitioning \(size.width)")
+        print("transitioning \(size.height)")
+        print(" ")
+        
+        coordinator.animate(alongsideTransition: { (_) in
+            self.view.frame = CGRect(
+                x: self.view.bounds.origin.x,
+                y: self.view.bounds.origin.y,
+                width: size.width,
+                height: size.height * 0.49
+            )
+            self.view.setNeedsDisplay()
+        }, completion: nil)
+
+    }
+//    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+//        if UIApplication.shared.statusBarOrientation.isLandscape {
+//            self.view.frame = CGRect(
+//                x: self.view.bounds.origin.x,
+//                y: self.view.bounds.origin.y,
+//                width: self.view.bounds.width,
+//                height: self.view.bounds.height * 0.49
+//            )
+//        } else {
+//            self.view.frame = CGRect(
+//                x: self.view.bounds.origin.x,
+//                y: self.view.bounds.origin.y,
+//                width: self.view.bounds.width,
+//                height: self.view.bounds.height * 0.49
+//            )
+//        }
+//    }
+    
     var orig_view_height:CGFloat = 0
     //var terminalScrollView = UIScrollView()
     // Loads terminal gui into the view
@@ -165,10 +216,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @State var host: HostInfo
     @Binding var showCanvasSheet: Bool
+    @State var modifyTerminalHeight: Bool
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        let viewController = SSHTerminalViewController (host: host)
+        let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight)
         viewController.delegate = context.coordinator
         return viewController
     }
@@ -213,7 +265,7 @@ struct SwiftUITerminal_Preview: PreviewProvider {
         var body: some View {
             let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
 
-            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet)
+            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet, modifyTerminalHeight: false)
         }
     }
 }

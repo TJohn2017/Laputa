@@ -16,7 +16,7 @@ struct SessionPageInputCanvas: View {
     )
     var canvases: FetchedResults<Canvas>
     
-    @State var canvas: Canvas?
+    @Binding var canvas: Canvas?
     @Binding var showCanvasSheet: Bool
     
     var body: some View {
@@ -60,7 +60,7 @@ struct SessionPageInputCanvas_Previews: PreviewProvider {
         var body: some View {
             
             return SessionPageInputCanvas(
-                canvas: canvas,
+                canvas: $canvas,
                 showCanvasSheet: $showCanvasSheet
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }

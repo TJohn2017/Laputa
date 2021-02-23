@@ -36,7 +36,9 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     // Async function every time data is available to be displayed on terminal
     public func channel(_ channel: NMSSHChannel, didReadData message: String) {
         //print("didReadData   data: \(message)")
-        self.feed(text: message)
+        DispatchQueue.main.sync {
+            self.feed(text: message)
+        }
         //self.scrolled(source: self, position: <#T##Double#>)
     }
     
