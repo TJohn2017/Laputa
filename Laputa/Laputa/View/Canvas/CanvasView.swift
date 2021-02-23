@@ -110,8 +110,6 @@ struct CanvasView: View {
                     DrawingView(isDrawing: self.isDrawing)
                         .allowsHitTesting(isDrawing)
                         .zIndex(maxZIndex + 1)
-
-                    Text("UI height: \(UIScreen.main.bounds.height), UI width: \(UIScreen.main.bounds.width)")
                 }
                 .scaleEffect(magniScale)
                 .offset(

@@ -83,11 +83,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var keyboardDelta: CGFloat = 0
     @objc
     func keyboardNotification(_ notification: NSNotification) {
-//        print ("Keyboard showed")
-//        print("showed: view height: \(view.frame.height)   view width: \(view.frame.width)")
         if let userInfo = notification.userInfo {
             let keyboardSize = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-            //let endFrameY = endFrame?.origin.y ?? 0
             let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
             let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
             let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
