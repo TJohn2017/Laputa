@@ -15,12 +15,15 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
     var addPairButton: UIButton
+    var modifyTerminalHeight: Bool
     weak var delegate: SwiftUITerminalDelegate?
+    var previous_height : CGFloat?
     
-    init(host: HostInfo) {
+    init(host: HostInfo, modifyTerminalHeight: Bool) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
         self.addPairButton = UIButton(type: .custom)
+        self.modifyTerminalHeight = modifyTerminalHeight
         super.init(nibName:nil, bundle:nil)
     }
     
@@ -29,26 +32,32 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     }
     
     // Makes the terminal gui frame
-    func makeFrame (keyboardDelta: CGFloat) -> CGRect
+    func makeFrame (keyboardDelta: CGFloat, keyboardWillHide: Bool) -> CGRect
     {
-        var frame_height = view.frame.height
-        if (orig_view_height != 0) {
-            frame_height = orig_view_height
+//        print ("LOG: frame height: \(view.frame.height), keyboard delta: \(keyboardDelta)")
+//        print ("LOG: Making frame height: \(view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta /*- 20*/)   width: \(view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right)   x,y : (\(view.safeAreaInsets.left), \(view.safeAreaInsets.top))")
+//        print ("LOG: view.safeAreaInsets.bottom: \(view.safeAreaInsets.bottom)   top: \(view.safeAreaInsets.top)")
+        
+        var view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+        if (self.modifyTerminalHeight && keyboardDelta > 0) { // set height when keyboard shows up to fill the screen til the keyboard
+            view_height += keyboardDelta*0.53
+        } else if (keyboardWillHide && previous_height != nil) { // set height to be the previous terminal view height before the keyboard appeared
+            view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top - 30
+        } else if (view_height < 5) { // if view height too small, set minimum height of 50
+            view_height = 50
         }
-        print ("frame height: \(frame_height), keyboard delta: \(keyboardDelta)")
-        print ("Making frame with \(keyboardDelta)")
+        
         return CGRect (
             x: view.safeAreaInsets.left,
             y: view.safeAreaInsets.top,
             width: view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right,
-            height: frame_height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta - 40)
+            height: view_height)
     }
     
     
     // Starts an instance of sshterminalview and writes the first line
     func startSSHSession() -> SSHTerminalView? {
-        let tv = SSHTerminalView(host: host, frame: makeFrame(keyboardDelta: 0))
-        //tv.feed(text: "Welcome to iPad Terminal\n\n")
+        let tv = SSHTerminalView(host: host, frame: makeFrame(keyboardDelta: 0, keyboardWillHide: false))
         return tv
     }
     
@@ -60,32 +69,34 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                     object: nil)
         
         notificationCenter.addObserver(self,
-                            selector: #selector(keyboardNotification(_:)),
+                            selector: #selector(handleKeyboardWillHide),
                             name: UIResponder.keyboardWillHideNotification,
                             object: nil)
         
     }
+    
+    @objc func handleKeyboardWillHide() {
+        keyboardDelta = 0
+        terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
+    }
+    
     var keyboardDelta: CGFloat = 0
     @objc
     func keyboardNotification(_ notification: NSNotification) {
-        print ("Keyboard showed")
-        print("showed: view height: \(view.frame.height)   view width: \(view.frame.width)")
         if let userInfo = notification.userInfo {
-            let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-            //let endFrameY = endFrame?.origin.y ?? 0
+            let keyboardSize = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
             let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
             let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
             let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
             let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
-            let relative = view.convert(endFrame ?? CGRect.zero, from: view.window)
-            
-            let inter = relative.intersection(terminalView!.frame)
-            if inter.height > 0 {
-                keyboardDelta = inter.height
+
+            if (keyboardSize != nil) {
+                keyboardDelta = keyboardSize!.height
+            } else {
+                keyboardDelta = 0
             }
-           // print ("KEYBOARD NOTIFICATION: Forcing frame to \(makeFrame(keyboardDelta: inter.height)) with incoming \(view.frame)")
             
-            terminalView!.frame = makeFrame(keyboardDelta: inter.height)
+            terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
             UIView.animate(withDuration: duration,
                                        delay: TimeInterval(0),
                                        options: animationCurve,
@@ -96,13 +107,50 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
-    var orig_view_height:CGFloat = 0
-    //var terminalScrollView = UIScrollView()
+    override func loadView() {
+        super.loadView()
+        if (self.modifyTerminalHeight) {
+            previous_height = self.view.bounds.height * 0.49
+            self.view.frame = CGRect(
+                x: self.view.bounds.origin.x,
+                y: self.view.bounds.origin.y,
+                width: self.view.bounds.width,
+                height: self.view.bounds.height * 0.49
+            )
+        }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        var screenMultiplier : CGFloat = 1
+        if (modifyTerminalHeight) {
+            screenMultiplier = 0.5
+        }
+        previous_height = size.height * screenMultiplier
+        coordinator.animate(alongsideTransition: { (_) in
+            self.view.frame = CGRect(
+                x: self.view.bounds.origin.x,
+                y: self.view.bounds.origin.y,
+                width: size.width,
+                height: size.height * screenMultiplier - 30
+            )
+     
+            // reset terminal view frame
+            self.terminalView!.frame = self.view.frame
+            // reset buttons in terminal view
+            self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 120, width: self.view.frame.width/15, height: self.view.frame.width/15)
+            self.addPairButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width / 15, height: self.view.frame.width/15)
+        }, completion: nil)
+
+    }
+    
     // Loads terminal gui into the view
     override func viewDidLoad() {
         super.viewDidLoad()
         addKeyboard()
-        orig_view_height = view.frame.height
+        
+        previous_height = view.frame.height
         
         // start ssh session and add it ot the view
         terminalView = startSSHSession()
@@ -115,22 +163,17 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         view.addSubview(t)
         
         // initiate addPair button
-        initializeAddPairButton(t: t)
-        view.addSubview(addPairButton)
-        self.terminalView?.becomeFirstResponder()
+        if (!self.modifyTerminalHeight) {
+            initializeAddPairButton(t: t)
+            view.addSubview(addPairButton)
+        }
         
         // initiate keyboard button
         initializeKeyboardButton(t: t)
         view.addSubview(keyboardButton)
-        self.terminalView?.becomeFirstResponder()
-        
     }
     
-    
-    /*override func viewWillAppear(_ animated: Bool) {
-        CGFloat fixedWidth = terminalView?.frame.width
-        
-    }*/
+
     private func initializeAddPairButton(t: TerminalView) {
         addPairButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width / 15, height: t.frame.width/15)
         addPairButton.layer.cornerRadius = 15
@@ -165,10 +208,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @State var host: HostInfo
     @Binding var showCanvasSheet: Bool
+    @State var modifyTerminalHeight: Bool
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        let viewController = SSHTerminalViewController (host: host)
+        let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight)
         viewController.delegate = context.coordinator
         return viewController
     }
@@ -213,7 +257,7 @@ struct SwiftUITerminal_Preview: PreviewProvider {
         var body: some View {
             let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
 
-            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet)
+            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet, modifyTerminalHeight: false)
         }
     }
 }

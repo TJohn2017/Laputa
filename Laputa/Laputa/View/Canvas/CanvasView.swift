@@ -74,6 +74,8 @@ struct CanvasView: View {
     func resetView() {
         magniScale = 1.0
         viewState = CGSize.zero
+        print("vertical size class: \(vSizeClass == .compact ? "Compact" : "Regular")")
+        print("horizontal size class: \(hSizeClass == .compact ? "Compact" : "Regular")")
     }
     
     func toggleDrawing() {
@@ -108,7 +110,6 @@ struct CanvasView: View {
                     DrawingView(isDrawing: self.isDrawing)
                         .allowsHitTesting(isDrawing)
                         .zIndex(maxZIndex + 1)
-                    Text("UI height: \(UIScreen.main.bounds.height), UI width: \(UIScreen.main.bounds.width)")
                 }
                 .scaleEffect(magniScale)
                 .offset(
