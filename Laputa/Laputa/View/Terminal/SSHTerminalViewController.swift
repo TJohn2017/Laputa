@@ -176,20 +176,20 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         t.frame = view.frame
         view.addSubview(t)
         
-        // initiate addPair button
+        // We don't have a canvas, so show the addPair button
         if (!self.modifyTerminalHeight) {
             initializeAddPairButton(t: t)
             view.addSubview(addPairButton)
+        }
+        else { // We have a canvas, so show the output catching button
+            initializeOutputCatchButton(t: t)
+            view.addSubview(outputCatchButton)
         }
         
         // initiate keyboard button
         initializeKeyboardButton(t: t)
         view.addSubview(keyboardButton)
         self.terminalView?.becomeFirstResponder()
-        
-        // initialize output catch button
-        initializeOutputCatchButton(t: t)
-        view.addSubview(outputCatchButton)
     }
     
     
@@ -231,8 +231,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     }
     
     // Setup the output catch button UI and behavior
-    private func initializeOutputCatchButton(t: TerminalView) {
-        outputCatchButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 320, width: t.frame.width/15, height: t.frame.width/15)
+    private func initializeOutputCatchButton(t: TerminalView) {g
+        outputCatchButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width/15, height: t.frame.width/15)
         outputCatchButton.layer.cornerRadius = 15
         outputCatchButton.layer.masksToBounds = true
         outputCatchButton.setImage(UIImage(systemName: "arrow.triangle.branch"), for: .normal)
@@ -246,12 +246,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     @objc
     func catchOutput() {
         let lastResponse = terminalView?.lastResponse()
-        if (lastResponse != nil) {
-            print("OUTPUT CATCHING: \(lastResponse!)")
-        }
         
         // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
-        if (canvas != nil && viewContext != nil) {
+        if (lastResponse != nil && canvas != nil && viewContext != nil) {
             print("We are attempting to create a card")
             let newCard = CodeCard(context: viewContext!)
             newCard.id = UUID()
@@ -263,7 +260,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 maxZIndex = cards[0].zIndex + 1.0
             }
             newCard.zIndex = maxZIndex
-            newCard.text = "\(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)\nzIndex: \(newCard.zIndex)"
+            newCard.text = "last response:\(lastResponse!) \(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)\nzIndex: \(newCard.zIndex)"
 
             do {
                 try viewContext!.save()
