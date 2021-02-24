@@ -101,9 +101,9 @@
 		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
 		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
 		585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageInputCanvas.swift; sourceTree = "<group>"; };
-		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
+		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/Terminal/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
 		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
-		759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalView.swift; path = Laputa/View/SSHTerminalView.swift; sourceTree = SOURCE_ROOT; };
+		759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalView.swift; path = Laputa/View/Terminal/SSHTerminalView.swift; sourceTree = SOURCE_ROOT; };
 		97B18099E4EC517DEE7D561E /* Pods-Laputa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Laputa.debug.xcconfig"; path = "Target Support Files/Pods-Laputa/Pods-Laputa.debug.xcconfig"; sourceTree = "<group>"; };
 		9C488E2525D0DCBA00662F1E /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		9C488E3125D1081C00662F1E /* CodeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeCardView.swift; sourceTree = "<group>"; };
@@ -167,6 +167,15 @@
 				1A24CDCC25D4CE130044044F /* SSHConnection.swift */,
 			);
 			path = SSH;
+			sourceTree = "<group>";
+		};
+		1A39DACE25E49D3700AAB8E0 /* Terminal */ = {
+			isa = PBXGroup;
+			children = (
+				759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */,
+				759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */,
+			);
+			path = Terminal;
 			sourceTree = "<group>";
 		};
 		1A64C87F25CA2EE50082FEA7 = {
@@ -257,9 +266,8 @@
 		584E47B125D39A3D005EDC0E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				1A39DACE25E49D3700AAB8E0 /* Terminal */,
 				9CEDEB7025E23DD900F0E380 /* Canvas */,
-				759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */,
-				759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */,
 				584E47F125E2099C005EDC0E /* SessionPage */,
 				584E47F025E20970005EDC0E /* MainPage */,
 			);

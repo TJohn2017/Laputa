@@ -9,21 +9,35 @@ import Foundation
 import SwiftTerm
 import SwiftUI
 import NMSSH
+import CoreData
 
 class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var host: HostInfo
+    
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
     var addPairButton: UIButton
+    var outputCatchButton: UIButton
+    
     var modifyTerminalHeight: Bool
     weak var delegate: SwiftUITerminalDelegate?
     var previous_height : CGFloat?
     
-    init(host: HostInfo, modifyTerminalHeight: Bool) {
+    // UI Canvas associated with this terminal. We can send our recent output to the canvas.
+    var canvas: Canvas?
+    var viewContext: NSManagedObjectContext?
+    
+    init(host: HostInfo, modifyTerminalHeight: Bool, canvas: Canvas? = nil, viewContext: NSManagedObjectContext? = nil) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
         self.addPairButton = UIButton(type: .custom)
+        self.outputCatchButton = UIButton(type: .custom)
         self.modifyTerminalHeight = modifyTerminalHeight
+        self.canvas = canvas
+        self.viewContext = viewContext
+        if (canvas != nil) {
+            print("CANVAS: We have a canvas")
+        }
         super.init(nibName:nil, bundle:nil)
     }
     
@@ -162,18 +176,29 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         t.frame = view.frame
         view.addSubview(t)
         
-        // initiate addPair button
+        // We don't have a canvas, so show the addPair button
         if (!self.modifyTerminalHeight) {
             initializeAddPairButton(t: t)
             view.addSubview(addPairButton)
+        }
+        else { // We have a canvas, so show the output catching button
+            initializeOutputCatchButton(t: t)
+            view.addSubview(outputCatchButton)
         }
         
         // initiate keyboard button
         initializeKeyboardButton(t: t)
         view.addSubview(keyboardButton)
+        self.terminalView?.becomeFirstResponder()
     }
     
-
+    
+    /*override func viewWillAppear(_ animated: Bool) {
+        CGFloat fixedWidth = terminalView?.frame.width
+        
+    }*/
+    
+    // Setup the add pair button UI and behavior
     private func initializeAddPairButton(t: TerminalView) {
         addPairButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width / 15, height: t.frame.width/15)
         addPairButton.layer.cornerRadius = 15
@@ -189,6 +214,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         self.delegate?.showCanvasSheet(self, showCanvas: true)
     }
     
+    // Setup the ketboard button UI and behavior
     private func initializeKeyboardButton(t: TerminalView) {
         keyboardButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 120, width: t.frame.width/15, height: t.frame.width/15)
         keyboardButton.layer.cornerRadius = 15
@@ -198,9 +224,59 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         keyboardButton.addTarget(self, action: #selector(showKeyboard), for: .touchUpInside)
     }
     
+    // Present the keyboard
     @objc
     func showKeyboard() {
         self.terminalView?.becomeFirstResponder()
+    }
+    
+    // Setup the output catch button UI and behavior
+    private func initializeOutputCatchButton(t: TerminalView) {
+        outputCatchButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width/15, height: t.frame.width/15)
+        outputCatchButton.layer.cornerRadius = 15
+        outputCatchButton.layer.masksToBounds = true
+        outputCatchButton.setImage(UIImage(systemName: "arrow.triangle.branch"), for: .normal)
+        outputCatchButton.backgroundColor = UIColor.white
+        outputCatchButton.addTarget(self, action: #selector(catchOutput), for: .touchUpInside)
+    }
+    
+    // Attempt to execute the current command prompt and catch the output
+    // so that it can be displayed in its own canvas card instead of in the
+    // terminal view.
+    @objc
+    func catchOutput() {
+        let lastResponse = terminalView?.lastResponse()
+        
+        // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
+        if (lastResponse != nil && canvas != nil && viewContext != nil) {
+            print("We are attempting to create a card")
+            let newCard = CodeCard(context: viewContext!)
+            newCard.id = UUID()
+            newCard.origin = canvas
+
+            var maxZIndex = 0.0
+            let cards = canvas!.cardArray
+            if !cards.isEmpty {
+                maxZIndex = cards[0].zIndex + 1.0
+            }
+            newCard.zIndex = maxZIndex
+            newCard.text = "last response:\(lastResponse!) \(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)\nzIndex: \(newCard.zIndex)"
+
+            do {
+                try viewContext!.save()
+            } catch {
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
+        
+        
+        // testing our ability to run execute command below. The "cd .." doesn't persist to the next executiong, unfortunately.
+//        var response = terminalView?.ssh_session.executeCommand(command: "cd ..")
+//        response = terminalView?.ssh_session.executeCommand(command: "ls")
+//        if (response != nil) {
+//            print("RESPONSE: \(response!)")
+//        }
     }
 }
 
@@ -208,11 +284,14 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @State var host: HostInfo
     @Binding var showCanvasSheet: Bool
+    @Binding var canvas: Canvas?
+    @Environment(\.managedObjectContext) private var viewContext
+    
     @State var modifyTerminalHeight: Bool
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight)
+        let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
         viewController.delegate = context.coordinator
         return viewController
     }
@@ -253,11 +332,12 @@ struct SwiftUITerminal_Preview: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State var showCanvasSheet = false
+        @State var canvas: Canvas? = nil
         
         var body: some View {
             let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
 
-            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet, modifyTerminalHeight: false)
+            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet, canvas: $canvas, modifyTerminalHeight: false)
         }
     }
 }

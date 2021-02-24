@@ -58,7 +58,6 @@ class SSHConnection {
     func executeCommand(command: String) -> String {
         let errorPointer: NSErrorPointer = nil
         let result = session.channel.execute(command, error: errorPointer)
-//        print(result)
         return result
     }
     
