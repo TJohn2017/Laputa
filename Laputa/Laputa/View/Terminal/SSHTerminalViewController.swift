@@ -260,7 +260,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 maxZIndex = cards[0].zIndex + 1.0
             }
             newCard.zIndex = maxZIndex
-            newCard.text = "last response:\(lastResponse!) \(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)\nzIndex: \(newCard.zIndex)"
+            newCard.text = "last response:\(lastResponse!) \(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)"
 
             do {
                 try viewContext!.save()

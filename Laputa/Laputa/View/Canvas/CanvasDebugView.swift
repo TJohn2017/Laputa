@@ -34,7 +34,7 @@ struct CanvasDebugView: View {
                 maxZIndex = cards[0].zIndex + 1.0
             }
             newCard.zIndex = maxZIndex
-            newCard.text = "\(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)\nzIndex: \(newCard.zIndex)"
+            newCard.text = "\(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)"
 
             do {
                 try viewContext.save()
