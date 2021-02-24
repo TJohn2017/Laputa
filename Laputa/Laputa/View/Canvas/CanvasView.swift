@@ -14,9 +14,9 @@ import SwiftUI
 struct CanvasView: View {
     
     // sets max canvas size to 2 * side length
-    @State var canvasScale = CGFloat(1.0)
-    @State var maxZoomIn = CGFloat(1.0)
-    @State var maxZoomOut = CGFloat(1.0 / 1.0)
+    @State var canvasScale = CGFloat(2.0)
+    @State var maxZoomIn = CGFloat(2.0)
+    @State var maxZoomOut = CGFloat(1.0 / 2.0)
     
     @State var isDrawing = false
     @Environment(\.managedObjectContext) private var viewContext
@@ -74,8 +74,6 @@ struct CanvasView: View {
     func resetView() {
         magniScale = 1.0
         viewState = CGSize.zero
-        print("vertical size class: \(vSizeClass == .compact ? "Compact" : "Regular")")
-        print("horizontal size class: \(hSizeClass == .compact ? "Compact" : "Regular")")
     }
     
     func toggleDrawing() {

@@ -88,7 +88,6 @@ struct CodeCardView: View {
             viewContext.performAndWait {
                 codeCard.locX = newLocX
                 codeCard.locY = newLocY
-                codeCard.text = "\(codeCard.id)\n\nx: \(codeCard.locX), y: \(codeCard.locY)\nzIndex: \(codeCard.zIndex)"
                 try? viewContext.save()
             }
         }
