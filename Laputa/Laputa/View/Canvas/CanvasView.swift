@@ -10,6 +10,7 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct CanvasView: View {
     
@@ -28,11 +29,22 @@ struct CanvasView: View {
     var isSplit: Bool
     var canvasHeight: CGFloat
     var canvasWidth: CGFloat
-    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width) {
+    
+    // Binding variables for PKCanvasView
+    @Binding var isDraw : Bool
+    @Binding var isErase : Bool
+    @Binding var color : Color
+    @Binding var type : PKInkingTool.InkType
+    
+    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
         isSplit = isSplitView
         canvasHeight = height!
         canvasWidth = width!
+        self._isDraw = isDraw
+        self._isErase = isErase
+        self._color = color
+        self._type = type
     }
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
@@ -94,6 +106,7 @@ struct CanvasView: View {
         return
             ZStack() {
                 ZStack() {
+                    
                     Rectangle()
                         .frame(width: sideLength, height: sideLength, alignment: .bottom)
                         .foregroundColor(.red)
@@ -105,17 +118,21 @@ struct CanvasView: View {
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
-                    DrawingView(isDrawing: self.isDrawing)
-                        .allowsHitTesting(isDrawing)
+                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
                         .zIndex(maxZIndex + 1)
+                        .allowsHitTesting(isDrawing)
+                    
+//                    DrawingView(isDrawing: self.isDrawing)
+//                        .allowsHitTesting(isDrawing)
+////                        .zIndex(maxZIndex + 1)
                 }
                 .scaleEffect(magniScale)
                 .offset(
                     x: viewState.width + panState.width,
                     y: viewState.height + panState.height
                 )
-                .gesture(navigate)
-                
+                .gesture(isDrawing ? nil : navigate)
+
                 Button(action: resetView) {
                     Image(systemName: "scope")
                         .padding(10)
@@ -130,13 +147,13 @@ struct CanvasView: View {
                 )
                 Button(action: toggleDrawing) {
                     isDrawing ?
-                        Image(systemName: "pencil.slash")
+                        Image(systemName: "pencil")
                         .padding()
                         .font(.largeTitle)
                         .foregroundColor(Color.white)
                         .background(Color.black)
                         :
-                        Image(systemName: "pencil")
+                        Image(systemName: "pencil.slash")
                         .padding()
                         .font(.largeTitle)
                         .foregroundColor(Color.white)
@@ -150,6 +167,7 @@ struct CanvasView: View {
             }
             .onAppear(perform: setMaxZIndex)
             .coordinateSpace(name: "Global")
+            
     }
 }
 
@@ -163,13 +181,17 @@ struct Canvas_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
+        @State var isDraw = true
+        @State var isErase = false
+        @State var color : Color = Color.black
+        @State var type : PKInkingTool.InkType = .pencil
         var body: some View {
             let context = PersistenceController.preview.container.viewContext
             let newCanvas = Canvas(context: context)
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasView(canvasId: newCanvas.id, isSplitView: false).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasView(canvasId: newCanvas.id, isSplitView: false, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }
