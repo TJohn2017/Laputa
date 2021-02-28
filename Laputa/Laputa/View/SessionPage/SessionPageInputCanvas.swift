@@ -12,36 +12,67 @@ struct SessionPageInputCanvas: View {
     
     @FetchRequest(
         entity: Canvas.entity(),
-        sortDescriptors: []
+        sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)]
     )
     var canvases: FetchedResults<Canvas>
     
     @Binding var canvas: Canvas?
     @Binding var showCanvasSheet: Bool
+    @State private var showingInputSheet: Bool = false
     
     var body: some View {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .short
         
-        return ScrollView {
-            VStack {
-                ForEach(canvases) { canvas in
+        return VStack {
+            Text("Add a canvas in split view")
+                .font(.title)
+                .padding(.top, 50)
+            ScrollView {
+                VStack {
+                    // Add a new canvas which will appear at the
+                    // top of the list since it was most recently made
                     Button(action: {
-                        self.canvas = canvas
-                        showCanvasSheet.toggle()
+                        showingInputSheet.toggle()
                     }) {
-                        VStack {
-                            Text("\(canvas.wrappedTitle)")
-                                .frame(width: 400.0, height: 200.0)
-                                .padding()
-                                .background(Color.blue)
-                                .foregroundColor(Color.black)
-                                .cornerRadius(10.0)
-                            Text("Created: \(dateFormatter.string(from: canvas.wrappedDate))")
-                                .foregroundColor(Color.black)
-                        }.padding()
+                        HStack {
+                            Image(systemName: "plus.circle")
+                            Text("New Canvas")
+                        }
+                        .font(.title)
                     }
+                    .padding(50)
+                    
+                    // Choose from an existing canvas
+                    ForEach(canvases) { canvas in
+                        Button(action: {
+                            self.canvas = canvas
+                            showCanvasSheet.toggle()
+                        }) {
+                            VStack {
+                                Text("\(canvas.wrappedTitle)")
+                                    .frame(width: 400.0, height: 200.0)
+                                    .padding()
+                                    .background(Color.blue)
+                                    .foregroundColor(Color.black)
+                                    .cornerRadius(10.0)
+                                Text("Created: \(dateFormatter.string(from: canvas.wrappedDate))")
+                                    .foregroundColor(Color.black)
+                            }.padding()
+                        }
+                    }
+                }
+                .sheet(
+                    isPresented: $showingInputSheet,
+                    onDismiss: {
+                        // TODO: Bring the user back to split view
+                        // with newly created canvas showing
+                    }
+                ) {
+                    MainPageInputCanvas(
+                        showingInputSheet: $showingInputSheet
+                    )
                 }
             }
         }
