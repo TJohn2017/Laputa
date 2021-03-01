@@ -17,6 +17,8 @@ struct PKDrawingView: View {
     @Binding var isErase : Bool
     @Binding var color : Color
     @Binding var type : PKInkingTool.InkType
+    @Binding var isInDrawingMode : Bool
+    
 //    @Binding var maxZIndex : Double
 //    var cards : [CodeCard]
 //    var cardViews : [CodeCardView]
@@ -27,7 +29,7 @@ struct PKDrawingView: View {
 //                CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
 //
 //            }.allowsHitTesting(true)
-        PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color)
+        PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color, isInDrawingMode: $isInDrawingMode)
 //                .zIndex(maxZIndex + 1)
         }
     }
@@ -41,7 +43,7 @@ struct PencilKitView : UIViewRepresentable {
     @Binding var isErase : Bool
     @Binding var type : PKInkingTool.InkType
     @Binding var color : Color
-        
+    @Binding var isInDrawingMode : Bool
     
     // updating inkType
     var ink : PKInkingTool {

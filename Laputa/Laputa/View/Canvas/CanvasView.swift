@@ -18,6 +18,7 @@ struct CanvasView: View {
     @State var canvasScale = CGFloat(2.0)
     @State var maxZoomIn = CGFloat(2.0)
     @State var maxZoomOut = CGFloat(1.0 / 2.0)
+    @State var isInDrawingMode = false
     
     @State var isDrawing = false
     @Environment(\.managedObjectContext) private var viewContext
@@ -117,8 +118,10 @@ struct CanvasView: View {
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
                     Text("Top of zstack")
-                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
+                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode)
                         .background(Color.white.opacity(0.01))
+                        .zIndex(maxZIndex + 1)
+                        .allowsHitTesting(isInDrawingMode)
                 }
                 .scaleEffect(magniScale)
                 .offset(
