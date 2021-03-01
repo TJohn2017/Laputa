@@ -18,24 +18,16 @@ struct PKDrawingView: View {
     @Binding var color : Color
     @Binding var type : PKInkingTool.InkType
     @Binding var isInDrawingMode : Bool
-    
-//    @Binding var maxZIndex : Double
-//    var cards : [CodeCard]
-//    var cardViews : [CodeCardView]
+    var canvasId : UUID
     
     var body: some View {
-       return ZStack() {
-//            ForEach(cards) { card in
-//                CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
-//
-//            }.allowsHitTesting(true)
-        PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color, isInDrawingMode: $isInDrawingMode)
-//                .zIndex(maxZIndex + 1)
-        }
+        PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color, isInDrawingMode: $isInDrawingMode, canvasId: canvasId)
     }
 }
 
 struct PencilKitView : UIViewRepresentable {
+    
+    @Environment(\.managedObjectContext) private var viewContext
     
     // Used to capture drawing for saving into albums
     @Binding var canvas : PKCanvasView
@@ -45,6 +37,20 @@ struct PencilKitView : UIViewRepresentable {
     @Binding var color : Color
     @Binding var isInDrawingMode : Bool
     
+    var fetchRequest: FetchRequest<Canvas>
+    init(canvas: Binding<PKCanvasView>, isDraw: Binding<Bool>, isErase: Binding<Bool>, type: Binding<PKInkingTool.InkType>, color: Binding<Color>, isInDrawingMode: Binding<Bool>, canvasId: UUID) {
+        
+        fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
+        
+        self._canvas = canvas
+        self._isDraw = isDraw
+        self._isErase = isErase
+        self._color = color
+        self._type = type
+        self._isInDrawingMode = isInDrawingMode
+    }
+    var canvasEntity: Canvas { fetchRequest.wrappedValue[0] }
+    
     // updating inkType
     var ink : PKInkingTool {
         PKInkingTool(type, color: UIColor(color))
@@ -53,8 +59,15 @@ struct PencilKitView : UIViewRepresentable {
     let cut = PKLassoTool()
     
     
-   func makeUIView(context: Context) -> PKCanvasView {
-    
+    func makeUIView(context: Context) -> PKCanvasView {
+        if (canvasEntity.drawingData != nil) {
+            do {
+                try canvas.drawing = PKDrawing.init(data: canvasEntity.drawingData!)
+            } catch {
+                print("Error loading drawing object")
+            }
+        }
+        
         canvas.backgroundColor = .blue
         canvas.isOpaque = false
         
@@ -80,6 +93,13 @@ struct PencilKitView : UIViewRepresentable {
             uiView.tool =  eraser
         } else { // lasso tool for cutting
             uiView.tool =  cut
+        }
+        
+        canvasEntity.drawingData = uiView.drawing.dataRepresentation()
+        
+        viewContext.performAndWait {
+            canvasEntity.drawingData = uiView.drawing.dataRepresentation()
+            try? viewContext.save()
         }
     }
 }

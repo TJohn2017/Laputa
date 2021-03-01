@@ -118,7 +118,7 @@ struct CanvasView: View {
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
                     Text("Top of zstack")
-                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode)
+                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode, canvasId: canvas.id)
                         .background(Color.white.opacity(0.01))
                         .zIndex(maxZIndex + 1)
                         .allowsHitTesting(isInDrawingMode)
