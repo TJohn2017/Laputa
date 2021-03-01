@@ -46,6 +46,7 @@ struct CanvasView: View {
         self._color = color
         self._type = type
     }
+    
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
     
@@ -105,33 +106,27 @@ struct CanvasView: View {
         
         return
             ZStack() {
+                Color.purple.opacity(0.5)
                 ZStack() {
                     
                     Rectangle()
-                        .frame(width: sideLength, height: sideLength, alignment: .bottom)
-                        .foregroundColor(.red)
-                        .zIndex(-2)
-                    Rectangle()
                         .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.white.opacity(0.5))
                         .zIndex(-1)
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
+                    Text("Top of zstack")
                     PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
-                        .zIndex(maxZIndex + 1)
-                        .allowsHitTesting(isDrawing)
-                    
-//                    DrawingView(isDrawing: self.isDrawing)
-//                        .allowsHitTesting(isDrawing)
-////                        .zIndex(maxZIndex + 1)
+                        .background(Color.white.opacity(0.01))
                 }
                 .scaleEffect(magniScale)
                 .offset(
                     x: viewState.width + panState.width,
                     y: viewState.height + panState.height
                 )
-                .gesture(isDrawing ? nil : navigate)
+                .gesture(navigate)
+               
 
                 Button(action: resetView) {
                     Image(systemName: "scope")
@@ -167,7 +162,7 @@ struct CanvasView: View {
             }
             .onAppear(perform: setMaxZIndex)
             .coordinateSpace(name: "Global")
-            
+//            .gesture(navigate)
     }
 }
 

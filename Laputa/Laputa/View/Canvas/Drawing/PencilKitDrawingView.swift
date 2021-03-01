@@ -7,32 +7,41 @@
 
 import SwiftUI
 import PencilKit
+import UIKit
 
 
 struct PKDrawingView: View {
     @State var canvas = PKCanvasView()
-
+    
     @Binding var isDraw : Bool
     @Binding var isErase : Bool
     @Binding var color : Color
     @Binding var type : PKInkingTool.InkType
+//    @Binding var maxZIndex : Double
+//    var cards : [CodeCard]
+//    var cardViews : [CodeCardView]
     
     var body: some View {
-        NavigationView {
-            PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color)
-                .navigationTitle("Drawing Pad")
-                .navigationBarTitleDisplayMode(.inline)
-        }.navigationViewStyle(StackNavigationViewStyle())
+       return ZStack() {
+//            ForEach(cards) { card in
+//                CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
+//
+//            }.allowsHitTesting(true)
+        PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color)
+//                .zIndex(maxZIndex + 1)
+        }
     }
 }
 
 struct PencilKitView : UIViewRepresentable {
+    
     // Used to capture drawing for saving into albums
     @Binding var canvas : PKCanvasView
     @Binding var isDraw : Bool
     @Binding var isErase : Bool
     @Binding var type : PKInkingTool.InkType
     @Binding var color : Color
+        
     
     // updating inkType
     var ink : PKInkingTool {
@@ -41,10 +50,12 @@ struct PencilKitView : UIViewRepresentable {
     let eraser = PKEraserTool(.bitmap)
     let cut = PKLassoTool()
     
-    func makeUIView(context: Context) -> PKCanvasView {
-        canvas.drawingPolicy = .anyInput
-        canvas.backgroundColor = .clear
+    
+   func makeUIView(context: Context) -> PKCanvasView {
+    
+        canvas.backgroundColor = .blue
         canvas.isOpaque = false
+        
         if (isDraw) {
             canvas.tool = ink
         } else if (isErase) {
@@ -58,6 +69,8 @@ struct PencilKitView : UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
+        canvas.backgroundColor = .clear
+        canvas.isOpaque = false
         // update tool whenever main view updates
         if (isDraw) {
             uiView.tool = ink

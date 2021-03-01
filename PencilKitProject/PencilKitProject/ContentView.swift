@@ -12,9 +12,9 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                CanvasView()
-                CanvasView()
-                CanvasView()
+               // CanvasView()
+                //CanvasView()
+               // CanvasView()
                 Home()//.allowsHitTesting(false)
             }
         }.navigationViewStyle(StackNavigationViewStyle())
