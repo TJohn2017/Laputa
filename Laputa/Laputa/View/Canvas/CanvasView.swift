@@ -129,6 +129,9 @@ struct CanvasView: View {
                     y: viewState.height + panState.height
                 )
                 .gesture(navigate)
+                .onTapGesture (count: 2, perform: {
+                    isInDrawingMode.toggle()
+                })
                
 
                 Button(action: resetView) {
@@ -144,7 +147,7 @@ struct CanvasView: View {
                     y: -canvasHeight / 2  + 150
                 )
                 Button(action: toggleDrawing) {
-                    isDrawing ?
+                    isInDrawingMode ?
                         Image(systemName: "pencil")
                         .padding()
                         .font(.largeTitle)
@@ -165,7 +168,6 @@ struct CanvasView: View {
             }
             .onAppear(perform: setMaxZIndex)
             .coordinateSpace(name: "Global")
-//            .gesture(navigate)
     }
 }
 
