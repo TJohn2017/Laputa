@@ -42,12 +42,12 @@ struct DrawingControls: View {
 //                }
 //            }
 //        }
-        .frame(height: 50)
-        .sheet(isPresented: $colorPickerShown, onDismiss: {
-            self.colorPickerShown = false
-        }, content: { () -> ColorPicker in
-            ColorPicker(color: self.$color, colorPickerShown: self.$colorPickerShown)
-        })
+//        .frame(height: 50)
+//        .sheet(isPresented: $colorPickerShown, onDismiss: {
+//            self.colorPickerShown = false
+////        }, content: { () -> ColorPicker in
+////            ColorPicker(color: self.$color, colorPickerShown: self.$colorPickerShown)
+////        })
     }
 }
 
