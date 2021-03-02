@@ -43,13 +43,18 @@ struct TestView: View {
     
     var body: some View {
         
+        return Text("Hello world")
+        
+        /*
         return NavigationView {
             VStack {
                 NavigationLink(destination: DetailView()) {
                     Text("yerr")
                 }
+                .onDisappear()
             }
         }.navigationViewStyle(StackNavigationViewStyle())
+         */
         
         /*
         Text("Hello World")

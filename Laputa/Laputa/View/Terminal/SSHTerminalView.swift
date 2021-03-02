@@ -118,4 +118,8 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     public func lastResponse() -> String {
         return lastReponse
     }
+    
+    public func isConnected() -> Bool {
+        return ssh_session.isConnected()
+    }
 }
