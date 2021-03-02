@@ -18,7 +18,7 @@ struct CanvasView: View {
     @State var canvasScale = CGFloat(2.0)
     @State var maxZoomIn = CGFloat(2.0)
     @State var maxZoomOut = CGFloat(1.0 / 2.0)
-    @State var isInDrawingMode = false
+    @State var isInDrawingMode = true
     
     @State var isDrawing = false
     @Environment(\.managedObjectContext) private var viewContext
@@ -91,7 +91,8 @@ struct CanvasView: View {
     }
     
     func toggleDrawing() {
-        self.isDrawing = !self.isDrawing
+        self.isInDrawingMode.toggle()
+        //self.isDrawing = !self.isDrawing
     }
     
     @State var maxZIndex = 0.0
@@ -117,7 +118,6 @@ struct CanvasView: View {
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
-                    Text("Top of zstack")
                     PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode, canvasId: canvas.id)
                         .background(Color.white.opacity(0.01))
                         .zIndex(maxZIndex + 1)
@@ -137,11 +137,11 @@ struct CanvasView: View {
                 Button(action: resetView) {
                     Image(systemName: "scope")
                         .padding(10)
-                        .font(.largeTitle)
+                        .font(.title)
                         .foregroundColor(Color.white)
                         .background(Color.red)
                 }
-                .clipShape(Circle())
+                .cornerRadius(20)
                 .offset(
                     x: canvasWidth / 2 - 70,
                     y: -canvasHeight / 2  + 150
@@ -150,17 +150,17 @@ struct CanvasView: View {
                     isInDrawingMode ?
                         Image(systemName: "pencil")
                         .padding()
-                        .font(.largeTitle)
+                        .font(.title)
                         .foregroundColor(Color.white)
                         .background(Color.black)
                         :
                         Image(systemName: "pencil.slash")
                         .padding()
-                        .font(.largeTitle)
+                        .font(.title)
                         .foregroundColor(Color.white)
                         .background(Color.black)
                 }
-                .clipShape(Circle())
+                .cornerRadius(20)
                 .offset(
                     x: canvasWidth / 2 - 70,
                     y: -canvasHeight / 2  + 70
