@@ -154,7 +154,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             self.terminalView!.frame = self.view.frame
             // reset buttons in terminal view
             self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 120, width: self.view.frame.width/15, height: self.view.frame.width/15)
-            self.addPairButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width / 15, height: self.view.frame.width/15)
+            if (self.modifyTerminalHeight) {
+                self.outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width/15, height: self.view.frame.width/15)
+            } else {
+                self.addPairButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width / 15, height: self.view.frame.width/15)
+            }
         }, completion: nil)
 
     }
