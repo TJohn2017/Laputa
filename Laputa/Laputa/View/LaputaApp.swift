@@ -6,14 +6,14 @@
 //
 
 import SwiftUI
-import SwiftTerm
 
 @main
 struct LaputaApp: App {
     let persistenceController = PersistenceController.shared
+
     var body: some Scene {
         WindowGroup {
-           ContentView()
+            ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

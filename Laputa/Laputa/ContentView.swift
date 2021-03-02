@@ -6,75 +6,59 @@
 //
 
 import SwiftUI
+import UIKit
 import CoreData
 
+/*
+  - MainPageList:
+    - TODO: Add initial empty tab with "plus" sign to add a canvas or host (when no items are present)
+ 
+    - TODO: Lower the starting height of the list so it doesn't start immediately from the very top.
+ 
+ - MainPagePreview:
+    - TODO: Add "***" button to menu popup that allows to delete
+      entities or update entity in the mainPageInput[Host/Canvas]
+    - TODO: Add delete functionality to remove entity optionally.
+ 
+ - MainPageInputCanvas
+   - TODO: Merge Canvas core data functionality.
+ */
+
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
+    init() {
+        // this is not the same as manipulating the proxy directly
+        let appearance = UINavigationBarAppearance()
+        
+        // this only applies to big titles
+        appearance.largeTitleTextAttributes = [
+            .font : UIFont.systemFont(ofSize: 20),
+            NSAttributedString.Key.foregroundColor : UIColor.black
+        ]
+        // this only applies to small titles
+        appearance.titleTextAttributes = [
+            .font : UIFont.systemFont(ofSize: 20),
+            NSAttributedString.Key.foregroundColor : UIColor.black
+        ]
+        
+        //In the following two lines you make sure that you apply the style for good
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().standardAppearance = appearance
+        
+        // This property is not present on the UINavigationBarAppearance
+        // object for some reason and you have to leave it til the end
+        UINavigationBar.appearance().tintColor = .black
+    }
+    
     var body: some View {
-        List {
-            ForEach(items) { item in
-                Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-            }
-            .onDelete(perform: deleteItems)
-        }
-        .toolbar {
-            #if os(iOS)
-            EditButton()
-            #endif
-
-            Button(action: addItem) {
-                Label("Add Item", systemImage: "plus")
-            }
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
+        MainPageView()
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
+
+

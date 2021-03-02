@@ -13,10 +13,39 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
+        for i in 0..<10 {
             let newItem = Item(context: viewContext)
             newItem.timestamp = Date()
+            
+            let newCodeCard = CodeCard(context: viewContext)
+            newCodeCard.id = UUID()
+            newCodeCard.text = "Hello \(i)"
+            newCodeCard.locX = 10.0 + Double(i) * 5.0
+            newCodeCard.locY = 10.0 + Double(i) * 5.0
         }
+        
+        for index in 0..<10 {
+            // Instantiate preview Item entities.
+            let newItem = Item(context: viewContext)
+            newItem.timestamp = Date()
+            newItem.id = Int32(index)
+            
+            // Instantiate preview Host entities.
+            let newHost = Host(context: viewContext)
+            newHost.host = "host_\(index)"
+            newHost.name = "Name #\(index)"
+            newHost.password = "password_\(index)"
+            newHost.port = "22"
+            newHost.username = "username_\(index)"
+        }
+        
+        let newHost = Host(context: viewContext)
+        newHost.name = "Laputa"
+        newHost.host = "159.65.78.184"
+        newHost.username = "laputa"
+        newHost.port = "22"
+        newHost.password = "LaputaIsAwesome"
+        
         do {
             try viewContext.save()
         } catch {
