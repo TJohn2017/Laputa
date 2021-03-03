@@ -108,12 +108,10 @@ struct CanvasView: View {
         
         return
             ZStack() {
-                Color.purple.opacity(0.5)
                 ZStack() {
-                    
                     Rectangle()
                         .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
-                        .foregroundColor(Color.white.opacity(0.5))
+                        .foregroundColor(Color.white)
                         .zIndex(-1)
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)

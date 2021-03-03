@@ -33,7 +33,7 @@ struct SessionPageView: View {
                 usePassword:true,
                 password:host!.password!
             )
-
+            
             return AnyView(
                 ZStack {
                     Color.black
@@ -48,66 +48,64 @@ struct SessionPageView: View {
                     SessionPageInputCanvas(canvas: $canvas, showCanvasSheet: $showCanvasSheet)
                 }
             )
-        // return canvas view only
+            // return canvas view only
         } else if (host == nil && canvas != nil) {
             return AnyView(
-                //NavigationView {
-                    GeometryReader { geometry in
-                        ZStack {
+                GeometryReader { geometry in
+                    ZStack {
                         Color.black
                         CanvasView(canvasId: canvas!.id, isSplitView: false, height: geometry.size.height, width: geometry.size.width, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
-                        }
-                        .frame(width: geometry.size.width, height: geometry.size.height)
-                        .navigationBarTitle("\(canvas!.wrappedTitle)")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .navigationBarItems(leading:
-                            Button(action: {
-                                // TODO save canvas
-                            }, label: {
-                                Image(systemName: "square.and.arrow.down.fill")
-                                    .font(.title)
-                            }), trailing: HStack(spacing: 15) {
-                                Button(action: { // pencil
-                                    isDraw = true
-                                    type = .pencil
-                                }) {
-                                    Image(systemName: "pencil")
-                                }
-                                
-                                Button(action: { // pen
-                                    isDraw = true
-                                    type = .pen
-                                }) {
-                                    Image(systemName: "pencil.tip")
-                                }
-                                
-                                Button(action: { // marker
-                                    isDraw = true
-                                    type = .marker
-                                }) {
-                                    Image(systemName: "highlighter")
-                                }
-                                
-                                Button(action: { // eraser
-                                    isDraw = false
-                                    isErase = true
-                                }) {
-                                    Image(systemName: "pencil.slash").font(.title)
-                                }
-                                
-                                Button(action: { // lasso cut tool
-                                    isDraw = false
-                                    isErase = false
-                                }) {
-                                    Image(systemName: "scissors").font(.title)
-                                }
-                                
-                                ColorPicker("", selection: $color)
-                                
-                            }
-                        )
                     }
-                //}.navigationViewStyle(StackNavigationViewStyle())
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .navigationBarTitle("\(canvas!.wrappedTitle)")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationBarItems(leading:
+                        Button(action: {
+                            // TODO save canvas
+                        }, label: {
+                            Image(systemName: "square.and.arrow.down.fill")
+                                .font(.title)
+                        }), trailing: HStack(spacing: 15) {
+                            Button(action: { // pencil
+                                isDraw = true
+                                type = .pencil
+                            }) {
+                                Image(systemName: "pencil")
+                            }
+                            
+                            Button(action: { // pen
+                                isDraw = true
+                                type = .pen
+                            }) {
+                                Image(systemName: "pencil.tip")
+                            }
+                            
+                            Button(action: { // marker
+                                isDraw = true
+                                type = .marker
+                            }) {
+                                Image(systemName: "highlighter")
+                            }
+                            
+                            Button(action: { // eraser
+                                isDraw = false
+                                isErase = true
+                            }) {
+                                Image(systemName: "pencil.slash").font(.title)
+                            }
+                            
+                            Button(action: { // lasso cut tool
+                                isDraw = false
+                                isErase = false
+                            }) {
+                                Image(systemName: "scissors").font(.title)
+                            }
+                            
+                            ColorPicker("", selection: $color)
+                            
+                        }
+                    )
+                }
             )
         } else {
             let host_info = HostInfo(
@@ -119,65 +117,62 @@ struct SessionPageView: View {
             )
             
             return AnyView(
-//                NavigationView {
-                    GeometryReader { geometry in
-                        VStack {
-                            CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
-                                .frame(width: geometry.size.width, height: geometry.size.height / 2)
-//                                .navigationBarTitle("\(canvas!.wrappedTitle)")
-                                .navigationBarTitleDisplayMode(.inline)
-                                .navigationBarItems(leading:
-                                    Button(action: {
-                                        // TODO save canvas
-                                    }, label: {
-                                        Image(systemName: "square.and.arrow.down.fill")
-                                            .font(.title)
-                                    }), trailing: HStack(spacing: 15) {
-                                        Button(action: { // pencil
-                                            isDraw = true
-                                            type = .pencil
-                                        }) {
-                                            Image(systemName: "pencil")
-                                        }
-                                        
-                                        Button(action: { // pen
-                                            isDraw = true
-                                            type = .pen
-                                        }) {
-                                            Image(systemName: "pencil.tip")
-                                        }
-                                        
-                                        Button(action: { // marker
-                                            isDraw = true
-                                            type = .marker
-                                        }) {
-                                            Image(systemName: "highlighter")
-                                        }
-                                        
-                                        Button(action: { // eraser
-                                            isDraw = false
-                                            isErase = true
-                                        }) {
-                                            Image(systemName: "pencil.slash").font(.title)
-                                        }
-                                        
-                                        Button(action: { // lasso cut tool
-                                            isDraw = false
-                                            isErase = false
-                                        }) {
-                                            Image(systemName: "scissors").font(.title)
-                                        }
-                                        
-                                        ColorPicker("", selection: $color)
-                                        
+                GeometryReader { geometry in
+                    VStack {
+                        CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
+                            .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                            .navigationBarTitleDisplayMode(.inline)
+                            .navigationBarItems(leading:
+                                Button(action: {
+                                    // TODO save canvas
+                                }, label: {
+                                    Image(systemName: "square.and.arrow.down.fill")
+                                        .font(.title)
+                                }), trailing: HStack(spacing: 15) {
+                                    Button(action: { // pencil
+                                        isDraw = true
+                                        type = .pencil
+                                    }) {
+                                        Image(systemName: "pencil")
                                     }
-                                )
-                            // Terminal view
-                            SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, canvas: $canvas, modifyTerminalHeight: true)
-                                .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        }
+                                    
+                                    Button(action: { // pen
+                                        isDraw = true
+                                        type = .pen
+                                    }) {
+                                        Image(systemName: "pencil.tip")
+                                    }
+                                    
+                                    Button(action: { // marker
+                                        isDraw = true
+                                        type = .marker
+                                    }) {
+                                        Image(systemName: "highlighter")
+                                    }
+                                    
+                                    Button(action: { // eraser
+                                        isDraw = false
+                                        isErase = true
+                                    }) {
+                                        Image(systemName: "pencil.slash").font(.title)
+                                    }
+                                    
+                                    Button(action: { // lasso cut tool
+                                        isDraw = false
+                                        isErase = false
+                                    }) {
+                                        Image(systemName: "scissors").font(.title)
+                                    }
+                                    
+                                    ColorPicker("", selection: $color)
+                                    
+                                }
+                            )
+                        // Terminal view
+                        SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, canvas: $canvas, modifyTerminalHeight: true)
+                            .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
-//                }.navigationViewStyle(StackNavigationViewStyle())
+                }
             )
         }
     }
@@ -194,13 +189,13 @@ struct SessionPageView_Previews: PreviewProvider {
             let context = PersistenceController.preview.container.viewContext
             
             /*
-            let newHost = Host(context: context)
-            newHost.host = "host_1"
-            newHost.name = "Name #1"
-            newHost.password = "password_1"
-            newHost.port = "22"
-            newHost.username = "username_1"
-            */
+             let newHost = Host(context: context)
+             newHost.host = "host_1"
+             newHost.name = "Name #1"
+             newHost.password = "password_1"
+             newHost.port = "22"
+             newHost.username = "username_1"
+             */
             
             let newHost = Host(context: context)
             newHost.name = "Laputa"
