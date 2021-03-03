@@ -15,6 +15,7 @@ struct SessionPageView: View {
     @State var host: Host?
     @State var canvas: Canvas?
     @State var showCanvasSheet: Bool = false
+    @State var showHostSheet: Bool = false
     // State vars for PKDrawingView
     @State var isDraw = true
     @State var isErase = false
@@ -68,7 +69,7 @@ struct SessionPageView: View {
                         } label : {
                             Image(systemName: "plus").font(.title)
                         })
-                .edgesIgnoringSafeArea(.top)
+                .edgesIgnoringSafeArea(.top)  //TODO not sure why this is here
                 .sheet(
                     isPresented: $showCanvasSheet
                 ) {
@@ -136,7 +137,9 @@ struct SessionPageView: View {
                                     }
                                 }
                                 
-                                Button(action: {}) { // Add terminal to session
+                                Button(action: {
+                                    showHostSheet.toggle()
+                                }) { // Add terminal to session
                                     Label {
                                         Text("Add terminal")
                                     } icon : {
@@ -148,6 +151,11 @@ struct SessionPageView: View {
                             }
                         }
                     )
+                    .sheet(
+                        isPresented: $showHostSheet
+                    ) {
+                        SessionPageInputHost(host: $host, showHostSheet: $showHostSheet)
+                    }
                 }
             )
         } else {
