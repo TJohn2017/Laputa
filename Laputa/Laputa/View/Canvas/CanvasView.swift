@@ -10,6 +10,7 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct CanvasView: View {
     
@@ -17,6 +18,7 @@ struct CanvasView: View {
     @State var canvasScale = CGFloat(2.0)
     @State var maxZoomIn = CGFloat(2.0)
     @State var maxZoomOut = CGFloat(1.0 / 2.0)
+    @State var isInDrawingMode = true
     
     @State var isDrawing = false
     @Environment(\.managedObjectContext) private var viewContext
@@ -28,12 +30,24 @@ struct CanvasView: View {
     var isSplit: Bool
     var canvasHeight: CGFloat
     var canvasWidth: CGFloat
-    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width) {
+    
+    // Binding variables for PKCanvasView
+    @Binding var isDraw : Bool
+    @Binding var isErase : Bool
+    @Binding var color : Color
+    @Binding var type : PKInkingTool.InkType
+    
+    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
         isSplit = isSplitView
         canvasHeight = height!
         canvasWidth = width!
+        self._isDraw = isDraw
+        self._isErase = isErase
+        self._color = color
+        self._type = type
     }
+    
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
     
@@ -77,7 +91,8 @@ struct CanvasView: View {
     }
     
     func toggleDrawing() {
-        self.isDrawing = !self.isDrawing
+        self.isInDrawingMode.toggle()
+        //self.isDrawing = !self.isDrawing
     }
     
     @State var maxZIndex = 0.0
@@ -95,19 +110,16 @@ struct CanvasView: View {
             ZStack() {
                 ZStack() {
                     Rectangle()
-                        .frame(width: sideLength, height: sideLength, alignment: .bottom)
-                        .foregroundColor(.red)
-                        .zIndex(-2)
-                    Rectangle()
                         .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color.white)
                         .zIndex(-1)
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
-                    DrawingView(isDrawing: self.isDrawing)
-                        .allowsHitTesting(isDrawing)
+                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode, canvasId: canvas.id)
+                        .background(Color.white.opacity(0.01))
                         .zIndex(maxZIndex + 1)
+                        .allowsHitTesting(isInDrawingMode)
                 }
                 .scaleEffect(magniScale)
                 .offset(
@@ -115,34 +127,38 @@ struct CanvasView: View {
                     y: viewState.height + panState.height
                 )
                 .gesture(navigate)
-                
+                .onTapGesture (count: 2, perform: {
+                    isInDrawingMode.toggle()
+                })
+               
+
                 Button(action: resetView) {
                     Image(systemName: "scope")
                         .padding(10)
-                        .font(.largeTitle)
+                        .font(.title)
                         .foregroundColor(Color.white)
                         .background(Color.red)
                 }
-                .clipShape(Circle())
+                .cornerRadius(20)
                 .offset(
                     x: canvasWidth / 2 - 70,
                     y: -canvasHeight / 2  + 150
                 )
                 Button(action: toggleDrawing) {
-                    isDrawing ?
-                        Image(systemName: "pencil.slash")
+                    isInDrawingMode ?
+                        Image(systemName: "pencil")
                         .padding()
-                        .font(.largeTitle)
+                        .font(.title)
                         .foregroundColor(Color.white)
                         .background(Color.black)
                         :
-                        Image(systemName: "pencil")
+                        Image(systemName: "pencil.slash")
                         .padding()
-                        .font(.largeTitle)
+                        .font(.title)
                         .foregroundColor(Color.white)
                         .background(Color.black)
                 }
-                .clipShape(Circle())
+                .cornerRadius(20)
                 .offset(
                     x: canvasWidth / 2 - 70,
                     y: -canvasHeight / 2  + 70
@@ -163,13 +179,17 @@ struct Canvas_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
+        @State var isDraw = true
+        @State var isErase = false
+        @State var color : Color = Color.black
+        @State var type : PKInkingTool.InkType = .pencil
         var body: some View {
             let context = PersistenceController.preview.container.viewContext
             let newCanvas = Canvas(context: context)
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasView(canvasId: newCanvas.id, isSplitView: false).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasView(canvasId: newCanvas.id, isSplitView: false, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }
