@@ -13,14 +13,10 @@ import CoreData
 
 class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var host: HostInfo
-    
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
-    var addPairButton: UIButton
     var outputCatchButton: UIButton
-    
     var modifyTerminalHeight: Bool
-    weak var delegate: SwiftUITerminalDelegate?
     var previous_height : CGFloat?
     
     // UI Canvas associated with this terminal. We can send our recent output to the canvas.
@@ -30,7 +26,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     init(host: HostInfo, modifyTerminalHeight: Bool, canvas: Canvas? = nil, viewContext: NSManagedObjectContext? = nil) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
-        self.addPairButton = UIButton(type: .custom)
         self.outputCatchButton = UIButton(type: .custom)
         self.modifyTerminalHeight = modifyTerminalHeight
         self.canvas = canvas
@@ -48,10 +43,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // Makes the terminal gui frame
     func makeFrame (keyboardDelta: CGFloat, keyboardWillHide: Bool) -> CGRect
     {
-//        print ("LOG: frame height: \(view.frame.height), keyboard delta: \(keyboardDelta)")
-//        print ("LOG: Making frame height: \(view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta /*- 20*/)   width: \(view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right)   x,y : (\(view.safeAreaInsets.left), \(view.safeAreaInsets.top))")
-//        print ("LOG: view.safeAreaInsets.bottom: \(view.safeAreaInsets.bottom)   top: \(view.safeAreaInsets.top)")
-        
         var view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
         if (self.modifyTerminalHeight && keyboardDelta > 0) { // set height when keyboard shows up to fill the screen til the keyboard
             view_height += keyboardDelta*0.53
@@ -156,8 +147,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 120, width: self.view.frame.width/15, height: self.view.frame.width/15)
             if (self.modifyTerminalHeight) {
                 self.outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width/15, height: self.view.frame.width/15)
-            } else {
-                self.addPairButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width / 15, height: self.view.frame.width/15)
             }
         }, completion: nil)
 
@@ -181,11 +170,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         view.addSubview(t)
         
         // We don't have a canvas, so show the addPair button
-        if (!self.modifyTerminalHeight) {
-            initializeAddPairButton(t: t)
-            view.addSubview(addPairButton)
-        }
-        else { // We have a canvas, so show the output catching button
+        if (self.modifyTerminalHeight) {
+            // We have a canvas, so show the output catching button
             initializeOutputCatchButton(t: t)
             view.addSubview(outputCatchButton)
         }
@@ -194,28 +180,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         initializeKeyboardButton(t: t)
         view.addSubview(keyboardButton)
         self.terminalView?.becomeFirstResponder()
-    }
-    
-    
-    /*override func viewWillAppear(_ animated: Bool) {
-        CGFloat fixedWidth = terminalView?.frame.width
-        
-    }*/
-    
-    // Setup the add pair button UI and behavior
-    private func initializeAddPairButton(t: TerminalView) {
-        addPairButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width / 15, height: t.frame.width/15)
-        addPairButton.layer.cornerRadius = 15
-        addPairButton.layer.masksToBounds = true
-        addPairButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        addPairButton.backgroundColor = UIColor.white
-        addPairButton.addTarget(self, action: #selector(showCanvasSheet), for: .touchUpInside)
-    }
-    
-    // This function tells the delegate to present the canvas sheet
-    @objc
-    func showCanvasSheet() {
-        self.delegate?.showCanvasSheet(self, showCanvas: true)
     }
     
     // Setup the ketboard button UI and behavior
@@ -287,7 +251,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 // SwiftUI Terminal Object
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @State var host: HostInfo
-    @Binding var showCanvasSheet: Bool
     @Binding var canvas: Canvas?
     @Environment(\.managedObjectContext) private var viewContext
     
@@ -296,7 +259,6 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
         let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
-        viewController.delegate = context.coordinator
         return viewController
     }
     
@@ -305,28 +267,17 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     
     // Coordinator will be used to share the canvas sheet toggle
     // variable with our parent views
-    class Coordinator: NSObject, SwiftUITerminalDelegate {
+    class Coordinator: NSObject {
         var parent: SwiftUITerminal
-        let showCanvasSheetBinding: Binding<Bool>
         
-        init(parent: SwiftUITerminal, showCanvasSheetBinding: Binding<Bool>) {
-            self.showCanvasSheetBinding = showCanvasSheetBinding
+        init(parent: SwiftUITerminal) {
             self.parent = parent
-        }
-        
-        // This function allows us to propagate a toggled value through our view controller back to our parent
-        func showCanvasSheet(_ viewController: SSHTerminalViewController, showCanvas: Bool) {
-            showCanvasSheetBinding.wrappedValue = showCanvas
         }
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self, showCanvasSheetBinding: $showCanvasSheet)
+        Coordinator(parent: self)
     }
-}
-
-protocol SwiftUITerminalDelegate: AnyObject {
-    func showCanvasSheet(_ viewController: SSHTerminalViewController, showCanvas: Bool)
 }
 
 struct SwiftUITerminal_Preview: PreviewProvider {
@@ -335,13 +286,12 @@ struct SwiftUITerminal_Preview: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State var showCanvasSheet = false
         @State var canvas: Canvas? = nil
         
         var body: some View {
             let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
 
-            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet, canvas: $canvas, modifyTerminalHeight: false)
+            return SwiftUITerminal(host: host, canvas: $canvas, modifyTerminalHeight: false)
         }
     }
 }
