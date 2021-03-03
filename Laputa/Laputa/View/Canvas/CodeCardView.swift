@@ -124,12 +124,15 @@ struct CodeCardView: View {
                         .gesture(dismissDelete)
                 }
                 HStack() {
-                    Text(codeCard.wrappedText)
+//                    Text(codeCard.wrappedText)
+//                        .padding(20)
+//                        .border(self.deleting ? .red : Color.white)
+//                        .foregroundColor(.white)
+//                        .background(Color(red: 0.2, green: 0.2, blue: 0.2, opacity: 1.0))
+//                        .font(.custom("Menlo-Regular", size: 12))
+                    CodeCardTerminal(content: codeCard.wrappedText)
                         .padding(20)
                         .border(self.deleting ? .red : Color.white)
-                        .foregroundColor(.white)
-                        .background(Color(red: 0.2, green: 0.2, blue: 0.2, opacity: 1.0))
-                        .font(.custom("Menlo-Regular", size: 12))
                     if self.deleting {
                         Button(action: {
                             viewContext.delete(codeCard)
