@@ -21,6 +21,7 @@ struct SessionPageView: View {
     @State var color : Color = Color.black
     @State var type : PKInkingTool.InkType = .pencil
     
+    
     // TODO: incorporate Canvas + Terminal Views.
     var body: some View {
         // return terminal view only
@@ -37,10 +38,36 @@ struct SessionPageView: View {
             return AnyView(
                 ZStack {
                     Color.black
-                    SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, canvas: $canvas, modifyTerminalHeight: false)
+                    SwiftUITerminal(host: host_info, canvas: $canvas, modifyTerminalHeight: false)
                 }
                 .navigationBarTitle("\(host!.name!)")
                 .navigationBarTitleDisplayMode(.inline)
+                .navigationBarItems(trailing:
+                        Menu {
+                            Button(action: {
+                                // TODO stop this if we already added a canvas
+                                showCanvasSheet.toggle()
+                            }) { // Add canvas to session
+                                Label {
+                                    Text("Add canvas")
+                                } icon : {
+                                    Image(systemName: "rectangle")
+                                }
+                            }
+                            
+                            Button(action: {
+                                // TODO toggle show terminal sheet
+                                // can only be implemented after multiple terminals is implemented
+                            }) { // Add terminal to session
+                                Label {
+                                    Text("Add terminal")
+                                } icon : {
+                                    Image(systemName: "greaterthan.square.fill")
+                                }
+                            }
+                        } label : {
+                            Image(systemName: "plus").font(.title)
+                        })
                 .edgesIgnoringSafeArea(.top)
                 .sheet(
                     isPresented: $showCanvasSheet
@@ -59,13 +86,7 @@ struct SessionPageView: View {
                     .frame(width: geometry.size.width, height: geometry.size.height)
                     .navigationBarTitle("\(canvas!.wrappedTitle)")
                     .navigationBarTitleDisplayMode(.inline)
-                    .navigationBarItems(leading:
-                        Button(action: {
-                            // TODO save canvas
-                        }, label: {
-                            Image(systemName: "square.and.arrow.down.fill")
-                                .font(.title)
-                        }), trailing: HStack(spacing: 15) {
+                    .navigationBarItems(trailing: HStack(spacing: 15) {
                             Button(action: { // pencil
                                 isDraw = true
                                 type = .pencil
@@ -103,6 +124,28 @@ struct SessionPageView: View {
                             
                             ColorPicker("", selection: $color)
                             
+                            Menu {
+                                // TODO implement add canvas button after multiple canvases is implemented
+                                Button(action: {
+
+                                }) { // Add canvas to session
+                                    Label {
+                                        Text("Add canvas")
+                                    } icon : {
+                                        Image(systemName: "rectangle")
+                                    }
+                                }
+                                
+                                Button(action: {}) { // Add terminal to session
+                                    Label {
+                                        Text("Add terminal")
+                                    } icon : {
+                                        Image(systemName: "greaterthan.square.fill")
+                                    }
+                                }
+                            } label : {
+                                Image(systemName: "plus").font(.title)
+                            }
                         }
                     )
                 }
@@ -121,14 +164,9 @@ struct SessionPageView: View {
                     VStack {
                         CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                            .navigationBarTitle("\(host!.name!) / \(canvas!.wrappedTitle)")
                             .navigationBarTitleDisplayMode(.inline)
-                            .navigationBarItems(leading:
-                                Button(action: {
-                                    // TODO save canvas
-                                }, label: {
-                                    Image(systemName: "square.and.arrow.down.fill")
-                                        .font(.title)
-                                }), trailing: HStack(spacing: 15) {
+                            .navigationBarItems(trailing: HStack(spacing: 15) {
                                     Button(action: { // pencil
                                         isDraw = true
                                         type = .pencil
@@ -166,10 +204,34 @@ struct SessionPageView: View {
                                     
                                     ColorPicker("", selection: $color)
                                     
+                                    Menu {
+                                        // TODO implement add canvas button after multiple canvases is implemented
+                                        Button(action: {
+                                            
+                                        }) { // Add canvas to session
+                                            Label {
+                                                Text("Add canvas")
+                                            } icon : {
+                                                Image(systemName: "rectangle")
+                                            }
+                                        }
+                                        
+                                        // TODO implement add terminal button after multiple terminals is implemented
+                                        Button(action: {}) { // Add terminal to session
+                                            Label {
+                                                Text("Add terminal")
+                                            } icon : {
+                                                Image(systemName: "greaterthan.square.fill")
+                                            }
+                                        }
+                                    } label : {
+                                        Image(systemName: "plus").font(.title)
+                                    }
+                                    
                                 }
                             )
                         // Terminal view
-                        SwiftUITerminal(host: host_info, showCanvasSheet: $showCanvasSheet, canvas: $canvas, modifyTerminalHeight: true)
+                        SwiftUITerminal(host: host_info, canvas: $canvas, modifyTerminalHeight: true)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
                 }
@@ -177,6 +239,8 @@ struct SessionPageView: View {
         }
     }
 }
+
+
 
 struct SessionPageView_Previews: PreviewProvider {
     static var previews: some View {
