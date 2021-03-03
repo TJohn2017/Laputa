@@ -17,14 +17,12 @@ struct CanvasView: View {
     // sets max canvas size to 2 * side length
     @State var canvasScale = CGFloat(2.0)
     @State var maxZoomIn = CGFloat(2.0)
-    @State var maxZoomOut = CGFloat(1.0 / 2.0)
+    // allows user to zoom out to see entire canvas ( 1 / canvasScale)
+    // and then a little more ( 0.2 )
+    @State var maxZoomOut = CGFloat(1.0 / 2.0) - 0.2
     @State var isInDrawingMode = true
     
-    @State var isDrawing = false
     @Environment(\.managedObjectContext) private var viewContext
-    
-    @Environment(\.verticalSizeClass) var vSizeClass
-    @Environment(\.horizontalSizeClass) var hSizeClass
     
     var fetchRequest: FetchRequest<Canvas>
     var isSplit: Bool
@@ -54,13 +52,16 @@ struct CanvasView: View {
     
     // gesture for pinching to zoom in/out
     @State var magniScale = CGFloat(1.0)
-    @GestureState var magnifyBy = CGFloat(1.0)
     var magnification: some Gesture {
         MagnificationGesture()
             .onChanged { value in
+                // smaller = less sensitive, larger = more
+                let sensitivity = CGFloat(0.05)
                 // magni + currentState - 1.0 is because
                 // maginfication gesture resets to scale 1.0 when you restart
-                magniScale = max(min(magniScale + value - 1.0, maxZoomIn), maxZoomOut)
+                let magni = (value - 1.0) * sensitivity + magniScale
+                // clamp it
+                magniScale = max(min(magni, maxZoomIn), maxZoomOut)
             }
     }
     
@@ -85,6 +86,8 @@ struct CanvasView: View {
         pan.exclusively(before: magnification)
     }
     
+    // In case the user gets lost when navigating around,
+    // this will reset to their initial view.
     func resetView() {
         magniScale = 1.0
         viewState = CGSize.zero
@@ -92,9 +95,10 @@ struct CanvasView: View {
     
     func toggleDrawing() {
         self.isInDrawingMode.toggle()
-        //self.isDrawing = !self.isDrawing
     }
     
+    // Since cards are returned sorted by zIndex, this gets
+    // the highest zIndex from all cards.
     @State var maxZIndex = 0.0
     func setMaxZIndex() {
         if !cards.isEmpty {
@@ -104,14 +108,16 @@ struct CanvasView: View {
     
     var body: some View {
         
-        let sideLength = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) * canvasScale
+        let sideLength = max(canvasWidth, canvasHeight) * canvasScale
         
         return
             ZStack() {
                 ZStack() {
+                    // White canvas with a thin border to show edges.
+                    // Square to avoid losing info when rotated.
                     Rectangle()
-                        .frame(width: sideLength - 2, height: sideLength - 2, alignment: .center)
-                        .foregroundColor(Color.white)
+                        .frame(width: sideLength, height: sideLength, alignment: .center)
+                        .foregroundColor(.white)
                         .zIndex(-1)
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
@@ -165,7 +171,6 @@ struct CanvasView: View {
                 )
             }
             .onAppear(perform: setMaxZIndex)
-            .coordinateSpace(name: "Global")
     }
 }
 
