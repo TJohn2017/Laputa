@@ -66,7 +66,7 @@ class SSHConnection {
         let letter = String(bytes: data, encoding: .utf8)
         if (letter != nil) {
             let new_data = Data(letter!.utf8)
-            try session.channel.write(new_data)
+            try session.channel.write(new_data) // TODO TJ should this be in the sync dispatch queue?
         }
     }
     

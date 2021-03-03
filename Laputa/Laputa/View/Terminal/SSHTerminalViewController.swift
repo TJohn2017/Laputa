@@ -35,9 +35,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         self.modifyTerminalHeight = modifyTerminalHeight
         self.canvas = canvas
         self.viewContext = viewContext
-        if (canvas != nil) {
-            print("CANVAS: We have a canvas")
-        }
         super.init(nibName:nil, bundle:nil)
     }
     
