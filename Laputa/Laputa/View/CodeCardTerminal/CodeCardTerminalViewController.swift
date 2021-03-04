@@ -34,8 +34,8 @@ class CodeCardTerminalViewController: UIViewController {
         return CGRect (
             x: view.safeAreaInsets.left,
             y: view.safeAreaInsets.top,
-            width: 100,
-            height: 100)
+            width: 500,
+            height: 500)
     }
     
     
@@ -43,6 +43,17 @@ class CodeCardTerminalViewController: UIViewController {
     func createDummyTerminal() -> CodeCardTerminalView? {
         let tv = CodeCardTerminalView(content: contentString, frame: makeFrame())
         return tv
+    }
+    
+    override func loadView() {
+        super.loadView()
+        self.view.frame = makeFrame()
+//        self.view.frame = CGRect(
+//            x: self.view.bounds.origin.x,
+//            y: self.view.bounds.origin.y,
+//            width: self.view.bounds.width * 0.2,
+//            height: self.view.bounds.height * 0.2
+//        )
     }
     
     // Loads terminal gui into the view

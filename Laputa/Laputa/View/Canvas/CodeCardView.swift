@@ -154,6 +154,7 @@ struct CodeCardView: View {
                 .gesture(self.deleting ? nil : drag)
                 .shadow(radius: dragState.isDragging ? 8 : 0)
                 .onAppear(perform: setInitialOffset)
+                .frame(width: 500, height: 500, alignment: .center)
             }
             .zIndex(codeCard.zIndex)
     }

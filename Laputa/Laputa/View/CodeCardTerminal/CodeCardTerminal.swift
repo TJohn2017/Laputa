@@ -21,7 +21,7 @@ public class CodeCardTerminalView: TerminalView, TerminalViewDelegate {
         
         // Resize the terminal to take only the amount of space that is required
         self.setOptimalSize(content: content)
-        
+        print("content: \(content)")
         // Give it the static content
         self.feed(text: content)
     }
