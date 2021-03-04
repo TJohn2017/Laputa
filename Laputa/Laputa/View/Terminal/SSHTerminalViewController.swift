@@ -247,7 +247,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
         if (lastResponse != nil && canvas != nil && viewContext != nil) {
             print("We are attempting to create a card")
-            print("last response: \(lastResponse)")
+            print("last response: \(lastResponse ?? "")")
             let newCard = CodeCard(context: viewContext!)
             newCard.id = UUID()
             newCard.origin = canvas
