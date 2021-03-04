@@ -20,8 +20,12 @@ struct PKDrawingView: View {
     @Binding var isInDrawingMode : Bool
     var canvasId : UUID
     
+    // passed down so that when it is toggled with the back button,
+    // the view will update and the current drawing will be saved
+    @Binding var savingDrawing: Bool
+    
     var body: some View {
-        PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color, isInDrawingMode: $isInDrawingMode, canvasId: canvasId)
+        PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color, isInDrawingMode: $isInDrawingMode, canvasId: canvasId, savingDrawing: $savingDrawing)
     }
 }
 
@@ -37,8 +41,10 @@ struct PencilKitView : UIViewRepresentable {
     @Binding var color : Color
     @Binding var isInDrawingMode : Bool
     
+    @Binding var savingDrawing: Bool
+    
     var fetchRequest: FetchRequest<Canvas>
-    init(canvas: Binding<PKCanvasView>, isDraw: Binding<Bool>, isErase: Binding<Bool>, type: Binding<PKInkingTool.InkType>, color: Binding<Color>, isInDrawingMode: Binding<Bool>, canvasId: UUID) {
+    init(canvas: Binding<PKCanvasView>, isDraw: Binding<Bool>, isErase: Binding<Bool>, type: Binding<PKInkingTool.InkType>, color: Binding<Color>, isInDrawingMode: Binding<Bool>, canvasId: UUID, savingDrawing: Binding<Bool>) {
         
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
         
@@ -48,6 +54,7 @@ struct PencilKitView : UIViewRepresentable {
         self._color = color
         self._type = type
         self._isInDrawingMode = isInDrawingMode
+        self._savingDrawing = savingDrawing
     }
     var canvasEntity: Canvas { fetchRequest.wrappedValue[0] }
     
@@ -60,6 +67,7 @@ struct PencilKitView : UIViewRepresentable {
     
     
     func makeUIView(context: Context) -> PKCanvasView {
+        // try pulling saved drawings from CoreData
         if (canvasEntity.drawingData != nil) {
             do {
                 try canvas.drawing = PKDrawing.init(data: canvasEntity.drawingData!)
@@ -68,7 +76,7 @@ struct PencilKitView : UIViewRepresentable {
             }
         }
         
-        canvas.backgroundColor = .blue
+        canvas.backgroundColor = .clear
         canvas.isOpaque = false
         
         if (isDraw) {
@@ -78,14 +86,11 @@ struct PencilKitView : UIViewRepresentable {
         } else { // isCut
             canvas.tool =  cut
         }
-        canvas.backgroundColor = .clear
-        canvas.isOpaque = false
+
         return canvas
     }
     
     func updateUIView(_ uiView: PKCanvasView, context: Context) {
-        canvas.backgroundColor = .clear
-        canvas.isOpaque = false
         // update tool whenever main view updates
         if (isDraw) {
             uiView.tool = ink
@@ -95,8 +100,7 @@ struct PencilKitView : UIViewRepresentable {
             uiView.tool =  cut
         }
         
-        canvasEntity.drawingData = uiView.drawing.dataRepresentation()
-        
+        // save updated drawing in CoreData
         viewContext.performAndWait {
             canvasEntity.drawingData = uiView.drawing.dataRepresentation()
             try? viewContext.save()

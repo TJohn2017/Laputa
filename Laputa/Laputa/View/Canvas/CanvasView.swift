@@ -35,7 +35,11 @@ struct CanvasView: View {
     @Binding var color : Color
     @Binding var type : PKInkingTool.InkType
     
-    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>) {
+    // passed into PKDrawingView so that when it is toggled by the
+    // back button, the view will update and save the current drawing
+    @Binding var savingDrawing: Bool
+    
+    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>, savingDrawing: Binding<Bool>) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
         isSplit = isSplitView
         canvasHeight = height!
@@ -44,6 +48,7 @@ struct CanvasView: View {
         self._isErase = isErase
         self._color = color
         self._type = type
+        self._savingDrawing = savingDrawing
     }
     
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
@@ -122,12 +127,14 @@ struct CanvasView: View {
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
-                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode, canvasId: canvas.id)
+                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode, canvasId: canvas.id, savingDrawing: $savingDrawing)
                         .background(Color.white.opacity(0.01))
                         .zIndex(maxZIndex + 1)
                         .allowsHitTesting(isInDrawingMode)
                 }
-                .scaleEffect(magniScale)
+                // if we're saving the drawing/exiting, zoom out all the way so that
+                // the large canvas overhang doesn't mess up the exit animation
+                .scaleEffect(savingDrawing ? maxZoomOut : magniScale)
                 .offset(
                     x: viewState.width + panState.width,
                     y: viewState.height + panState.height
@@ -188,13 +195,15 @@ struct Canvas_Previews: PreviewProvider {
         @State var isErase = false
         @State var color : Color = Color.black
         @State var type : PKInkingTool.InkType = .pencil
+        @State var savingDrawing: Bool = false
+        
         var body: some View {
             let context = PersistenceController.preview.container.viewContext
             let newCanvas = Canvas(context: context)
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasView(canvasId: newCanvas.id, isSplitView: false, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasView(canvasId: newCanvas.id, isSplitView: false, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }

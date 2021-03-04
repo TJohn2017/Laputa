@@ -22,6 +22,11 @@ struct SessionPageView: View {
     @State var color : Color = Color.black
     @State var type : PKInkingTool.InkType = .pencil
     
+    // passed into CanvasView/PKDrawingView so that when it is toggled by the
+    // back button, the view will update and save the current drawing
+    @State var savingDrawing = false
+    
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     // TODO: incorporate Canvas + Terminal Views.
     var body: some View {
@@ -43,7 +48,8 @@ struct SessionPageView: View {
                 }
                 .navigationBarTitle("\(host!.name!)")
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(trailing:
+                .navigationBarItems(
+                    trailing:
                         Menu {
                             Button(action: {
                                 // TODO stop this if we already added a canvas
@@ -80,14 +86,25 @@ struct SessionPageView: View {
         } else if (host == nil && canvas != nil) {
             return AnyView(
                 GeometryReader { geometry in
+                    // if we are saving the drawing / exiting, change the background to white
+                    // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
+                    savingDrawing ? Color.white : Color.black
                     ZStack {
-                        Color.black
-                        CanvasView(canvasId: canvas!.id, isSplitView: false, height: geometry.size.height, width: geometry.size.width, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
+                        CanvasView(canvasId: canvas!.id, isSplitView: false, height: geometry.size.height, width: geometry.size.width, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
                     }
                     .frame(width: geometry.size.width, height: geometry.size.height)
                     .navigationBarTitle("\(canvas!.wrappedTitle)")
                     .navigationBarTitleDisplayMode(.inline)
-                    .navigationBarItems(trailing: HStack(spacing: 15) {
+                    .navigationBarBackButtonHidden(true)
+                    .navigationBarItems(
+                        leading:
+                            Button(action: {
+                                savingDrawing.toggle()
+                                self.presentationMode.wrappedValue.dismiss()
+                            }) {
+                                Image(systemName: "chevron.left").font(.title2)
+                            },
+                        trailing: HStack(spacing: 15) {
                             Button(action: { // pencil
                                 isDraw = true
                                 type = .pencil
@@ -128,7 +145,7 @@ struct SessionPageView: View {
                             Menu {
                                 // TODO implement add canvas button after multiple canvases is implemented
                                 Button(action: {
-
+                                    
                                 }) { // Add canvas to session
                                     Label {
                                         Text("Add canvas")
@@ -170,11 +187,20 @@ struct SessionPageView: View {
             return AnyView(
                 GeometryReader { geometry in
                     VStack {
-                        CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
+                        CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                             .navigationBarTitle("\(host!.name!) / \(canvas!.wrappedTitle)")
                             .navigationBarTitleDisplayMode(.inline)
-                            .navigationBarItems(trailing: HStack(spacing: 15) {
+                            .navigationBarBackButtonHidden(true)
+                            .navigationBarItems(
+                                leading:
+                                    Button(action: {
+                                        savingDrawing.toggle()
+                                        self.presentationMode.wrappedValue.dismiss()
+                                    }) {
+                                        Image(systemName: "chevron.left").font(.title2)
+                                    },
+                                trailing: HStack(spacing: 15) {
                                     Button(action: { // pencil
                                         isDraw = true
                                         type = .pencil
