@@ -24,13 +24,18 @@ class CodeCardTerminalViewController: UIViewController {
     // Makes the terminal gui frame
     func makeFrame () -> CGRect
     {
-        let view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top
+//        let view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top
         
+//        return CGRect (
+//            x: view.safeAreaInsets.left,
+//            y: view.safeAreaInsets.top,
+//            width: view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right,
+//            height: view_height)
         return CGRect (
             x: view.safeAreaInsets.left,
             y: view.safeAreaInsets.top,
-            width: view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right,
-            height: view_height)
+            width: 100,
+            height: 100)
     }
     
     
