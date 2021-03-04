@@ -23,6 +23,10 @@ class SSHConnection {
         session = NMSSHSession(host: host, andUsername: andUsername)
     }
     
+    deinit {
+        disconnect()
+    }
+    
     // TODO TJ comment
     func connect(withAuth:Bool, password: String?) throws {
         if (session.connect()) {

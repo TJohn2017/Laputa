@@ -125,7 +125,6 @@ struct CodeCardView: View {
                 }
                 HStack() {
                     CodeCardTerminal(content: codeCard.wrappedText)
-                        .padding(20)
                         .border(self.deleting ? .red : Color.white)
                     if self.deleting {
                         Button(action: {
