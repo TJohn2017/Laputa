@@ -20,6 +20,8 @@ struct MainPageView: View {
     @State private var displayHosts: Bool = true
     @State private var showingInputSheet: Bool = false
     @State private var startSession: Bool = false
+    @State var selectedCanvas: Canvas? = nil
+    @State var selectedHost: Host? = nil
     
     var body: some View {
         NavigationView {
@@ -34,7 +36,10 @@ struct MainPageView: View {
                     
                     Spacer()
                     
-                    MainPageList(displayHosts: $displayHosts)
+                    MainPageList(displayHosts: $displayHosts,
+                                 showingInputSheet: $showingInputSheet,
+                                 selectedHost: $selectedHost,
+                                 selectedCanvas: $selectedCanvas)
                     
                     Spacer()
                     
@@ -54,11 +59,15 @@ struct MainPageView: View {
                 onDismiss: {
                     // Execute if Input is completed.
                     // startSession.toggle()
+                    selectedHost = nil
+                    selectedCanvas = nil
                 }
             ) {
                 MainPageInputView(
                     displayHosts: $displayHosts,
-                    showingInputSheet: $showingInputSheet
+                    showingInputSheet: $showingInputSheet,
+                    selectedHost: $selectedHost,
+                    selectedCanvas: $selectedCanvas
                 )
             }
         }

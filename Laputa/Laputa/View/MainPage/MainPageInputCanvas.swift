@@ -11,24 +11,37 @@ struct MainPageInputCanvas: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @Binding var showingInputSheet: Bool
+    // if this is not nil, we are editing an existing canvas
+    @Binding var selectedCanvas: Canvas?
 
     @State var name: String = ""
     
+    // fill form with existing canvas information if there is one
+    func populate() {
+        if self.selectedCanvas != nil {
+            name = selectedCanvas!.title!
+        }
+    }
+    
     func saveCanvas() {
         guard self.name != "" else {return}
-        let newCanvas = Canvas(context: viewContext)
-        newCanvas.id = UUID()
-        newCanvas.dateCreated = Date()
-        newCanvas.title = name
         
+        // creating a new canvas
+        if selectedCanvas == nil {
+            selectedCanvas = Canvas(context: viewContext)
+            selectedCanvas!.id = UUID()
+            selectedCanvas!.dateCreated = Date()
+        }
+        selectedCanvas!.title = name
+        
+        // Save the created canvas
         do {
             try viewContext.save()
+            print("Canvas w/ name: \(self.name) saved.")
+            showingInputSheet.toggle()
         } catch {
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            print(error.localizedDescription)
         }
-        
-        showingInputSheet = false
     }
     
     var body: some View {
@@ -41,9 +54,10 @@ struct MainPageInputCanvas: View {
             }
             
             Button(action: saveCanvas) {
-                Text("Add Canvas")
+                Text(selectedCanvas == nil ? "Add Canvas" : "Save Changes")
             }
         }
+        .onAppear(perform: populate)
     }
 }
 
@@ -58,7 +72,8 @@ struct MainPageInputCanvas_Previews: PreviewProvider {
         var body: some View {
             
             return MainPageInputCanvas(
-                showingInputSheet: $showingInputSheet
+                showingInputSheet: $showingInputSheet,
+                selectedCanvas: .constant(nil)
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
