@@ -30,6 +30,7 @@
 		584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */; };
 		584E47F325E209AF005EDC0E /* SessionPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47F225E209AF005EDC0E /* SessionPageView.swift */; };
 		585B34C825E370040095DD2C /* SessionPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */; };
+		75463D8725F2067300B77D40 /* SessionPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75463D8625F2067300B77D40 /* SessionPageInputHost.swift */; };
 		75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */; };
 		759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */; };
 		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
@@ -95,6 +96,7 @@
 		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
 		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
 		585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageInputCanvas.swift; sourceTree = "<group>"; };
+		75463D8625F2067300B77D40 /* SessionPageInputHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionPageInputHost.swift; sourceTree = "<group>"; };
 		75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilKitDrawingView.swift; sourceTree = "<group>"; };
 		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/Terminal/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
 		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
@@ -282,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				584E47F225E209AF005EDC0E /* SessionPageView.swift */,
+				75463D8625F2067300B77D40 /* SessionPageInputHost.swift */,
 				585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */,
 			);
 			path = SessionPage;
@@ -566,6 +569,7 @@
 				9CEDEA1625E07FCE00F0E380 /* CodeCard+CoreDataClass.swift in Sources */,
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
+				75463D8725F2067300B77D40 /* SessionPageInputHost.swift in Sources */,
 				1A64C89525CA2EE80082FEA7 /* Persistence.swift in Sources */,
 				1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */,
 				75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */,
