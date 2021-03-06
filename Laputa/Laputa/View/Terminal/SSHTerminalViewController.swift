@@ -13,14 +13,10 @@ import CoreData
 
 class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var host: HostInfo
-    
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
-    var addPairButton: UIButton
     var outputCatchButton: UIButton
-    
     var modifyTerminalHeight: Bool
-    weak var delegate: SwiftUITerminalDelegate?
     var previous_height : CGFloat?
     
     var connected: Bool
@@ -33,7 +29,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     init(host: HostInfo, modifyTerminalHeight: Bool, canvas: Canvas? = nil, viewContext: NSManagedObjectContext? = nil) {
         self.host = host
         self.keyboardButton = UIButton(type: .custom)
-        self.addPairButton = UIButton(type: .custom)
         self.outputCatchButton = UIButton(type: .custom)
         self.modifyTerminalHeight = modifyTerminalHeight
         self.canvas = canvas
@@ -157,12 +152,12 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 // reset buttons in terminal view
                 self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 120, width: self.view.frame.width/15, height: self.view.frame.width/15)
                 self.addPairButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width / 15, height: self.view.frame.width/15)
+                if (self.modifyTerminalHeight) {
+                    self.outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width/15, height: self.view.frame.width/15)
+                }
             } else {
                 self.errorView.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
-            }
-
-            
-            
+            }     
         }, completion: nil)
     }
     
@@ -315,7 +310,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @Environment(\.managedObjectContext) private var viewContext
     @State var host: HostInfo
-    @Binding var showCanvasSheet: Bool
     @Binding var canvas: Canvas?
     @State var modifyTerminalHeight: Bool
     
@@ -323,7 +317,6 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
         let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
-        viewController.delegate = context.coordinator
         return viewController
     }
     
@@ -332,32 +325,21 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     
     // Coordinator will be used to share the canvas sheet toggle
     // variable with our parent views
-    class Coordinator: NSObject, SwiftUITerminalDelegate {
+    class Coordinator: NSObject {
         var parent: SwiftUITerminal
-        let showCanvasSheetBinding: Binding<Bool>
         
-        init(parent: SwiftUITerminal, showCanvasSheetBinding: Binding<Bool>) {
-            self.showCanvasSheetBinding = showCanvasSheetBinding
+        init(parent: SwiftUITerminal) {
             self.parent = parent
-        }
-        
-        // This function allows us to propagate a toggled value through our view controller back to our parent
-        func showCanvasSheet(_ viewController: SSHTerminalViewController, showCanvas: Bool) {
-            showCanvasSheetBinding.wrappedValue = showCanvas
         }
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self, showCanvasSheetBinding: $showCanvasSheet)
+        Coordinator(parent: self)
     }
     
     static func dismantleUIViewController(_ uiViewController: SSHTerminalViewController, coordinator: Coordinator) {
         uiViewController.terminalView?.ssh_session.disconnect()
     }
-}
-
-protocol SwiftUITerminalDelegate: AnyObject {
-    func showCanvasSheet(_ viewController: SSHTerminalViewController, showCanvas: Bool)
 }
 
 struct SwiftUITerminal_Preview: PreviewProvider {
@@ -366,13 +348,12 @@ struct SwiftUITerminal_Preview: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State var showCanvasSheet = false
         @State var canvas: Canvas? = nil
         
         var body: some View {
             let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
 
-            return SwiftUITerminal(host: host, showCanvasSheet: $showCanvasSheet, canvas: $canvas, modifyTerminalHeight: false)
+            return SwiftUITerminal(host: host, canvas: $canvas, modifyTerminalHeight: false)
         }
     }
 }

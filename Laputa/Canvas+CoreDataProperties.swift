@@ -17,9 +17,10 @@ extension Canvas {
     }
 
     @NSManaged public var id: UUID
-    @NSManaged public var dateCreated: Date?
+    @NSManaged public var dateCreated: Date
     @NSManaged public var title: String?
     @NSManaged public var cards: NSSet?
+    @NSManaged public var drawingData: Data?
     
     public var wrappedTitle: String {
         title ?? "Untitled canvas"

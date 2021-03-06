@@ -30,6 +30,8 @@
 		584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */; };
 		584E47F325E209AF005EDC0E /* SessionPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47F225E209AF005EDC0E /* SessionPageView.swift */; };
 		585B34C825E370040095DD2C /* SessionPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */; };
+		75463D8725F2067300B77D40 /* SessionPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75463D8625F2067300B77D40 /* SessionPageInputHost.swift */; };
+		75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */; };
 		759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */; };
 		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
 		759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */; };
@@ -40,13 +42,6 @@
 		9CEDEA1825E07FCE00F0E380 /* Canvas+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */; };
 		9CEDEA1925E07FCE00F0E380 /* Canvas+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */; };
 		9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */; };
-		9CEDEB7A25E2404500F0E380 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7925E2404500F0E380 /* DrawingView.swift */; };
-		9CEDEB7F25E2408A00F0E380 /* DrawingPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7E25E2408A00F0E380 /* DrawingPad.swift */; };
-		9CEDEB8425E2413D00F0E380 /* Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8325E2413D00F0E380 /* Drawing.swift */; };
-		9CEDEB8925E2417700F0E380 /* DrawingControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8825E2417700F0E380 /* DrawingControls.swift */; };
-		9CEDEB8E25E2419F00F0E380 /* ColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */; };
-		9CEDEB9325E241C500F0E380 /* ColorProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9225E241C500F0E380 /* ColorProvider.swift */; };
-		9CEDEB9925E2420400F0E380 /* ColorEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9825E2420400F0E380 /* ColorEntry.swift */; };
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -101,6 +96,8 @@
 		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
 		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
 		585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageInputCanvas.swift; sourceTree = "<group>"; };
+		75463D8625F2067300B77D40 /* SessionPageInputHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionPageInputHost.swift; sourceTree = "<group>"; };
+		75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilKitDrawingView.swift; sourceTree = "<group>"; };
 		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/Terminal/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
 		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
 		759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalView.swift; path = Laputa/View/Terminal/SSHTerminalView.swift; sourceTree = SOURCE_ROOT; };
@@ -113,13 +110,6 @@
 		9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Canvas+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Canvas+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDebugView.swift; sourceTree = "<group>"; };
-		9CEDEB7925E2404500F0E380 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
-		9CEDEB7E25E2408A00F0E380 /* DrawingPad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingPad.swift; sourceTree = "<group>"; };
-		9CEDEB8325E2413D00F0E380 /* Drawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawing.swift; sourceTree = "<group>"; };
-		9CEDEB8825E2417700F0E380 /* DrawingControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingControls.swift; sourceTree = "<group>"; };
-		9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPicker.swift; sourceTree = "<group>"; };
-		9CEDEB9225E241C500F0E380 /* ColorProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorProvider.swift; sourceTree = "<group>"; };
-		9CEDEB9825E2420400F0E380 /* ColorEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorEntry.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -294,6 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				584E47F225E209AF005EDC0E /* SessionPageView.swift */,
+				75463D8625F2067300B77D40 /* SessionPageInputHost.swift */,
 				585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */,
 			);
 			path = SessionPage;
@@ -326,13 +317,7 @@
 		9CEDEB9725E241EA00F0E380 /* Drawing */ = {
 			isa = PBXGroup;
 			children = (
-				9CEDEB7925E2404500F0E380 /* DrawingView.swift */,
-				9CEDEB7E25E2408A00F0E380 /* DrawingPad.swift */,
-				9CEDEB8325E2413D00F0E380 /* Drawing.swift */,
-				9CEDEB8825E2417700F0E380 /* DrawingControls.swift */,
-				9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */,
-				9CEDEB9225E241C500F0E380 /* ColorProvider.swift */,
-				9CEDEB9825E2420400F0E380 /* ColorEntry.swift */,
+				75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */,
 			);
 			path = Drawing;
 			sourceTree = "<group>";
@@ -581,18 +566,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				9CEDEA1925E07FCE00F0E380 /* Canvas+CoreDataProperties.swift in Sources */,
-				9CEDEB8925E2417700F0E380 /* DrawingControls.swift in Sources */,
 				9CEDEA1625E07FCE00F0E380 /* CodeCard+CoreDataClass.swift in Sources */,
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
-				9CEDEB9925E2420400F0E380 /* ColorEntry.swift in Sources */,
-				9CEDEB7A25E2404500F0E380 /* DrawingView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
+				75463D8725F2067300B77D40 /* SessionPageInputHost.swift in Sources */,
 				1A64C89525CA2EE80082FEA7 /* Persistence.swift in Sources */,
-				9CEDEB7F25E2408A00F0E380 /* DrawingPad.swift in Sources */,
 				1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */,
-				9CEDEB9325E241C500F0E380 /* ColorProvider.swift in Sources */,
-				9CEDEB8E25E2419F00F0E380 /* ColorPicker.swift in Sources */,
-				9CEDEB8425E2413D00F0E380 /* Drawing.swift in Sources */,
+				75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */,
 				1A64C89825CA2EE80082FEA7 /* Laputa.xcdatamodeld in Sources */,
 				9C488E2625D0DCBA00662F1E /* CanvasView.swift in Sources */,
 				9CEDEA1725E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift in Sources */,
@@ -784,7 +764,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Laputa.Laputa;
+				PRODUCT_BUNDLE_IDENTIFIER = Laputa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -807,7 +787,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Laputa.Laputa;
+				PRODUCT_BUNDLE_IDENTIFIER = Laputa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct CanvasDebugView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -22,6 +23,11 @@ struct CanvasDebugView: View {
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
 
+    // added state vars for CanvasView
+    @State var isDraw = true
+    @State var isErase = false
+    @State var color : Color = Color.black
+    @State var type : PKInkingTool.InkType = .pencil
     var body: some View {
                 
         func addExampleCard() {
@@ -62,7 +68,7 @@ struct CanvasDebugView: View {
         }
         
         return ZStack {
-            CanvasView(canvasId: canvas.id, isSplitView: isSplit)
+            CanvasView(canvasId: canvas.id, isSplitView: isSplit, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type)
             HStack {
                 Button(action: addExampleCard) {
                     Text("Add card")

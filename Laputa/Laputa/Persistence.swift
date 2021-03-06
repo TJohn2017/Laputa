@@ -22,6 +22,11 @@ struct PersistenceController {
             newCodeCard.text = "Hello \(i)"
             newCodeCard.locX = 10.0 + Double(i) * 5.0
             newCodeCard.locY = 10.0 + Double(i) * 5.0
+            
+            let newCanvas = Canvas(context: viewContext)
+            newCanvas.id = UUID()
+            newCanvas.title = "Test canvas"
+            newCanvas.dateCreated = Date()
         }
         
         for index in 0..<10 {
