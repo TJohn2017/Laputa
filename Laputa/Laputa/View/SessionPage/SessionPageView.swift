@@ -23,10 +23,10 @@ struct SessionPageView: View {
     @State var type : PKInkingTool.InkType = .pencil
     
     
-    // TODO: incorporate Canvas + Terminal Views.
     var body: some View {
         // return terminal view only
         if (host != nil && canvas == nil) {
+            // Case: a terminal-only session.
             // TODO: need to be able to handle incorrect / malformed host info.
             let host_info = HostInfo(
                 alias:host!.name!,
@@ -78,6 +78,7 @@ struct SessionPageView: View {
             )
             // return canvas view only
         } else if (host == nil && canvas != nil) {
+            // Case: a canvas-only session.
             return AnyView(
                 GeometryReader { geometry in
                     ZStack {
@@ -159,6 +160,7 @@ struct SessionPageView: View {
                 }
             )
         } else {
+            // Case: a canvas-and-terminal session.
             let host_info = HostInfo(
                 alias:host!.name!,
                 hostname:host!.host!,
