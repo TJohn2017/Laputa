@@ -210,7 +210,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     }
     
     // Setup the add pair button UI and behavior
-    private func initializeAddPairButton(t: UIView) {
+    private func initializeAddPairButton(t: TerminalView) {
         addPairButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width / 15, height: t.frame.width/15)
         addPairButton.layer.cornerRadius = 15
         addPairButton.layer.masksToBounds = true
@@ -226,7 +226,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     }
     
     // Setup the ketboard button UI and behavior
-    private func initializeKeyboardButton(t: UIView) {
+    private func initializeKeyboardButton(t: TerminalView) {
         keyboardButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 120, width: t.frame.width/15, height: t.frame.width/15)
         keyboardButton.layer.cornerRadius = 15
         keyboardButton.layer.masksToBounds = true
@@ -242,7 +242,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     }
     
     // Setup the output catch button UI and behavior
-    private func initializeOutputCatchButton(t: UIView) {
+    private func initializeOutputCatchButton(t: TerminalView) {
         outputCatchButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width/15, height: t.frame.width/15)
         outputCatchButton.layer.cornerRadius = 15
         outputCatchButton.layer.masksToBounds = true
@@ -280,14 +280,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
-        
-        
-        // testing our ability to run execute command below. The "cd .." doesn't persist to the next executiong, unfortunately.
-//        var response = terminalView?.ssh_session.executeCommand(command: "cd ..")
-//        response = terminalView?.ssh_session.executeCommand(command: "ls")
-//        if (response != nil) {
-//            print("RESPONSE: \(response!)")
-//        }
     }
     
     func generateErrorView() -> UIView {
