@@ -216,37 +216,48 @@ struct SessionPageView: View {
                                 trailing: HStack(spacing: 15) {
                                     Button(action: { // pencil
                                         isDraw = true
+                                        isErase = false
                                         type = .pencil
                                     }) {
                                         Image(systemName: "pencil")
+                                            .foregroundColor(isDraw && type == .pencil ? .blue : .black)
                                     }
                                     
                                     Button(action: { // pen
                                         isDraw = true
+                                        isErase = false
                                         type = .pen
                                     }) {
                                         Image(systemName: "pencil.tip")
+                                            .foregroundColor(isDraw && type == .pen ? .blue : .black)
                                     }
                                     
                                     Button(action: { // marker
                                         isDraw = true
+                                        isErase = false
                                         type = .marker
                                     }) {
                                         Image(systemName: "highlighter")
+                                            .foregroundColor(isDraw && type == .marker ? .blue : .black)
                                     }
                                     
                                     Button(action: { // eraser
                                         isDraw = false
                                         isErase = true
                                     }) {
-                                        Image(systemName: "pencil.slash").font(.title)
+                                        Image("erase_icon")
+                                            .resizable()
+                                            .frame(width: 35, height: 35)
+                                            .foregroundColor(isErase ? .blue : .black)
                                     }
                                     
                                     Button(action: { // lasso cut tool
                                         isDraw = false
                                         isErase = false
                                     }) {
-                                        Image(systemName: "scissors").font(.title)
+                                        Image(systemName: "scissors")
+                                            .font(.title2)
+                                            .foregroundColor(!isErase && !isDraw ? .blue : .black)
                                     }
                                     
                                     ColorPicker("", selection: $color)
