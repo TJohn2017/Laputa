@@ -581,7 +581,6 @@
 			files = (
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
-				9C7B157C25F18E2000E88B09 /* SessionPageInputHost.swift in Sources */,
 				9C7B160625F4951000E88B09 /* CanvasList.swift in Sources */,
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
