@@ -12,10 +12,6 @@ import SwiftUI
 //   and ssh host.
 // - Clicking a Host --> should bring up a detail where you can choose
 //    between saved canvases or prompts you to make a new one.
-/*
-    .padding(.leading, 35)
-    .padding(.trailing, 5)
-*/
 struct MainPageView: View {
     @State private var displayHosts: Bool = true
     @State private var showingInputSheet: Bool = false
