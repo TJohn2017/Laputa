@@ -17,6 +17,7 @@
         <relationship name="origin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Canvas" inverseName="cards" inverseEntity="Canvas"/>
     </entity>
     <entity name="Host" representedClassName="Host" syncable="YES">
+        <attribute name="authenticationTypeRawValue" optional="YES" attributeType="String"/>
         <attribute name="host" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="password" optional="YES" attributeType="String"/>
@@ -31,8 +32,8 @@
     </entity>
     <elements>
         <element name="Canvas" positionX="-63" positionY="-9" width="128" height="89"/>
-        <element name="CodeCard" positionX="-54" positionY="0" width="128" height="134"/>
-        <element name="Host" positionX="-63" positionY="0" width="128" height="148"/>
+        <element name="CodeCard" positionX="-54" positionY="0" width="128" height="148"/>
+        <element name="Host" positionX="-63" positionY="0" width="128" height="163"/>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="73"/>
     </elements>
 </model>

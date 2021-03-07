@@ -84,13 +84,10 @@ struct MainPageInputHost: View {
                     newHost.username = self.username
                     newHost.host = self.host
                     newHost.port = self.port
-                    
-                    if (self.selectedAuthenticationType == AuthenticationType.password) {
-                        newHost.password = self.password
-                    } else {
-                        newHost.publicKey = self.publicKey
-                        newHost.privateKey = self.privateKey
-                    }
+                    newHost.authenticationType = self.selectedAuthenticationType
+                    newHost.password = self.password
+                    newHost.publicKey = self.publicKey
+                    newHost.privateKey = self.privateKey
                     
                     // Save the created host.
                     do {

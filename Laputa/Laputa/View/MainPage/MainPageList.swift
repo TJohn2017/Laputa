@@ -35,11 +35,8 @@ struct MainPageList: View {
                     ForEach(hosts) { host in
                         HStack {
                             NavigationLink(
-                                destination: SessionPageView(
-                                    hostPresent: true,
-                                    canvasPresent: false,
-                                    host: host
-                                )) {
+                                destination: SessionPageView(host: host)
+                            ) {
                                 MainPagePreview(host: host)
                             }
                             Menu() {
@@ -71,11 +68,8 @@ struct MainPageList: View {
                     ForEach(canvases) { canvas in
                         HStack {
                             NavigationLink(
-                                destination: SessionPageView(
-                                    hostPresent: true,
-                                    canvasPresent: false,
-                                    canvas: canvas
-                            )) {
+                                destination: SessionPageView(canvas: canvas)
+                            ) {
                                 MainPagePreview(canvas: canvas)
                             }
                             Menu() {

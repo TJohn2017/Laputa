@@ -16,13 +16,17 @@ struct HostInfo: Codable, Identifiable {
     var username: String = ""
     var usePassword: Bool = true
     var password: String = ""
+    var publicKey: String = ""
+    var privateKey: String = ""
     var environmentVariables: [String] = [] // EX: Environment(name: "LANG", variable: "en_US.UTF-8")
    
-    init(alias:String, hostname:String, username:String, usePassword:Bool, password:String){
+    init(alias:String, username:String, hostname:String, usePassword:Bool, password:String, publicKey:String, privateKey:String){
         self.alias = alias
-        self.hostname = hostname
         self.username = username
+        self.hostname = hostname
         self.usePassword = usePassword
         self.password = password
+        self.publicKey = publicKey
+        self.privateKey = privateKey
     }
 }

@@ -20,18 +20,17 @@ extension Host {
     @NSManaged public var name: String?
     @NSManaged public var password: String?
     @NSManaged public var port: String?
-    @NSManaged public var username: String?
-    @NSManaged public var publicKey: String?
     @NSManaged public var privateKey: String?
-    
-    @NSManaged public var authenticationType: String
-    
-    var authenticationTypeValue: AuthenticationType {
+    @NSManaged public var publicKey: String?
+    @NSManaged public var username: String?
+    @NSManaged public var authenticationTypeRawValue: String
+
+    var authenticationType: AuthenticationType {
         set {
-            authenticationType = newValue.rawValue
+            authenticationTypeRawValue = newValue.rawValue
         }
         get {
-            AuthenticationType(rawValue: authenticationType) ?? .password
+            AuthenticationType(rawValue: authenticationTypeRawValue) ?? .password
         }
     }
 }

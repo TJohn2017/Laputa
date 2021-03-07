@@ -7,15 +7,9 @@
 
 import SwiftUI
 
-// TODO:
-// - Add a "+" add button --> triggers a menu that offers between canvas
-//   and ssh host.
-// - Clicking a Host --> should bring up a detail where you can choose
-//    between saved canvases or prompts you to make a new one.
 struct MainPageView: View {
     @State private var displayHosts: Bool = true
     @State private var showingInputSheet: Bool = false
-    @State private var startSession: Bool = false
     
     var body: some View {
         NavigationView {
@@ -31,23 +25,13 @@ struct MainPageView: View {
                     Spacer()
                     
                     MainPageList(displayHosts: $displayHosts)
-                    
-                    Spacer()
-                    
-                    NavigationLink(
-                        destination: Text("Session"),
-                        isActive: $startSession
-                    ) {
-                        EmptyView()
-                    }
                 }
             }
             .navigationBarTitle("")
             .navigationBarHidden(true)
             .edgesIgnoringSafeArea(.top) // Add to cover-up status bar.
             .sheet(
-                isPresented: $showingInputSheet,
-                onDismiss: {}
+                isPresented: $showingInputSheet
             ) {
                 MainPageInputView(
                     displayHosts: $displayHosts,
