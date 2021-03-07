@@ -25,14 +25,14 @@ struct SessionPageView: View {
         if (host != nil && canvas == nil) {
             // Case: a terminal-only session.
             let host_info = HostInfo(
-                alias: host!.name!,
-                username: host!.username!,
-                hostname: host!.host!,
+                alias: host!.name,
+                username: host!.username,
+                hostname: host!.host,
                 authType: host!.authenticationType,
-                password: host!.password!,
-                publicKey: host!.publicKey!,
-                privateKey: host!.privateKey!,
-                privateKeyPassword: host!.privateKeyPassword!
+                password: host!.password,
+                publicKey: host!.publicKey,
+                privateKey: host!.privateKey,
+                privateKeyPassword: host!.privateKeyPassword
             )
             
             return AnyView(
@@ -40,7 +40,7 @@ struct SessionPageView: View {
                     Color.black
                     SwiftUITerminal(host: host_info, canvas: $canvas, modifyTerminalHeight: false)
                 }
-                .navigationBarTitle("\(host!.name!)")
+                .navigationBarTitle("\(host!.name)")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarItems(trailing:
                         Menu {
@@ -171,14 +171,14 @@ struct SessionPageView: View {
         } else {
             // Case: a canvas-and-terminal session.
             let host_info = HostInfo(
-                alias: host!.name!,
-                username: host!.username!,
-                hostname: host!.host!,
+                alias: host!.name,
+                username: host!.username,
+                hostname: host!.host,
                 authType: host!.authenticationType,
-                password: host!.password!,
-                publicKey: host!.publicKey!,
-                privateKey: host!.privateKey!,
-                privateKeyPassword: host!.privateKeyPassword!
+                password: host!.password,
+                publicKey: host!.publicKey,
+                privateKey: host!.privateKey,
+                privateKeyPassword: host!.privateKeyPassword
             )
             
             return AnyView(
@@ -186,7 +186,7 @@ struct SessionPageView: View {
                     VStack {
                         CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                            .navigationBarTitle("\(host!.name!) / \(canvas!.wrappedTitle)")
+                            .navigationBarTitle("\(host!.name) / \(canvas!.wrappedTitle)")
                             .navigationBarTitleDisplayMode(.inline)
                             .navigationBarItems(trailing: HStack(spacing: 15) {
                                     Button(action: { // pencil

@@ -27,11 +27,11 @@ struct MainPageInputHost: View {
     // fill form with existing host information if there is one
     func populate() {
         if selectedHost != nil {
-            name = selectedHost!.name!
-            host = selectedHost!.host!
-            port = selectedHost!.port!
-            username = selectedHost!.username!
-            password = selectedHost!.password!
+            name = selectedHost!.name
+            host = selectedHost!.host
+            port = selectedHost!.port
+            username = selectedHost!.username
+            password = selectedHost!.password
         }
     }
     
