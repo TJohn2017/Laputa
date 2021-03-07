@@ -21,6 +21,7 @@ extension Host {
     @NSManaged public var password: String?
     @NSManaged public var port: String?
     @NSManaged public var privateKey: String?
+    @NSManaged public var privateKeyPassword: String?
     @NSManaged public var publicKey: String?
     @NSManaged public var username: String?
     @NSManaged public var authenticationTypeRawValue: String
@@ -39,9 +40,10 @@ extension Host : Identifiable {
 
 }
 
-enum AuthenticationType: String, CaseIterable, Identifiable {
+enum AuthenticationType: String, CaseIterable, Identifiable, Codable {
     case password
     case publicPrivateKey
+    case none
 
     var id: String { self.rawValue }
 }

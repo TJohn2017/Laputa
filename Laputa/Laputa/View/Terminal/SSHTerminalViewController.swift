@@ -334,10 +334,11 @@ struct SwiftUITerminal_Preview: PreviewProvider {
                 alias:"Laputa",
                 username:"laputa",
                 hostname:"159.65.78.184",
-                usePassword:true,
+                authType:AuthenticationType.password,
                 password:"LaputaIsAwesome",
                 publicKey: "",
-                privateKey: ""
+                privateKey: "",
+                privateKeyPassword: ""
             )
 
             return SwiftUITerminal(host: host, canvas: $canvas, modifyTerminalHeight: false)

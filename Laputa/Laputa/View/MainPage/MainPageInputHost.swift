@@ -20,6 +20,7 @@ struct MainPageInputHost: View {
     @State var password: String = ""
     @State var publicKey: String = ""
     @State var privateKey: String = ""
+    @State var privateKeyPassword: String = ""
     @State var selectedAuthenticationType = AuthenticationType.password
     
     var body: some View {
@@ -64,6 +65,10 @@ struct MainPageInputHost: View {
                             Text("Private Key")
                             TextField("Required", text: $privateKey).multilineTextAlignment(.trailing)
                         }
+                        HStack {
+                            Text("Password for encrypted private key")
+                            TextField("Required", text: $privateKeyPassword).multilineTextAlignment(.trailing)
+                        }
                     }
                 }
                 
@@ -77,6 +82,7 @@ struct MainPageInputHost: View {
                     } else {
                         guard self.publicKey != "" else {return}
                         guard self.privateKey != "" else {return}
+                        guard self.privateKeyPassword != "" else {return}
                     }
                     
                     let newHost = Host(context: viewContext)
@@ -88,6 +94,7 @@ struct MainPageInputHost: View {
                     newHost.password = self.password
                     newHost.publicKey = self.publicKey
                     newHost.privateKey = self.privateKey
+                    newHost.privateKeyPassword = self.privateKeyPassword
                     
                     // Save the created host.
                     do {

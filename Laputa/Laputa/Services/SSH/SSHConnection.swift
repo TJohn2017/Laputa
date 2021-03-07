@@ -24,11 +24,22 @@ class SSHConnection {
     }
     
     // TODO TJ comment
-    func connect(withAuth:Bool, password: String?) throws {
+    func connect(hostInfo: HostInfo) throws {
         if (session.connect()) {
             // Must authenticate before getting a terminal
-            if (withAuth) {
-                session.authenticate(byPassword: password ?? "") // If they did not provide a password try none.
+            if (hostInfo.authType != AuthenticationType.none) {
+                
+                if (hostInfo.authType == AuthenticationType.password) {
+                    session.authenticate(byPassword: hostInfo.password) // If they did not provide a password, try none.
+                } else {
+                    // authType == Authenticationtype.publicPrivateKey
+                    session.authenticateBy(
+                        inMemoryPublicKey: hostInfo.publicKey,
+                        privateKey: hostInfo.privateKey,
+                        andPassword: hostInfo.privateKeyPassword
+                    )
+                }
+                
                 if (!session.isAuthorized) {
                     session.disconnect()
                     throw SSHSessionError.authorizationFailed

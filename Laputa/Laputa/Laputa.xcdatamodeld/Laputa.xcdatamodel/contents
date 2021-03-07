@@ -23,6 +23,7 @@
         <attribute name="password" optional="YES" attributeType="String"/>
         <attribute name="port" optional="YES" attributeType="String"/>
         <attribute name="privateKey" optional="YES" attributeType="String"/>
+        <attribute name="privateKeyPassword" optional="YES" attributeType="String"/>
         <attribute name="publicKey" optional="YES" attributeType="String"/>
         <attribute name="username" optional="YES" attributeType="String"/>
     </entity>
@@ -33,7 +34,7 @@
     <elements>
         <element name="Canvas" positionX="-63" positionY="-9" width="128" height="89"/>
         <element name="CodeCard" positionX="-54" positionY="0" width="128" height="148"/>
-        <element name="Host" positionX="-63" positionY="0" width="128" height="163"/>
+        <element name="Host" positionX="-63" positionY="0" width="128" height="178"/>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="73"/>
     </elements>
 </model>

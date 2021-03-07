@@ -28,10 +28,11 @@ struct SessionPageView: View {
                 alias: host!.name!,
                 username: host!.username!,
                 hostname: host!.host!,
-                usePassword: host!.authenticationType == AuthenticationType.password,
+                authType: host!.authenticationType,
                 password: host!.password!,
                 publicKey: host!.publicKey!,
-                privateKey: host!.privateKey!
+                privateKey: host!.privateKey!,
+                privateKeyPassword: host!.privateKeyPassword!
             )
             
             return AnyView(
@@ -162,10 +163,11 @@ struct SessionPageView: View {
                 alias: host!.name!,
                 username: host!.username!,
                 hostname: host!.host!,
-                usePassword: host!.authenticationType == AuthenticationType.password,
+                authType: host!.authenticationType,
                 password: host!.password!,
                 publicKey: host!.publicKey!,
-                privateKey: host!.privateKey!
+                privateKey: host!.privateKey!,
+                privateKeyPassword: host!.privateKeyPassword!
             )
             
             return AnyView(
