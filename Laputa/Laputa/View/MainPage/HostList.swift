@@ -29,11 +29,8 @@ struct HostList: View {
             ForEach(hosts) { host in
                 HStack {
                     NavigationLink(
-                        destination: SessionPageView(
-                            hostPresent: true,
-                            canvasPresent: false,
-                            host: host
-                        )) {
+                        destination: SessionPageView(host: host)
+                    ) {
                         VStack {
                             Text("\(host.name!)")
                                 .frame(width: 400.0, height: 200.0)

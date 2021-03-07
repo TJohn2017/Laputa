@@ -33,11 +33,8 @@ struct CanvasList: View {
             ForEach(canvases) { canvas in
                 HStack {
                     NavigationLink(
-                        destination: SessionPageView(
-                            hostPresent: true,
-                            canvasPresent: false,
-                            canvas: canvas
-                        )) {
+                        destination: SessionPageView(canvas: canvas)
+                    ) {
                         VStack {
                             Text("\(canvas.wrappedTitle)")
                                 .frame(width: 400.0, height: 200.0)
