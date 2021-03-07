@@ -47,10 +47,7 @@ struct MainPageView: View {
             .edgesIgnoringSafeArea(.top) // Add to cover-up status bar.
             .sheet(
                 isPresented: $showingInputSheet,
-                onDismiss: {
-                    // Execute if Input is completed.
-                    // startSession.toggle()
-                }
+                onDismiss: {}
             ) {
                 MainPageInputView(
                     displayHosts: $displayHosts,
