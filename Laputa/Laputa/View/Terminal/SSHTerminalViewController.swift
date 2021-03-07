@@ -151,7 +151,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 self.terminalView!.frame = self.view.frame
                 // reset buttons in terminal view
                 self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 120, width: self.view.frame.width/15, height: self.view.frame.width/15)
-                self.addPairButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width / 15, height: self.view.frame.width/15)
                 if (self.modifyTerminalHeight) {
                     self.outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width/15, height: self.view.frame.width/15)
                 }
@@ -184,12 +183,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             t.frame = view.frame
             view.addSubview(t)
             
-            // We don't have a canvas, so show the addPair button
-            if (!self.modifyTerminalHeight) {
-                initializeAddPairButton(t: t)
-                view.addSubview(addPairButton)
-            }
-            else { // We have a canvas, so show the output catching button
+            // We have a canvas, so show the output catching button
+            if (self.modifyTerminalHeight) {
                 initializeOutputCatchButton(t: t)
                 view.addSubview(outputCatchButton)
             }
@@ -202,22 +197,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             self.errorView.center = CGPoint(x: view.frame.size.width / 2, y: view.frame.size.height / 2)
             view.addSubview(self.errorView)
         }
-    }
-    
-    // Setup the add pair button UI and behavior
-    private func initializeAddPairButton(t: TerminalView) {
-        addPairButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width / 15, height: t.frame.width/15)
-        addPairButton.layer.cornerRadius = 15
-        addPairButton.layer.masksToBounds = true
-        addPairButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        addPairButton.backgroundColor = UIColor.white
-        addPairButton.addTarget(self, action: #selector(showCanvasSheet), for: .touchUpInside)
-    }
-    
-    // This function tells the delegate to present the canvas sheet
-    @objc
-    func showCanvasSheet() {
-        self.delegate?.showCanvasSheet(self, showCanvas: true)
     }
     
     // Setup the ketboard button UI and behavior
