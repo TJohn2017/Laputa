@@ -30,6 +30,7 @@
 		584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */; };
 		584E47F325E209AF005EDC0E /* SessionPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47F225E209AF005EDC0E /* SessionPageView.swift */; };
 		585B34C825E370040095DD2C /* SessionPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */; };
+		75463D8725F2067300B77D40 /* SessionPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75463D8625F2067300B77D40 /* SessionPageInputHost.swift */; };
 		75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */; };
 		759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */; };
 		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
@@ -41,6 +42,13 @@
 		9C7B158725F18FB500E88B09 /* CodeCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158525F18FB500E88B09 /* CodeCard+CoreDataProperties.swift */; };
 		9C7B159025F1901D00E88B09 /* Canvas+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158E25F1901D00E88B09 /* Canvas+CoreDataClass.swift */; };
 		9C7B159125F1901D00E88B09 /* Canvas+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158F25F1901D00E88B09 /* Canvas+CoreDataProperties.swift */; };
+		9C7B15AC25F1E1D400E88B09 /* SessionPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B15AB25F1E1D400E88B09 /* SessionPageInputHost.swift */; };
+		9C7B160125F4950600E88B09 /* HostList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B160025F4950600E88B09 /* HostList.swift */; };
+		9C7B160625F4951000E88B09 /* CanvasList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B160525F4951000E88B09 /* CanvasList.swift */; };
+		9CEDEA1625E07FCE00F0E380 /* CodeCard+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1225E07FCE00F0E380 /* CodeCard+CoreDataClass.swift */; };
+		9CEDEA1725E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1325E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift */; };
+		9CEDEA1825E07FCE00F0E380 /* Canvas+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */; };
+		9CEDEA1925E07FCE00F0E380 /* Canvas+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */; };
 		9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */; };
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
@@ -96,6 +104,7 @@
 		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
 		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
 		585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageInputCanvas.swift; sourceTree = "<group>"; };
+		75463D8625F2067300B77D40 /* SessionPageInputHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionPageInputHost.swift; sourceTree = "<group>"; };
 		75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilKitDrawingView.swift; sourceTree = "<group>"; };
 		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/Terminal/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
 		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
@@ -109,6 +118,13 @@
 		9C7B158525F18FB500E88B09 /* CodeCard+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CodeCard+CoreDataProperties.swift"; path = "Laputa/CoreData/CodeCard+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9C7B158E25F1901D00E88B09 /* Canvas+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+CoreDataClass.swift"; path = "Laputa/CoreData/Canvas+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		9C7B158F25F1901D00E88B09 /* Canvas+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+CoreDataProperties.swift"; path = "Laputa/CoreData/Canvas+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		9C7B15AB25F1E1D400E88B09 /* SessionPageInputHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionPageInputHost.swift; sourceTree = "<group>"; };
+		9C7B160025F4950600E88B09 /* HostList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostList.swift; sourceTree = "<group>"; };
+		9C7B160525F4951000E88B09 /* CanvasList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasList.swift; sourceTree = "<group>"; };
+		9CEDEA1225E07FCE00F0E380 /* CodeCard+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeCard+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		9CEDEA1325E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeCard+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Canvas+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Canvas+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDebugView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -273,6 +289,8 @@
 				584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */,
 				584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */,
 				584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */,
+				9C7B160025F4950600E88B09 /* HostList.swift */,
+				9C7B160525F4951000E88B09 /* CanvasList.swift */,
 			);
 			path = MainPage;
 			sourceTree = "<group>";
@@ -281,7 +299,9 @@
 			isa = PBXGroup;
 			children = (
 				9C7B157B25F18E2000E88B09 /* SessionPageInputHost.swift */,
+				9C7B15AB25F1E1D400E88B09 /* SessionPageInputHost.swift */,
 				584E47F225E209AF005EDC0E /* SessionPageView.swift */,
+				75463D8625F2067300B77D40 /* SessionPageInputHost.swift */,
 				585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */,
 			);
 			path = SessionPage;
@@ -576,6 +596,13 @@
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
 				9C7B157C25F18E2000E88B09 /* SessionPageInputHost.swift in Sources */,
+				9CEDEA1925E07FCE00F0E380 /* Canvas+CoreDataProperties.swift in Sources */,
+				9C7B160625F4951000E88B09 /* CanvasList.swift in Sources */,
+				9CEDEA1625E07FCE00F0E380 /* CodeCard+CoreDataClass.swift in Sources */,
+				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
+				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
+				9C7B160125F4950600E88B09 /* HostList.swift in Sources */,
+				9C7B15AC25F1E1D400E88B09 /* SessionPageInputHost.swift in Sources */,
 				1A64C89525CA2EE80082FEA7 /* Persistence.swift in Sources */,
 				1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */,
 				9C7B158625F18FB500E88B09 /* CodeCard+CoreDataClass.swift in Sources */,

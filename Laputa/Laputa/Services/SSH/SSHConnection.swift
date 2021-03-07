@@ -74,5 +74,9 @@ class SSHConnection {
     func requestTerminalSize(width: UInt, height: UInt) -> Bool {
         return session.channel.requestSizeWidth(width, height: height)
     }
+    
+    func isConnected() -> Bool {
+        return session.isConnected
+    }
 }
 
