@@ -32,7 +32,6 @@
 		585B34C825E370040095DD2C /* SessionPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */; };
 		589AC31025F48D8700405E20 /* Host+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */; };
 		589AC31125F48D8700405E20 /* Host+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */; };
-		75463D8725F2067300B77D40 /* SessionPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75463D8625F2067300B77D40 /* SessionPageInputHost.swift */; };
 		75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */; };
 		759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */; };
 		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
@@ -101,9 +100,8 @@
 		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
 		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
 		585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageInputCanvas.swift; sourceTree = "<group>"; };
-		589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Host+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Host+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
-		75463D8625F2067300B77D40 /* SessionPageInputHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionPageInputHost.swift; sourceTree = "<group>"; };
+		589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Host+CoreDataClass.swift"; path = "Laputa/CoreData/Host+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Host+CoreDataProperties.swift"; path = "Laputa/CoreData/Host+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilKitDrawingView.swift; sourceTree = "<group>"; };
 		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/Terminal/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
 		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
@@ -247,8 +245,6 @@
 		1A84751725CCF6D7004169AC /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */,
-				589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */,
 				759EA50025D4C68400560D98 /* DataStructs.swift */,
 			);
 			path = Model;
@@ -317,6 +313,8 @@
 		9C7B158025F18EDF00E88B09 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */,
+				589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */,
 				9C7B158E25F1901D00E88B09 /* Canvas+CoreDataClass.swift */,
 				9C7B158F25F1901D00E88B09 /* Canvas+CoreDataProperties.swift */,
 				9C7B158425F18FB500E88B09 /* CodeCard+CoreDataClass.swift */,
