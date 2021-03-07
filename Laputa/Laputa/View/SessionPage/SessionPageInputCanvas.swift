@@ -71,7 +71,8 @@ struct SessionPageInputCanvas: View {
                     }
                 ) {
                     MainPageInputCanvas(
-                        showingInputSheet: $showingInputSheet
+                        showingInputSheet: $showingInputSheet,
+                        selectedCanvas: .constant(nil)
                     )
                 }
             }
