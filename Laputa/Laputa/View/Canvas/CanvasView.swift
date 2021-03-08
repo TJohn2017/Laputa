@@ -25,7 +25,6 @@ struct CanvasView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     var fetchRequest: FetchRequest<Canvas>
-    var isSplit: Bool
     var canvasHeight: CGFloat
     var canvasWidth: CGFloat
     
@@ -39,9 +38,8 @@ struct CanvasView: View {
     // back button, the view will update and save the current drawing
     @Binding var savingDrawing: Bool
     
-    init(canvasId: UUID, isSplitView: Bool, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>, savingDrawing: Binding<Bool>) {
+    init(canvasId: UUID, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>, savingDrawing: Binding<Bool>) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
-        isSplit = isSplitView
         canvasHeight = height!
         canvasWidth = width!
         self._isDraw = isDraw
@@ -203,7 +201,7 @@ struct Canvas_Previews: PreviewProvider {
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasView(canvasId: newCanvas.id, isSplitView: false, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasView(canvasId: newCanvas.id, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }

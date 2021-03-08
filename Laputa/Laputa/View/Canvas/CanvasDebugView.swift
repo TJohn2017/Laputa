@@ -15,10 +15,8 @@ struct CanvasDebugView: View {
     var allCards: FetchedResults<CodeCard>
     
     var fetchRequest: FetchRequest<Canvas>
-    var isSplit: Bool
-    init(canvasId: UUID, isSplitView: Bool, savingDrawing: Binding<Bool>) {
+    init(canvasId: UUID, savingDrawing: Binding<Bool>) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
-        isSplit = isSplitView
         self._savingDrawing = savingDrawing
     }
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
@@ -74,7 +72,7 @@ struct CanvasDebugView: View {
         }
         
         return ZStack {
-            CanvasView(canvasId: canvas.id, isSplitView: isSplit, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing)
+            CanvasView(canvasId: canvas.id, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing)
             HStack {
                 Button(action: addExampleCard) {
                     Text("Add card")
@@ -113,7 +111,7 @@ struct CanvasDebugView_Previews: PreviewProvider {
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasDebugView(canvasId: newCanvas.id, isSplitView: false, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasDebugView(canvasId: newCanvas.id, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }
