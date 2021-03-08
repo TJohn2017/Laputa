@@ -70,7 +70,7 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     
     func connect() {
         do {
-            try ssh_session.connect(withAuth: host.usePassword, password: host.password)
+            try ssh_session.connect(hostInfo: self.host)
             ssh_session.session.channel.delegate = self
         } catch SSHSessionError.authorizationFailed {
             let error = SSHSessionError.authorizationFailed

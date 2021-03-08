@@ -330,7 +330,16 @@ struct SwiftUITerminal_Preview: PreviewProvider {
         @State var canvas: Canvas? = nil
         
         var body: some View {
-            let host = HostInfo(alias:"Laputa", hostname:"159.65.78.184", username:"laputa", usePassword:true, password:"LaputaIsAwesome")
+            let host = HostInfo(
+                alias:"Laputa",
+                username:"laputa",
+                hostname:"159.65.78.184",
+                authType:AuthenticationType.password,
+                password:"LaputaIsAwesome",
+                publicKey: "",
+                privateKey: "",
+                privateKeyPassword: ""
+            )
 
             return SwiftUITerminal(host: host, canvas: $canvas, modifyTerminalHeight: false)
         }

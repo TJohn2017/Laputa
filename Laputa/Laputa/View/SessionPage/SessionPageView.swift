@@ -10,8 +10,6 @@ import UIKit
 import PencilKit
 
 struct SessionPageView: View {
-    @State var hostPresent: Bool
-    @State var canvasPresent: Bool
     @State var host: Host?
     @State var canvas: Canvas?
     @State var showCanvasSheet: Bool = false
@@ -29,16 +27,17 @@ struct SessionPageView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     var body: some View {
-        // return terminal view only
         if (host != nil && canvas == nil) {
             // Case: a terminal-only session.
-            // TODO: need to be able to handle incorrect / malformed host info.
             let host_info = HostInfo(
-                alias:host!.name!,
-                hostname:host!.host!,
-                username:host!.username!,
-                usePassword:true,
-                password:host!.password!
+                alias: host!.name,
+                username: host!.username,
+                hostname: host!.host,
+                authType: host!.authenticationType,
+                password: host!.password,
+                publicKey: host!.publicKey,
+                privateKey: host!.privateKey,
+                privateKeyPassword: host!.privateKeyPassword
             )
             
             return AnyView(
@@ -46,7 +45,7 @@ struct SessionPageView: View {
                     Color.black
                     SwiftUITerminal(host: host_info, canvas: $canvas, modifyTerminalHeight: false)
                 }
-                .navigationBarTitle("\(host!.name!)")
+                .navigationBarTitle("\(host!.name)")
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarItems(
                     trailing:
@@ -82,7 +81,6 @@ struct SessionPageView: View {
                     SessionPageInputCanvas(canvas: $canvas, showCanvasSheet: $showCanvasSheet)
                 }
             )
-            // return canvas view only
         } else if (host == nil && canvas != nil) {
             // Case: a canvas-only session.
             return AnyView(
@@ -190,11 +188,14 @@ struct SessionPageView: View {
         } else {
             // Case: a canvas-and-terminal session.
             let host_info = HostInfo(
-                alias:host!.name!,
-                hostname:host!.host!,
-                username:host!.username!,
-                usePassword:true,
-                password:host!.password!
+                alias: host!.name,
+                username: host!.username,
+                hostname: host!.host,
+                authType: host!.authenticationType,
+                password: host!.password,
+                publicKey: host!.publicKey,
+                privateKey: host!.privateKey,
+                privateKeyPassword: host!.privateKeyPassword
             )
             
             return AnyView(
@@ -202,7 +203,7 @@ struct SessionPageView: View {
                     VStack {
                         CanvasView(canvasId: canvas!.id, isSplitView: true, height: geometry.size.height / 2, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                            .navigationBarTitle("\(host!.name!) / \(canvas!.wrappedTitle)")
+                            .navigationBarTitle("\(host!.name) / \(canvas!.wrappedTitle)")
                             .navigationBarTitleDisplayMode(.inline)
                             .navigationBarBackButtonHidden(true)
                             .navigationBarItems(
@@ -310,15 +311,6 @@ struct SessionPageView_Previews: PreviewProvider {
         var body: some View {
             let context = PersistenceController.preview.container.viewContext
             
-            /*
-             let newHost = Host(context: context)
-             newHost.host = "host_1"
-             newHost.name = "Name #1"
-             newHost.password = "password_1"
-             newHost.port = "22"
-             newHost.username = "username_1"
-             */
-            
             let newHost = Host(context: context)
             newHost.name = "Laputa"
             newHost.host = "159.65.78.184"
@@ -332,8 +324,6 @@ struct SessionPageView_Previews: PreviewProvider {
             newCanvas.title = "Test Canvas"
             
             return SessionPageView(
-                hostPresent: true,
-                canvasPresent: true,
                 host: newHost,
                 canvas: newCanvas
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)

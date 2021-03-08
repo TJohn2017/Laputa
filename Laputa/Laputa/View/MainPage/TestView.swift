@@ -40,10 +40,32 @@ struct DetailView: View {
 struct TestView: View {
     @State private var displayHosts: Bool = false
     @State private var displayNewView: Bool = false
+    @State var selectedAuthenticationType = AuthenticationType.password
+    @State var selectedPizzaIndex = 1
+    let pizzaTypes = ["Pizza Margherita", "Greek Pizza", "Pizza Supreme", "Pizza California", "New York Pizza"]
     
     var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Host Info")) {
+                    Picker(
+                        selection:$selectedAuthenticationType,
+                        label:Text("Authentication Type")
+                    ) {
+                        Text("Password").tag(AuthenticationType.password)
+                        Text("Public / Private Key").tag(AuthenticationType.publicPrivateKey)
+                    }
+                    
+                    Picker(selection: $selectedPizzaIndex, label: Text("Pizza Type")) {
+                        ForEach(0 ..< pizzaTypes.count) {
+                                Text(self.pizzaTypes[$0]).tag($0)
+                        }
+                    }
+                }
+            }
+        }
         
-        return Text("Hello world")
+    }
         
         /*
         return NavigationView {
@@ -169,8 +191,6 @@ struct TestView: View {
         .edgesIgnoringSafeArea(.top)
     */
         
-
-    }
 }
 
 struct TestView_Previews: PreviewProvider {

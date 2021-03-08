@@ -19,37 +19,51 @@ struct MainPageInputHost: View {
     @State var port: String = "22"
     @State var username: String = ""
     @State var password: String = ""
+    @State var publicKey: String = ""
+    @State var privateKey: String = ""
+    @State var privateKeyPassword: String = ""
+    @State var selectedAuthenticationType = AuthenticationType.password
     
     // fill form with existing host information if there is one
     func populate() {
         if selectedHost != nil {
-            name = selectedHost!.name!
-            host = selectedHost!.host!
-            port = selectedHost!.port!
-            username = selectedHost!.username!
-            password = selectedHost!.password!
+            name = selectedHost!.name
+            host = selectedHost!.host
+            port = selectedHost!.port
+            username = selectedHost!.username
+            password = selectedHost!.password
         }
     }
     
-    func saveHost() {
+    func saveHost() {      
         // Ensure that required fields are met.
         guard self.name != "" else {return}
         guard self.username != "" else {return}
-        guard self.password != "" else {return}
-        guard self.port != "" else {return}
         guard self.host != "" else {return}
-        
-        // creating a new host
+        guard self.port != "" else {return}
+        if (self.selectedAuthenticationType == AuthenticationType.password) {
+            guard self.password != "" else {return}
+        } else {
+            guard self.publicKey != "" else {return}
+            guard self.privateKey != "" else {return}
+            guard self.privateKeyPassword != "" else {return}
+        }
+
+        // Creating a new host
         if selectedHost == nil {
             selectedHost = Host(context: viewContext)
         }
         selectedHost!.name = self.name
+        selectedHost!.username = self.username
         selectedHost!.host = self.host
         selectedHost!.port = self.port
-        selectedHost!.username = self.username
+        selectedHost!.authenticationType = self.selectedAuthenticationType
         selectedHost!.password = self.password
-        
-        // Save the created host
+        selectedHost!.publicKey = self.publicKey
+        selectedHost!.privateKey = self.privateKey
+        selectedHost!.privateKeyPassword = self.privateKeyPassword
+
+        // Save the created host.
         do {
             try viewContext.save()
             print("Host w/ name: \(self.name) saved.")
@@ -60,35 +74,64 @@ struct MainPageInputHost: View {
     }
     
     var body: some View {
-        Form {
-            Section(header: Text("Host Info")) {
-                HStack {
-                    Text("Name")
-                    TextField("Required", text: $name).multilineTextAlignment(.trailing)
+        NavigationView {
+            Form {
+                Section(header: Text("Host Info")) {
+                    HStack {
+                        Text("Name")
+                        TextField("Required", text: $name).multilineTextAlignment(.trailing)
+                    }
+                    HStack {
+                        Text("Username")
+                        TextField("Required", text: $username).multilineTextAlignment(.trailing)
+                    }
+                    HStack {
+                        Text("Host")
+                        TextField("Required", text: $host).multilineTextAlignment(.trailing)
+                    }
+                    HStack {
+                        Text("Port")
+                        TextField("Required", text: $port).multilineTextAlignment(.trailing)
+                    }
                 }
-                HStack {
-                    Text("Host")
-                    TextField("Required", text: $host).multilineTextAlignment(.trailing)
+                
+                Section(header: Text("Authentication")) {
+                    Picker("Authentication Type", selection:$selectedAuthenticationType) {
+                        Text("Password").tag(AuthenticationType.password)
+                        Text("Public / Private Key").tag(AuthenticationType.publicPrivateKey)
+                    }
+                    
+                    if (self.selectedAuthenticationType == AuthenticationType.password) {
+                        HStack {
+                            Text("Password")
+                            TextField("Required", text: $password).multilineTextAlignment(.trailing)
+                        }
+                    } else {
+                        HStack {
+                            Text("Public Key")
+                            TextField("Required", text: $publicKey).multilineTextAlignment(.trailing)
+                        }
+                        HStack {
+                            Text("Private Key")
+                            TextField("Required", text: $privateKey).multilineTextAlignment(.trailing)
+                        }
+                        HStack {
+                            Text("Password for encrypted private key")
+                            TextField("Required", text: $privateKeyPassword).multilineTextAlignment(.trailing)
+                        }
+                    }
                 }
-                HStack {
-                    Text("Port")
-                    TextField("Required", text: $port).multilineTextAlignment(.trailing)
+                
+                Button(action: saveHost) {
+                    Text(selectedHost == nil ? "Add Host" : "Save Changes")
                 }
-                HStack {
-                    Text("Username")
-                    TextField("Required", text: $username).multilineTextAlignment(.trailing)
-                }
-                HStack {
-                    Text("Password")
-                    TextField("Required", text: $password).multilineTextAlignment(.trailing)
-                }
+                
             }
-            
-            Button(action: saveHost) {
-                Text(selectedHost == nil ? "Add Host" : "Save Changes")
-            }
+            .navigationBarTitle("")
+            .navigationBarHidden(true)
+            .onAppear(perform: populate)
         }
-        .onAppear(perform: populate)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     private func addHostEntity() {

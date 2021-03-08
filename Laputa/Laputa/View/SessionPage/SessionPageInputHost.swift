@@ -46,13 +46,13 @@ struct SessionPageInputHost: View {
                             showHostSheet.toggle()
                         }) {
                             VStack {
-                                Text("\(host.name!)")
+                                Text("\(host.name)")
                                     .frame(width: 400.0, height: 200.0)
                                     .padding()
                                     .background(Color.red)
                                     .foregroundColor(Color.black)
                                     .cornerRadius(10.0)
-                                Text("Host: \(host.host!)")
+                                Text("Host: \(host.host)")
                                     .foregroundColor(Color.black)
                             }.padding()
                         }
