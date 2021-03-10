@@ -12,7 +12,7 @@ import NMSSH
 import CoreData
 
 class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
-    var host: HostInfo
+    var connection: SSHConnection?
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
     var outputCatchButton: UIButton
@@ -26,8 +26,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var canvas: Canvas?
     var viewContext: NSManagedObjectContext?
     
-    init(host: HostInfo, modifyTerminalHeight: Bool, canvas: Canvas? = nil, viewContext: NSManagedObjectContext? = nil) {
-        self.host = host
+    init(connection: SSHConnection?, modifyTerminalHeight: Bool, canvas: Canvas? = nil, viewContext: NSManagedObjectContext? = nil) {
+        self.connection = connection
         self.keyboardButton = UIButton(type: .custom)
         self.outputCatchButton = UIButton(type: .custom)
         self.modifyTerminalHeight = modifyTerminalHeight
@@ -50,9 +50,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     {
         var view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
         if (self.modifyTerminalHeight && keyboardDelta > 0) { // set height when keyboard shows up to fill the screen til the keyboard
-            view_height += keyboardDelta*0.53
+            view_height += keyboardDelta*0.53 // TODO makes screen start too low
         } else if (keyboardWillHide && previous_height != nil) { // set height to be the previous terminal view height before the keyboard appeared
-            view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top - 30
+            view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top - 30 // WEIRD OFFSET
         } else if (view_height < 5) { // if view height too small, set minimum height of 50
             view_height = 50
         }
@@ -67,7 +67,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Starts an instance of sshterminalview and writes the first line
     func startSSHSession() -> (SSHTerminalView?, Bool) {
-        let tv = SSHTerminalView(host: host, frame: makeFrame(keyboardDelta: 0, keyboardWillHide: false))
+        let tv = SSHTerminalView(connection: connection, frame: makeFrame(keyboardDelta: 0, keyboardWillHide: false))
         return (tv, tv.isConnected())
     }
     
@@ -87,7 +87,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     @objc func handleKeyboardWillHide() {
         keyboardDelta = 0
-        terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
+        if (terminalView != nil) {
+            terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
+        }
     }
     
     var keyboardDelta: CGFloat = 0
@@ -105,19 +107,21 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             } else {
                 keyboardDelta = 0
             }
-            
-            terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
-            UIView.animate(withDuration: duration,
-                                       delay: TimeInterval(0),
-                                       options: animationCurve,
-                                       animations: {
+            if (terminalView != nil) {
+                terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
+                UIView.animate(withDuration: duration,
+                                           delay: TimeInterval(0),
+                                           options: animationCurve,
+                                           animations: {
 
-                                        self.view.layoutIfNeeded() },
-                                       completion: nil)
+                                            self.view.layoutIfNeeded() },
+                                           completion: nil)
+            }
         }
     }
     
     override func loadView() {
+        print("LOG: loadView called")
         super.loadView()
         if (self.modifyTerminalHeight) {
             previous_height = self.view.bounds.height * 0.49
@@ -143,7 +147,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 x: self.view.bounds.origin.x,
                 y: self.view.bounds.origin.y,
                 width: size.width,
-                height: size.height * screenMultiplier - 30
+                height: size.height * screenMultiplier - 30 // WEIRD OFFSET
             )
      
             if (self.connected) {
@@ -162,6 +166,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Loads terminal gui into the view
     override func viewDidLoad() {
+        print("LOG: viewDidLoad called")
         super.viewDidLoad()
         addKeyboard()
         
@@ -170,12 +175,15 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // start ssh session and add it ot the view
         let (terminalView, connected) = startSSHSession()
         self.connected = connected
+        print("LOG: terminalView = \(terminalView != nil)")
+        print("LOG: self.connected = \(self.connected)")
         
         // Initialize default-failure page (in case of no connection).
         self.errorView = self.generateErrorView()
         
         // Otherwise, display the terminal view.
         if (self.connected) {
+            print("LOG: connected in viewDidLoad")
             guard let t = terminalView else {
                 return
             }
@@ -262,7 +270,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         errorView.frame = CGRect(x: 0, y:0, width: 700, height: 700)
         
         // Set error symbol.
-         let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
         let img = UIImageView(image: UIImage(systemName: "exclamationmark.triangle", withConfiguration: largeConfig))
         img.tintColor = .red
         img.center = CGPoint(
@@ -288,14 +296,14 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 // SwiftUI Terminal Object
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @Environment(\.managedObjectContext) private var viewContext
-    @State var host: HostInfo
     @Binding var canvas: Canvas?
+    @Binding var connection: SSHConnection?
     @State var modifyTerminalHeight: Bool
     
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
+        let viewController = SSHTerminalViewController (connection: connection, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
         return viewController
     }
     
@@ -317,7 +325,7 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     }
     
     static func dismantleUIViewController(_ uiViewController: SSHTerminalViewController, coordinator: Coordinator) {
-        uiViewController.terminalView?.ssh_session.disconnect()
+//        uiViewController.terminalView?.ssh_session?.disconnect()
     }
 }
 
@@ -328,8 +336,10 @@ struct SwiftUITerminal_Preview: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State var canvas: Canvas? = nil
+        @State var session: SSHConnection? = nil
         
         var body: some View {
+            // Establish laputa test connection
             let host = HostInfo(
                 alias:"Laputa",
                 username:"laputa",
@@ -340,8 +350,18 @@ struct SwiftUITerminal_Preview: PreviewProvider {
                 privateKey: "",
                 privateKeyPassword: ""
             )
+            session = SSHConnection(host: host.hostname, andUsername: host.username)
+            do {
+                try session?.connect(hostInfo: host)
+            } catch SSHSessionError.authorizationFailed {
+                // TODO TJ how should we show these errors to users?
+                let error = SSHSessionError.authorizationFailed
+                print("[SSHSessionError] \(error)")
+            } catch {
+                print("[SSHSessionError] \(error)")
+            }
 
-            return SwiftUITerminal(host: host, canvas: $canvas, modifyTerminalHeight: false)
+            return SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: false)
         }
     }
 }

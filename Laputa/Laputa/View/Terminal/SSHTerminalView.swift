@@ -14,19 +14,16 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     let ReturnControlCode = UInt8(13)
         
     // Class variables
-    var host: HostInfo
-    var ssh_session: SSHConnection
+    var ssh_session: SSHConnection?
     var command_buffer = [UInt8]()
     var shouldCatchResponse: Bool = false
     var lastReponse: String = ""
     
-    init(host: HostInfo, frame: CGRect) {
-        self.host = host
-        
-        self.ssh_session = SSHConnection(host: host.hostname, andUsername: host.username) //create ssh session
+    init(connection: SSHConnection?, frame: CGRect) {
         super.init(frame: frame) // init function of TerminalView
+        self.ssh_session = connection
+        connection?.session.channel.delegate = self // Allows us to handle delegate functions for fetching/sending data
         terminalDelegate = self
-        self.connect()
     }
     
     private func addScrolling () {
@@ -68,18 +65,6 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
         print ("didReadError: \(error)")
     }
     
-    func connect() {
-        do {
-            try ssh_session.connect(hostInfo: self.host)
-            ssh_session.session.channel.delegate = self
-        } catch SSHSessionError.authorizationFailed {
-            let error = SSHSessionError.authorizationFailed
-            self.feed(text: "[ERROR] \(error)")
-        } catch {
-            self.feed(text: "[ERROR] \(error)")
-        }
-    }
-    
     public func scrolled(source: TerminalView, position: Double) {
         print ("scrolled, position: \(position)")
     }
@@ -89,8 +74,8 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     }
     
     public func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
-        let resizeSuccess = ssh_session.requestTerminalSize(width: UInt(newCols), height: UInt(newRows))
-        print(resizeSuccess)
+        let resizeSuccess = ssh_session?.requestTerminalSize(width: UInt(newCols), height: UInt(newRows))
+        print(resizeSuccess ?? "Resized terminal.")
         //source.sizeChanged(source: source.getTerminal())
         
     }
@@ -105,10 +90,12 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
             // response for potential UI use.
             // TODO TJ: should we try to be more precise than this? for example, we are going to unnecessarily
             //          catch a ton of responses when doing things like using vim
-            if (data[data.endIndex - 1] == ReturnControlCode) {
+            
+            let lastIndex = ((data.endIndex - 1) > 0) ? (data.endIndex - 1) : 0 // Don't let last index go out of bounds
+            if (data[lastIndex] == ReturnControlCode) {
                 shouldCatchResponse = true
             }
-            try ssh_session.write(data: data)
+            try ssh_session?.write(data: data)
         } catch {
             // TODO TJ figure out what error types we need to account for here
         }
@@ -120,6 +107,10 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     }
     
     public func isConnected() -> Bool {
-        return ssh_session.isConnected()
+        if (ssh_session != nil) {
+            return ssh_session!.isConnected()
+        } else {
+            return false
+        }
     }
 }
