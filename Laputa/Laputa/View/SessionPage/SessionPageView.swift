@@ -27,6 +27,7 @@ struct SessionPageView: View {
     
     var body: some View {
         // TODO TJ right now we're only checking nil session, not connection status
+        //  - BUG: the terminal view post-refactor has weird dead area at the top of it like a margin
         if (host != nil && session != nil && canvas == nil) {
             // Case: a terminal-only session with an active connection
             return AnyView(
