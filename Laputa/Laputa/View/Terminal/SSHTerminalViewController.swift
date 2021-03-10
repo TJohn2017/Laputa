@@ -262,7 +262,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         errorView.frame = CGRect(x: 0, y:0, width: 700, height: 700)
         
         // Set error symbol.
-         let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
         let img = UIImageView(image: UIImage(systemName: "exclamationmark.triangle", withConfiguration: largeConfig))
         img.tintColor = .red
         img.center = CGPoint(

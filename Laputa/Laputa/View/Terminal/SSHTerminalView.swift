@@ -90,7 +90,9 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
             // response for potential UI use.
             // TODO TJ: should we try to be more precise than this? for example, we are going to unnecessarily
             //          catch a ton of responses when doing things like using vim
-            if (data[data.endIndex - 1] == ReturnControlCode) {
+            
+            let lastIndex = ((data.endIndex - 1) > 0) ? (data.endIndex - 1) : 0 // Don't let last index go out of bounds
+            if (data[lastIndex] == ReturnControlCode) {
                 shouldCatchResponse = true
             }
             try ssh_session?.write(data: data)

@@ -26,9 +26,9 @@ struct SessionPageView: View {
     @State var savingDrawing = false
     
     var body: some View {
-        
-        if (host != nil && canvas == nil) {
-            // Case: a terminal-only session.
+        // TODO REFACTOR right now we're only checking nil session, not connection status
+        if (host != nil && session != nil && canvas == nil) {
+            // Case: a terminal-only session with an active connection
             return AnyView(
                 ZStack {
                     Color.black
@@ -71,6 +71,13 @@ struct SessionPageView: View {
                 }
                 .onAppear(perform: establishConnection)
             )
+        } else if (host != nil && session == nil && canvas == nil) {
+            // TODO replace with a real not connected view
+            // Case: a terminal-only session without an active connection
+            return AnyView(
+                Text("Not connected.")
+                .onAppear(perform: establishConnection)
+            )
         } else if (host == nil && canvas != nil) {
             // Case: a canvas-only session.
             return AnyView(
@@ -86,8 +93,8 @@ struct SessionPageView: View {
                     }
                 }
             )
-        } else {
-            // Case: a canvas-and-terminal session.
+        } else if (host != nil && session != nil && canvas != nil){
+            // Case: a canvas-and-terminal session with an active connection.
             return AnyView(
                 GeometryReader { geometry in
                     // if we are saving the drawing / exiting, change the background to white
@@ -102,13 +109,29 @@ struct SessionPageView: View {
                     .onAppear(perform: establishConnection)
                 }
             )
+        } else {
+            // TODO replace with a real not connected view
+            // Case: a canvas-and-terminal session without an active connection.
+            return AnyView(
+                GeometryReader { geometry in
+                    // if we are saving the drawing / exiting, change the background to white
+                    // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
+                    savingDrawing ? Color.white : Color.black
+                    VStack {
+                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
+                        Text("Not connected.")
+                            .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                    }
+                    .onAppear(perform: establishConnection)
+                }
+            )
         }
     }
     
     // This function should be run on the appearance of any of the above views which have a terminal.
     // It is used to establish the ssh connection for the terminal from the given host data.
     private func establishConnection() {
-        if (host != nil) {
+        if (self.host != nil) {
             let host_info = HostInfo(
                 alias: host!.name,
                 username: host!.username,
@@ -121,10 +144,10 @@ struct SessionPageView: View {
             )
             
             // We haven't established our connection yet. That must be done for a working terminal view
-            if (session == nil) {
-                session = SSHConnection(host: host_info.hostname, andUsername: host_info.username)
+            if (self.session == nil) {
+                self.session = SSHConnection(host: host_info.hostname, andUsername: host_info.username)
                 do {
-                    try session?.connect(hostInfo: host_info)
+                    try self.session?.connect(hostInfo: host_info)
                 } catch SSHSessionError.authorizationFailed {
                     // TODO TJ how should we show these errors to users?
                     let error = SSHSessionError.authorizationFailed
