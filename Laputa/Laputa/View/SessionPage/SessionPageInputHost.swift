@@ -64,7 +64,9 @@ struct SessionPageInputHost: View {
                         // TODO Bring the user back to split view with the newly made host
                     }
                 ) {
-                    MainPageInputHost(showingInputSheet: $showingInputSheet, selectedHost: .constant(nil))
+                    MainPageInputHost(showingInputSheet: $showingInputSheet,
+                                      selectedHost: $host
+                    )
                 }
             }
         }
