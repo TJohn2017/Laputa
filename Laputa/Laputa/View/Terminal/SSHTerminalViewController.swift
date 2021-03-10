@@ -12,7 +12,7 @@ import NMSSH
 import CoreData
 
 class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
-    var host: HostInfo
+    var connection: SSHConnection?
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
     var outputCatchButton: UIButton
@@ -26,8 +26,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var canvas: Canvas?
     var viewContext: NSManagedObjectContext?
     
-    init(host: HostInfo, modifyTerminalHeight: Bool, canvas: Canvas? = nil, viewContext: NSManagedObjectContext? = nil) {
-        self.host = host
+    init(connection: SSHConnection?, modifyTerminalHeight: Bool, canvas: Canvas? = nil, viewContext: NSManagedObjectContext? = nil) {
+        self.connection = connection
         self.keyboardButton = UIButton(type: .custom)
         self.outputCatchButton = UIButton(type: .custom)
         self.modifyTerminalHeight = modifyTerminalHeight
@@ -67,7 +67,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Starts an instance of sshterminalview and writes the first line
     func startSSHSession() -> (SSHTerminalView?, Bool) {
-        let tv = SSHTerminalView(host: host, frame: makeFrame(keyboardDelta: 0, keyboardWillHide: false))
+        let tv = SSHTerminalView(connection: connection, frame: makeFrame(keyboardDelta: 0, keyboardWillHide: false))
         return (tv, tv.isConnected())
     }
     
@@ -288,14 +288,14 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 // SwiftUI Terminal Object
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @Environment(\.managedObjectContext) private var viewContext
-    @State var host: HostInfo
     @Binding var canvas: Canvas?
+    @Binding var connection: SSHConnection?
     @State var modifyTerminalHeight: Bool
     
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        let viewController = SSHTerminalViewController (host: host, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
+        let viewController = SSHTerminalViewController (connection: connection, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
         return viewController
     }
     
@@ -317,7 +317,7 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     }
     
     static func dismantleUIViewController(_ uiViewController: SSHTerminalViewController, coordinator: Coordinator) {
-        uiViewController.terminalView?.ssh_session.disconnect()
+        uiViewController.terminalView?.ssh_session?.disconnect()
     }
 }
 
@@ -328,8 +328,10 @@ struct SwiftUITerminal_Preview: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State var canvas: Canvas? = nil
+        @State var session: SSHConnection? = nil
         
         var body: some View {
+            // Establish laputa test connection
             let host = HostInfo(
                 alias:"Laputa",
                 username:"laputa",
@@ -340,8 +342,18 @@ struct SwiftUITerminal_Preview: PreviewProvider {
                 privateKey: "",
                 privateKeyPassword: ""
             )
+            session = SSHConnection(host: host.hostname, andUsername: host.username)
+            do {
+                try session?.connect(hostInfo: host)
+            } catch SSHSessionError.authorizationFailed {
+                // TODO TJ how should we show these errors to users?
+                let error = SSHSessionError.authorizationFailed
+                print("[SSHSessionError] \(error)")
+            } catch {
+                print("[SSHSessionError] \(error)")
+            }
 
-            return SwiftUITerminal(host: host, canvas: $canvas, modifyTerminalHeight: false)
+            return SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: false)
         }
     }
 }

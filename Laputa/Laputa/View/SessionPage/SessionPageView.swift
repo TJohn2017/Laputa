@@ -12,6 +12,7 @@ import PencilKit
 struct SessionPageView: View {
     @State var host: Host?
     @State var canvas: Canvas?
+    @State var session: SSHConnection?
     @State var showCanvasSheet: Bool = false
     @State var showHostSheet: Bool = false
     // State vars for PKDrawingView
@@ -25,9 +26,10 @@ struct SessionPageView: View {
     @State var savingDrawing = false
     
     var body: some View {
-        if (host != nil && canvas == nil) {
-            // Case: a terminal-only session.
-            let host_info = HostInfo(
+        // Setup host info and ssh connection if we are going to be displaying a terminal
+        var host_info: HostInfo? = nil
+        if (host != nil) {
+            host_info = HostInfo(
                 alias: host!.name,
                 username: host!.username,
                 hostname: host!.host,
@@ -38,10 +40,27 @@ struct SessionPageView: View {
                 privateKeyPassword: host!.privateKeyPassword
             )
             
+            // We haven't established our connection yet. That must be done before we create a terminal view
+            if (session == nil) {
+                session = SSHConnection(host: host_info!.hostname, andUsername: host_info!.username)
+                do {
+                    try session?.connect(hostInfo: host_info!)
+                } catch SSHSessionError.authorizationFailed {
+                    // TODO TJ how should we show these errors to users?
+                    let error = SSHSessionError.authorizationFailed
+                    print("[SSHSessionError] \(error)")
+                } catch {
+                    print("[SSHSessionError] \(error)")
+                }
+            }
+        }
+        
+        if (host != nil && canvas == nil) {
+            // Case: a terminal-only session.
             return AnyView(
                 ZStack {
                     Color.black
-                    SwiftUITerminal(host: host_info, canvas: $canvas, modifyTerminalHeight: false)
+                    SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: false)
                 }
                 .navigationBarTitle("\(host!.name)")
                 .navigationBarTitleDisplayMode(.inline)
@@ -96,17 +115,6 @@ struct SessionPageView: View {
             )
         } else {
             // Case: a canvas-and-terminal session.
-            let host_info = HostInfo(
-                alias: host!.name,
-                username: host!.username,
-                hostname: host!.host,
-                authType: host!.authenticationType,
-                password: host!.password,
-                publicKey: host!.publicKey,
-                privateKey: host!.privateKey,
-                privateKeyPassword: host!.privateKeyPassword
-            )
-            
             return AnyView(
                 GeometryReader { geometry in
                     // if we are saving the drawing / exiting, change the background to white
@@ -114,7 +122,8 @@ struct SessionPageView: View {
                     savingDrawing ? Color.white : Color.black
                     VStack {
                         CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
-                        SwiftUITerminal(host: host_info, canvas: $canvas, modifyTerminalHeight: true)
+                        // TODO REFACTOR get connection. again should we open a new one here every time?
+                        SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: true)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
                 }
