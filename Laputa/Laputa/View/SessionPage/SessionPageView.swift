@@ -26,7 +26,7 @@ struct SessionPageView: View {
     @State var savingDrawing = false
     
     var body: some View {
-        // TODO REFACTOR right now we're only checking nil session, not connection status
+        // TODO TJ right now we're only checking nil session, not connection status
         if (host != nil && session != nil && canvas == nil) {
             // Case: a terminal-only session with an active connection
             return AnyView(
@@ -69,7 +69,6 @@ struct SessionPageView: View {
                 ) {
                     SessionPageInputCanvas(canvas: $canvas, showCanvasSheet: $showCanvasSheet)
                 }
-                .onAppear(perform: establishConnection)
             )
         } else if (host != nil && session == nil && canvas == nil) {
             // TODO replace with a real not connected view
@@ -103,11 +102,9 @@ struct SessionPageView: View {
                     savingDrawing ? Color.white : Color.black
                     VStack {
                         CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
-                        // TODO REFACTOR get connection. again should we open a new one here every time?
                         SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: true)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
-                    .onAppear(perform: establishConnection)
                 }
             )
         } else {
