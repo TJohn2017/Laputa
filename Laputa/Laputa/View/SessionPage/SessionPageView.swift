@@ -94,6 +94,7 @@ struct SessionPageView: View {
                 }
             )
         } else if (host != nil && session != nil && canvas != nil){
+            print("LOG: about to render both host and canvas with session = \(session != nil)")
             // Case: a canvas-and-terminal session with an active connection.
             return AnyView(
                 GeometryReader { geometry in
@@ -158,7 +159,6 @@ struct SessionPageView: View {
             }
         }
     }
-    
 }
 
 

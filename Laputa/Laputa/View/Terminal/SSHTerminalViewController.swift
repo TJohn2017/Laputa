@@ -87,7 +87,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     @objc func handleKeyboardWillHide() {
         keyboardDelta = 0
-        terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
+        if (terminalView != nil) {
+            terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
+        }
     }
     
     var keyboardDelta: CGFloat = 0
@@ -105,19 +107,21 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             } else {
                 keyboardDelta = 0
             }
-            
-            terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
-            UIView.animate(withDuration: duration,
-                                       delay: TimeInterval(0),
-                                       options: animationCurve,
-                                       animations: {
+            if (terminalView != nil) {
+                terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
+                UIView.animate(withDuration: duration,
+                                           delay: TimeInterval(0),
+                                           options: animationCurve,
+                                           animations: {
 
-                                        self.view.layoutIfNeeded() },
-                                       completion: nil)
+                                            self.view.layoutIfNeeded() },
+                                           completion: nil)
+            }
         }
     }
     
     override func loadView() {
+        print("LOG: loadView called")
         super.loadView()
         if (self.modifyTerminalHeight) {
             previous_height = self.view.bounds.height * 0.49
@@ -162,6 +166,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Loads terminal gui into the view
     override func viewDidLoad() {
+        print("LOG: viewDidLoad called")
         super.viewDidLoad()
         addKeyboard()
         
@@ -170,12 +175,15 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // start ssh session and add it ot the view
         let (terminalView, connected) = startSSHSession()
         self.connected = connected
+        print("LOG: terminalView = \(terminalView != nil)")
+        print("LOG: self.connected = \(self.connected)")
         
         // Initialize default-failure page (in case of no connection).
         self.errorView = self.generateErrorView()
         
         // Otherwise, display the terminal view.
         if (self.connected) {
+            print("LOG: connected in viewDidLoad")
             guard let t = terminalView else {
                 return
             }
@@ -317,7 +325,7 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     }
     
     static func dismantleUIViewController(_ uiViewController: SSHTerminalViewController, coordinator: Coordinator) {
-        uiViewController.terminalView?.ssh_session?.disconnect()
+//        uiViewController.terminalView?.ssh_session?.disconnect()
     }
 }
 
