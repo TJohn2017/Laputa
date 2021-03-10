@@ -50,9 +50,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     {
         var view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
         if (self.modifyTerminalHeight && keyboardDelta > 0) { // set height when keyboard shows up to fill the screen til the keyboard
-            view_height += keyboardDelta*0.53
+            view_height += keyboardDelta*0.53 // TODO makes screen start too low
         } else if (keyboardWillHide && previous_height != nil) { // set height to be the previous terminal view height before the keyboard appeared
-            view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top - 30
+            view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top - 30 // WEIRD OFFSET
         } else if (view_height < 5) { // if view height too small, set minimum height of 50
             view_height = 50
         }
@@ -147,7 +147,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 x: self.view.bounds.origin.x,
                 y: self.view.bounds.origin.y,
                 width: size.width,
-                height: size.height * screenMultiplier - 30
+                height: size.height * screenMultiplier - 30 // WEIRD OFFSET
             )
      
             if (self.connected) {

@@ -15,6 +15,8 @@ struct SessionPageView: View {
     @State var session: SSHConnection?
     @State var showCanvasSheet: Bool = false
     @State var showHostSheet: Bool = false
+    @State var hideNavBar : Bool = false
+    
     // State vars for PKDrawingView
     @State var isDraw = true
     @State var isErase = false
@@ -24,6 +26,7 @@ struct SessionPageView: View {
     // passed into CanvasView/PKDrawingView so that when it is toggled by the
     // back button, the view will update and save the current drawing
     @State var savingDrawing = false
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         // TODO REFACTOR right now we're only checking nil session, not connection status
@@ -31,13 +34,22 @@ struct SessionPageView: View {
             // Case: a terminal-only session with an active connection
             return AnyView(
                 ZStack {
-                    Color.black
+                    Color.purple // TODO change back to Color.black
                     SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: false)
                 }
                 .navigationBarTitle("\(host!.name)")
                 .navigationBarTitleDisplayMode(.inline)
+                .navigationBarHidden(hideNavBar)
+                .navigationBarBackButtonHidden(true)
                 .navigationBarItems(
-                    trailing:
+                    leading:
+                        Button(action: {
+                            session?.disconnect()
+                            hideNavBar.toggle()
+                            self.presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Image(systemName: "chevron.left").font(.title2)
+                        },trailing:
                         Menu {
                             Button(action: {
                                 // TODO stop this if we already added a canvas
@@ -85,7 +97,7 @@ struct SessionPageView: View {
                     // if we are saving the drawing / exiting, change the background to white
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
-                    CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
+                    CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
                     .sheet(
                         isPresented: $showHostSheet
                     ) {
@@ -102,7 +114,7 @@ struct SessionPageView: View {
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
                     VStack {
-                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
+                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
                         // TODO REFACTOR get connection. again should we open a new one here every time?
                         SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: true)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
@@ -119,7 +131,7 @@ struct SessionPageView: View {
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
                     VStack {
-                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
+                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
                         Text("Not connected.")
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
@@ -128,6 +140,7 @@ struct SessionPageView: View {
             )
         }
     }
+    
     
     // This function should be run on the appearance of any of the above views which have a terminal.
     // It is used to establish the ssh connection for the terminal from the given host data.

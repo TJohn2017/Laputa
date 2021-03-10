@@ -24,9 +24,12 @@ struct CanvasViewWithNavigation: View {
     @Binding var color : Color
     @Binding var type : PKInkingTool.InkType
     
+    
     // passed into PKDrawingView so that when it is toggled by the
     // back button, the view will update and save the current drawing
     @Binding var savingDrawing: Bool
+    
+    @Binding var session : SSHConnection?
     
     var body: some View {
         CanvasView(canvasId: canvas.id, height: canvasHeight, width: canvasWidth, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
@@ -39,6 +42,9 @@ struct CanvasViewWithNavigation: View {
                 leading:
                     Button(action: {
                         savingDrawing.toggle()
+                        if (session != nil) {
+                            session?.disconnect()
+                        }
                         self.presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "chevron.left").font(.title2)
@@ -133,6 +139,7 @@ struct CanvasViewWithNavigation_Previews: PreviewProvider {
         @State var color : Color = Color.black
         @State var type : PKInkingTool.InkType = .pencil
         @State var savingDrawing: Bool = false
+        @State var session : SSHConnection?
         
         var body: some View {
             let context = PersistenceController.preview.container.viewContext
@@ -142,7 +149,7 @@ struct CanvasViewWithNavigation_Previews: PreviewProvider {
             newCanvas.dateCreated = Date()
             newCanvas.title = "Test Canvas"
             
-            return CanvasViewWithNavigation(canvas: newCanvas, canvasHeight: UIScreen.main.bounds.height, canvasWidth: UIScreen.main.bounds.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasViewWithNavigation(canvas: newCanvas, canvasHeight: UIScreen.main.bounds.height, canvasWidth: UIScreen.main.bounds.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }
