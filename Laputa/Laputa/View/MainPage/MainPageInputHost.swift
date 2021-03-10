@@ -104,7 +104,7 @@ struct MainPageInputHost: View {
                     if (self.selectedAuthenticationType == AuthenticationType.password) {
                         HStack {
                             Text("Password")
-                            TextField("Required", text: $password).multilineTextAlignment(.trailing)
+                            SecureField("Required", text: $password).multilineTextAlignment(.trailing)
                         }
                     } else {
                         HStack {
@@ -117,7 +117,7 @@ struct MainPageInputHost: View {
                         }
                         HStack {
                             Text("Password for encrypted private key")
-                            TextField("Required", text: $privateKeyPassword).multilineTextAlignment(.trailing)
+                            SecureField("Required", text: $privateKeyPassword).multilineTextAlignment(.trailing)
                         }
                     }
                 }
