@@ -16,8 +16,9 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     // Class variables
     var ssh_session: SSHConnection?
     var command_buffer = [UInt8]()
-    var shouldCatchResponse: Bool = false
-    var lastReponse: String = ""
+    // TODO TJ take these out if we can't use them
+//    var shouldCatchResponse: Bool = false
+//    var lastResponse: String = ""
     
     init(connection: SSHConnection?, frame: CGRect) {
         super.init(frame: frame) // init function of TerminalView
@@ -40,13 +41,14 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     public func channel(_ channel: NMSSHChannel, didReadData message: String) {
         print("DATA RECEIVED: \(message)")
         
+        // TODO TJ take this out if we can't figure it out
         // This message is a response from a command. Stash it so that the UI can work with it.
-        if (shouldCatchResponse) {
-            shouldCatchResponse = false
-            print("CATCHING RESPONSE: \(message)")
-            lastReponse = message
-        }
-        
+//        if (shouldCatchResponse) {
+//            shouldCatchResponse = false
+//            print("CATCHING RESPONSE: \(message)")
+//            lastResponse = message
+//        }
+                
         // TODO TJ: this check for the return character isn't working. It seems like it goes through send
         //          but doesn't actually show up in didReadData so for now I just put it there
 //        if (message.count > 0 && message.last! == Character("\r")) {
@@ -90,11 +92,11 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
             // response for potential UI use.
             // TODO TJ: should we try to be more precise than this? for example, we are going to unnecessarily
             //          catch a ton of responses when doing things like using vim
+//            let lastIndex = ((data.endIndex - 1) > 0) ? (data.endIndex - 1) : 0 // Don't let last index go out of bounds
+//            if (data[lastIndex] == ReturnControlCode) {
+//                shouldCatchResponse = true
+//            }
             
-            let lastIndex = ((data.endIndex - 1) > 0) ? (data.endIndex - 1) : 0 // Don't let last index go out of bounds
-            if (data[lastIndex] == ReturnControlCode) {
-                shouldCatchResponse = true
-            }
             try ssh_session?.write(data: data)
         } catch {
             // TODO TJ figure out what error types we need to account for here
@@ -103,7 +105,7 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     
     // Getter function that returns teh last response instance variable
     public func lastResponse() -> String {
-        return lastReponse
+        return ssh_session?.session.channel.lastResponse ?? ""
     }
     
     public func isConnected() -> Bool {

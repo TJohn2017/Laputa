@@ -44,11 +44,16 @@ struct CodeCardView: View {
     @State var viewState = CGSize.zero
     // Whether or not a user is currently able to delete a card
     @State var deleting = false
+    // Size state variables
+    @State var width: CGFloat = 500
+    @State var height: CGFloat = 500
     
     // Sets initial card position saved in CoreData
-    func setInitialOffset() {
+    func setInitialOffsetAndSize() {
         self.viewState.width = CGFloat(codeCard.locX)
         self.viewState.height = CGFloat(codeCard.locY)
+        self.width = CGFloat(codeCard.width)
+        self.height = CGFloat(codeCard.height)
     }
     
     // Sets code card zIndex to the max, bringing
@@ -68,6 +73,18 @@ struct CodeCardView: View {
         viewContext.performAndWait {
             codeCard.locX = newLocX
             codeCard.locY = newLocY
+            try? viewContext.save()
+        }
+    }
+    
+    @GestureState var resizeState = CGSize.zero
+    @State var isResizing: Bool = false
+    
+    // Saves card size in CoreData
+    func updateCardSize() {
+        viewContext.performAndWait {
+            codeCard.width = Float(width)
+            codeCard.height = Float(height)
             try? viewContext.save()
         }
     }
@@ -97,6 +114,9 @@ struct CodeCardView: View {
     }
     
     var body: some View {
+        // minimum size for a card
+        let minWidth: CGFloat = 100
+        let minHeight: CGFloat = 100
         
         let drag = DragGesture()
             .onChanged { _ in
@@ -112,6 +132,28 @@ struct CodeCardView: View {
                 
                 updateCardPosition()
             }
+    
+        var resize: some Gesture {
+            DragGesture()
+                .onChanged { _ in
+                    updateCardZIndex()
+                    isResizing = true
+                }
+                .updating($resizeState) { value, state, transaction in
+                    state = value.translation
+                    print("value.translation: \(value.translation)")
+                }
+                .onEnded() { value in
+                    isResizing = false
+                    
+                    width = max(width + value.translation.width, minWidth)
+                    height = max(height + value.translation.height, minHeight)
+                    maxZIndex += 1
+                    
+                    updateCardSize()
+                    print("LOG:  new width = \(width), new height = \(height)")
+                }
+        }
         
         return
             ZStack {
@@ -120,16 +162,33 @@ struct CodeCardView: View {
                 if self.deleting {
                     Rectangle()
                         .ignoresSafeArea()
-                        .foregroundColor(Color(white: 1).opacity(0.5))
+                        .foregroundColor(Color(white: 0).opacity(0.2))
                         .gesture(dismissDelete)
                 }
                 HStack() {
-                    Text(codeCard.wrappedText)
-                        .padding(20)
-                        .border(self.deleting ? .red : Color.white)
-                        .foregroundColor(.white)
-                        .background(Color(red: 0.2, green: 0.2, blue: 0.2, opacity: 1.0))
-                        .font(.custom("Menlo-Regular", size: 12))
+                    ZStack () {
+                        CodeCardTerminal(
+                            content: codeCard.wrappedText,
+                            width: $width,
+                            height: $height
+                        )
+                        .border(self.deleting ? .red : (isResizing ? Color.yellow : Color.white))
+                        
+                        Image(systemName: "arrow.left.and.right.circle.fill")
+                            .font(.largeTitle)
+                            .rotationEffect(.degrees(45))
+                            .offset(
+                                x: max((width + resizeState.width), minWidth) / 2 - 30,
+                                y: max((height + resizeState.height), minHeight) / 2 - 30
+                            )
+                            .foregroundColor(.yellow)
+                            .gesture(resize)
+                    }
+                    .frame(
+                        width: max(CGFloat(codeCard.width) + resizeState.width, minWidth),
+                        height: max(CGFloat(codeCard.height) + resizeState.height, minHeight)
+                    )
+                    
                     if self.deleting {
                         Button(action: {
                             viewContext.delete(codeCard)
@@ -156,11 +215,12 @@ struct CodeCardView: View {
                 // don't allow dragging while delete button is visible
                 .gesture(self.deleting ? nil : drag)
                 .shadow(radius: dragState.isDragging ? 8 : 0)
-                .onAppear(perform: setInitialOffset)
+                .onAppear(perform: setInitialOffsetAndSize)
             }
             .zIndex(codeCard.zIndex)
     }
 }
+
 
 struct CodeCardView_Previews: PreviewProvider {
     static var previews: some View {

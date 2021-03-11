@@ -23,6 +23,10 @@ class SSHConnection {
         session = NMSSHSession(host: host, andUsername: andUsername)
     }
     
+    deinit {
+        disconnect()
+    }
+    
     // TODO TJ comment
     func connect(hostInfo: HostInfo) throws {
         if (session.connect()) {
@@ -77,7 +81,7 @@ class SSHConnection {
         let letter = String(bytes: data, encoding: .utf8)
         if (letter != nil) {
             let new_data = Data(letter!.utf8)
-            try session.channel.write(new_data)
+            try session.channel.write(new_data) // TODO TJ should this be in the sync dispatch queue?
         }
     }
     

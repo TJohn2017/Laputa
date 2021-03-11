@@ -9,10 +9,12 @@
     </entity>
     <entity name="CodeCard" representedClassName="CodeCard" syncable="YES">
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="height" optional="YES" attributeType="Float" defaultValueString="400" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="locX" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="locY" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="text" optional="YES" attributeType="String"/>
+        <attribute name="width" optional="YES" attributeType="Float" defaultValueString="400" usesScalarValueType="YES"/>
         <attribute name="zIndex" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="origin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Canvas" inverseName="cards" inverseEntity="Canvas"/>
     </entity>
@@ -33,7 +35,7 @@
     </entity>
     <elements>
         <element name="Canvas" positionX="-63" positionY="-9" width="128" height="89"/>
-        <element name="CodeCard" positionX="-54" positionY="0" width="128" height="148"/>
+        <element name="CodeCard" positionX="-54" positionY="0" width="128" height="178"/>
         <element name="Host" positionX="-63" positionY="0" width="128" height="178"/>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="73"/>
     </elements>

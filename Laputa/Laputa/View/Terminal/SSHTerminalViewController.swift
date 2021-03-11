@@ -250,6 +250,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
         if (lastResponse != nil && canvas != nil && viewContext != nil) {
             print("We are attempting to create a card")
+            print("last response: \(lastResponse ?? "")")
             let newCard = CodeCard(context: viewContext!)
             newCard.id = UUID()
             newCard.origin = canvas
@@ -260,8 +261,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 maxZIndex = cards[0].zIndex + 1.0
             }
             newCard.zIndex = maxZIndex
-            newCard.text = "last response:\(lastResponse!) \(newCard.id)\n\nx: \(newCard.locX), y: \(newCard.locY)"
-
+            newCard.text = lastResponse
+        
             do {
                 try viewContext!.save()
             } catch {
