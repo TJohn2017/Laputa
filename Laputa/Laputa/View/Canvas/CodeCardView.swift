@@ -77,6 +77,10 @@ struct CodeCardView: View {
         }
     }
     
+    @GestureState var resizeState = CGSize.zero
+    @State var isResizing: Bool = false
+    
+    // Saves card size in CoreData
     func updateCardSize() {
         viewContext.performAndWait {
             codeCard.width = Float(width)
@@ -110,6 +114,9 @@ struct CodeCardView: View {
     }
     
     var body: some View {
+        // minimum size for a card
+        let minWidth: CGFloat = 100
+        let minHeight: CGFloat = 100
         
         let drag = DragGesture()
             .onChanged { _ in
@@ -125,6 +132,28 @@ struct CodeCardView: View {
                 
                 updateCardPosition()
             }
+    
+        var resize: some Gesture {
+            DragGesture()
+                .onChanged { _ in
+                    updateCardZIndex()
+                    isResizing = true
+                }
+                .updating($resizeState) { value, state, transaction in
+                    state = value.translation
+                    print("value.translation: \(value.translation)")
+                }
+                .onEnded() { value in
+                    isResizing = false
+                    
+                    width = max(width + value.translation.width, minWidth)
+                    height = max(height + value.translation.height, minHeight)
+                    maxZIndex += 1
+                    
+                    updateCardSize()
+                    print("LOG:  new width = \(width), new height = \(height)")
+                }
+        }
         
         return
             ZStack {
@@ -133,19 +162,31 @@ struct CodeCardView: View {
                 if self.deleting {
                     Rectangle()
                         .ignoresSafeArea()
-                        .foregroundColor(Color(white: 1).opacity(0.5))
+                        .foregroundColor(Color(white: 0).opacity(0.2))
                         .gesture(dismissDelete)
                 }
                 HStack() {
                     ZStack () {
-                        CodeCardTerminal(content: codeCard.wrappedText, width: $width, height: $height)
-                            .border(self.deleting ? .red : Color.white)
+                        CodeCardTerminal(
+                            content: codeCard.wrappedText,
+                            width: $width,
+                            height: $height
+                        )
+                        .border(self.deleting ? .red : (isResizing ? Color.yellow : Color.white))
                         
-                        Image(systemName: "viewfinder.circle.fill")
-                            .offset(x: width/2 - 20, y: height/2 - 20)
+                        Image(systemName: "arrow.left.and.right.circle.fill")
+                            .rotationEffect(.degrees(45))
+                            .offset(
+                                x: max((width + resizeState.width), minWidth) / 2 - 20,
+                                y: max((height + resizeState.height), minHeight) / 2 - 20
+                            )
                             .foregroundColor(.yellow)
                             .gesture(resize)
                     }
+                    .frame(
+                        width: max(CGFloat(codeCard.width) + resizeState.width, minWidth),
+                        height: max(CGFloat(codeCard.height) + resizeState.height, minHeight)
+                    )
                     
                     if self.deleting {
                         Button(action: {
@@ -174,28 +215,8 @@ struct CodeCardView: View {
                 .gesture(self.deleting ? nil : drag)
                 .shadow(radius: dragState.isDragging ? 8 : 0)
                 .onAppear(perform: setInitialOffsetAndSize)
-                .frame(width: width, height: height, alignment: .center)
             }
             .zIndex(codeCard.zIndex)
-    }
-    
-    @GestureState var resizeState = CGSize.zero
-    var resize: some Gesture {
-        DragGesture()
-            .updating($resizeState) { value, state, transaction in
-                state = value.translation
-                print("value.translation: \(value.translation)")
-            }
-            .onEnded() { value in
-//                self.viewState.width += value.translation.width
-//                self.viewState.height += value.translation.height
-                // update state vars
-                
-                width += value.translation.width
-                height += value.translation.height
-                updateCardSize()
-                print("LOG:  new width = \(width), new height = \(height)")
-            }
     }
 }
 
