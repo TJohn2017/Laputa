@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D64" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="19H524" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Canvas" representedClassName="Canvas" syncable="YES">
         <attribute name="dateCreated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="drawingData" optional="YES" attributeType="Binary"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <relationship name="cards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CodeCard" inverseName="origin" inverseEntity="CodeCard"/>
@@ -15,11 +16,15 @@
         <attribute name="zIndex" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="origin" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Canvas" inverseName="cards" inverseEntity="Canvas"/>
     </entity>
-    <entity name="Host" representedClassName="Host" syncable="YES" codeGenerationType="class">
+    <entity name="Host" representedClassName="Host" syncable="YES">
+        <attribute name="authenticationTypeRawValue" optional="YES" attributeType="String"/>
         <attribute name="host" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="password" optional="YES" attributeType="String"/>
         <attribute name="port" optional="YES" attributeType="String"/>
+        <attribute name="privateKey" optional="YES" attributeType="String"/>
+        <attribute name="privateKeyPassword" optional="YES" attributeType="String"/>
+        <attribute name="publicKey" optional="YES" attributeType="String"/>
         <attribute name="username" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
@@ -28,8 +33,8 @@
     </entity>
     <elements>
         <element name="Canvas" positionX="-63" positionY="-9" width="128" height="89"/>
-        <element name="CodeCard" positionX="-54" positionY="0" width="128" height="134"/>
-        <element name="Host" positionX="-63" positionY="0" width="128" height="118"/>
+        <element name="CodeCard" positionX="-54" positionY="0" width="128" height="148"/>
+        <element name="Host" positionX="-63" positionY="0" width="128" height="178"/>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="73"/>
     </elements>
 </model>

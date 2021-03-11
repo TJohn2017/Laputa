@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct CanvasDebugView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -14,14 +15,23 @@ struct CanvasDebugView: View {
     var allCards: FetchedResults<CodeCard>
     
     var fetchRequest: FetchRequest<Canvas>
-    var isSplit: Bool
-    init(canvasId: UUID, isSplitView: Bool) {
+    init(canvasId: UUID, savingDrawing: Binding<Bool>) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
-        isSplit = isSplitView
+        self._savingDrawing = savingDrawing
     }
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
 
+    // added state vars for CanvasView
+    @State var isDraw = true
+    @State var isErase = false
+    @State var color : Color = Color.black
+    @State var type : PKInkingTool.InkType = .pencil
+    
+    // passed into PKDrawingView so that when it is toggled by the
+    // back button, the view will update and save the current drawing
+    @Binding var savingDrawing: Bool
+    
     var body: some View {
                 
         func addExampleCard() {
@@ -62,7 +72,7 @@ struct CanvasDebugView: View {
         }
         
         return ZStack {
-            CanvasView(canvasId: canvas.id, isSplitView: isSplit)
+            CanvasView(canvasId: canvas.id, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing)
             HStack {
                 Button(action: addExampleCard) {
                     Text("Add card")
@@ -93,13 +103,15 @@ struct CanvasDebugView_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
+        @State var savingDrawing: Bool = false
+        
         var body: some View {
             let context = PersistenceController.preview.container.viewContext
             let newCanvas = Canvas(context: context)
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasDebugView(canvasId: newCanvas.id, isSplitView: false).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasDebugView(canvasId: newCanvas.id, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }

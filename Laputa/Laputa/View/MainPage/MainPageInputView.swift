@@ -10,12 +10,14 @@ import SwiftUI
 struct MainPageInputView: View {
     @Binding var displayHosts: Bool
     @Binding var showingInputSheet: Bool
+    @Binding var selectedHost: Host?
+    @Binding var selectedCanvas: Canvas?
     
     var body: some View {
         if (displayHosts) {
-            MainPageInputHost(showingInputSheet: $showingInputSheet)
+            MainPageInputHost(showingInputSheet: $showingInputSheet, selectedHost: $selectedHost)
         } else {
-            MainPageInputCanvas(showingInputSheet: $showingInputSheet)
+            MainPageInputCanvas(showingInputSheet: $showingInputSheet, selectedCanvas: $selectedCanvas)
         }
     }
 }
@@ -32,7 +34,9 @@ struct MainPageInputView_Previews: PreviewProvider {
         var body: some View {
             MainPageInputView(
                 displayHosts: $displayHosts,
-                showingInputSheet: $showingInputSheet
+                showingInputSheet: $showingInputSheet,
+                selectedHost: .constant(nil),
+                selectedCanvas: .constant(nil)
             ).environment(
                 \.managedObjectContext,
                 PersistenceController.preview.container.viewContext

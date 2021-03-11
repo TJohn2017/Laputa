@@ -7,19 +7,11 @@
 
 import SwiftUI
 
-// TODO:
-// - Add a "+" add button --> triggers a menu that offers between canvas
-//   and ssh host.
-// - Clicking a Host --> should bring up a detail where you can choose
-//    between saved canvases or prompts you to make a new one.
-/*
-    .padding(.leading, 35)
-    .padding(.trailing, 5)
-*/
 struct MainPageView: View {
     @State private var displayHosts: Bool = true
     @State private var showingInputSheet: Bool = false
-    @State private var startSession: Bool = false
+    @State var selectedCanvas: Canvas? = nil
+    @State var selectedHost: Host? = nil
     
     var body: some View {
         NavigationView {
@@ -34,16 +26,10 @@ struct MainPageView: View {
                     
                     Spacer()
                     
-                    MainPageList(displayHosts: $displayHosts)
-                    
-                    Spacer()
-                    
-                    NavigationLink(
-                        destination: Text("Session"),
-                        isActive: $startSession
-                    ) {
-                        EmptyView()
-                    }
+                    MainPageList(displayHosts: $displayHosts,
+                                 showingInputSheet: $showingInputSheet,
+                                 selectedHost: $selectedHost,
+                                 selectedCanvas: $selectedCanvas)
                 }
             }
             .navigationBarTitle("")
@@ -52,13 +38,15 @@ struct MainPageView: View {
             .sheet(
                 isPresented: $showingInputSheet,
                 onDismiss: {
-                    // Execute if Input is completed.
-                    // startSession.toggle()
+                    selectedHost = nil
+                    selectedCanvas = nil
                 }
             ) {
                 MainPageInputView(
                     displayHosts: $displayHosts,
-                    showingInputSheet: $showingInputSheet
+                    showingInputSheet: $showingInputSheet,
+                    selectedHost: $selectedHost,
+                    selectedCanvas: $selectedCanvas
                 )
             }
         }

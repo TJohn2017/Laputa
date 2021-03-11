@@ -10,102 +10,23 @@ import SwiftUI
 struct MainPageList: View {
     @Environment(\.managedObjectContext) private var viewContext
     
-    @FetchRequest(
-        entity: Canvas.entity(),
-        sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)]
-    )
-    var canvases: FetchedResults<Canvas>
-    
-    @FetchRequest(
-        entity: Host.entity(),
-        sortDescriptors: []
-    )
-    var hosts: FetchedResults<Host>
-    
     @Binding var displayHosts: Bool
+    @Binding var showingInputSheet: Bool
     
-    @State private var showDeleteAlert = false
-
+    // passed up to MainPageView where editing host/canvas info sheet is located
+    @Binding var selectedHost: Host?
+    @Binding var selectedCanvas: Canvas?
     
     var body: some View {
-
-        return AnyView(ScrollView {
+        return ScrollView {
             VStack {
                 if (displayHosts) {
-                    ForEach(hosts) { host in
-                        HStack {
-                            NavigationLink(
-                                destination: SessionPageView(
-                                    hostPresent: true,
-                                    canvasPresent: false,
-                                    host: host
-                                )) {
-                                MainPagePreview(host: host)
-                            }
-                            Menu() {
-                                Button("Delete host", action: {
-                                    viewContext.delete(host)
-                                
-                                    do {
-                                        try viewContext.save()
-                                        showDeleteAlert = true
-                                        print("Host deleted.")
-                                    } catch {
-                                        print(error.localizedDescription)
-                                    }
-                                })
-                            } label: {
-                                Label("", systemImage: "ellipsis.circle")
-                                    .font(.largeTitle)
-                                    .foregroundColor(.white)
-                            }
-                        }.alert(isPresented: $showDeleteAlert) {
-                            Alert(
-                                title: Text("Host deleted"),
-                                message: Text("Host will now be removed."),
-                                dismissButton: .default(Text("OK"))
-                            )
-                        }
-                    }
+                    HostList(showingInputSheet: $showingInputSheet, selectedHost: $selectedHost)
                 } else {
-                    ForEach(canvases) { canvas in
-                        HStack {
-                            NavigationLink(
-                                destination: SessionPageView(
-                                    hostPresent: true,
-                                    canvasPresent: false,
-                                    canvas: canvas
-                            )) {
-                                MainPagePreview(canvas: canvas)
-                            }
-                            Menu() {
-                                Button("Delete canvas", action: {
-                                    viewContext.delete(canvas)
-                                    
-                                    do {
-                                        try viewContext.save()
-                                        showDeleteAlert = true
-                                        print("Canvas deleted.")
-                                    } catch {
-                                        print(error.localizedDescription)
-                                    }
-                                })
-                            } label: {
-                                Label("", systemImage: "ellipsis.circle")
-                                .font(.largeTitle)
-                                .foregroundColor(.white)
-                            }
-                        }.alert(isPresented: $showDeleteAlert) {
-                            Alert(
-                                title: Text("Canvas deleted"),
-                                message: Text("Canvas will now be removed."),
-                                dismissButton: .default(Text("OK"))
-                            )
-                        }
-                    }
+                    CanvasList(showingInputSheet: $showingInputSheet, selectedCanvas: $selectedCanvas)
                 }
             }
-        })
+        }
     }
     
 }
@@ -117,9 +38,15 @@ struct MainPageList_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State private var displayHosts: Bool = false
+        @State private var showingInputSheet: Bool = false
         
         var body: some View {
-            MainPageList(displayHosts: $displayHosts).environment(
+            MainPageList(
+                displayHosts: $displayHosts,
+                showingInputSheet: $showingInputSheet,
+                selectedHost: .constant(nil),
+                selectedCanvas: .constant(nil)
+            ).environment(
                 \.managedObjectContext,
                 PersistenceController.preview.container.viewContext
             )

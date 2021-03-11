@@ -32,23 +32,23 @@
 		584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */; };
 		584E47F325E209AF005EDC0E /* SessionPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584E47F225E209AF005EDC0E /* SessionPageView.swift */; };
 		585B34C825E370040095DD2C /* SessionPageInputCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */; };
+		589AC31025F48D8700405E20 /* Host+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */; };
+		589AC31125F48D8700405E20 /* Host+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */; };
+		75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */; };
 		759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */; };
 		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
 		759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */; };
 		9C488E2625D0DCBA00662F1E /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C488E2525D0DCBA00662F1E /* CanvasView.swift */; };
 		9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C488E3125D1081C00662F1E /* CodeCardView.swift */; };
-		9CEDEA1625E07FCE00F0E380 /* CodeCard+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1225E07FCE00F0E380 /* CodeCard+CoreDataClass.swift */; };
-		9CEDEA1725E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1325E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift */; };
-		9CEDEA1825E07FCE00F0E380 /* Canvas+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */; };
-		9CEDEA1925E07FCE00F0E380 /* Canvas+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */; };
+		9C60058025F5B242007997FB /* CanvasViewWithNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C60057F25F5B242007997FB /* CanvasViewWithNavigation.swift */; };
+		9C7B158625F18FB500E88B09 /* CodeCard+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158425F18FB500E88B09 /* CodeCard+CoreDataClass.swift */; };
+		9C7B158725F18FB500E88B09 /* CodeCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158525F18FB500E88B09 /* CodeCard+CoreDataProperties.swift */; };
+		9C7B159025F1901D00E88B09 /* Canvas+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158E25F1901D00E88B09 /* Canvas+CoreDataClass.swift */; };
+		9C7B159125F1901D00E88B09 /* Canvas+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158F25F1901D00E88B09 /* Canvas+CoreDataProperties.swift */; };
+		9C7B15AC25F1E1D400E88B09 /* SessionPageInputHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B15AB25F1E1D400E88B09 /* SessionPageInputHost.swift */; };
+		9C7B160125F4950600E88B09 /* HostList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B160025F4950600E88B09 /* HostList.swift */; };
+		9C7B160625F4951000E88B09 /* CanvasList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B160525F4951000E88B09 /* CanvasList.swift */; };
 		9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */; };
-		9CEDEB7A25E2404500F0E380 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7925E2404500F0E380 /* DrawingView.swift */; };
-		9CEDEB7F25E2408A00F0E380 /* DrawingPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB7E25E2408A00F0E380 /* DrawingPad.swift */; };
-		9CEDEB8425E2413D00F0E380 /* Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8325E2413D00F0E380 /* Drawing.swift */; };
-		9CEDEB8925E2417700F0E380 /* DrawingControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8825E2417700F0E380 /* DrawingControls.swift */; };
-		9CEDEB8E25E2419F00F0E380 /* ColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */; };
-		9CEDEB9325E241C500F0E380 /* ColorProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9225E241C500F0E380 /* ColorProvider.swift */; };
-		9CEDEB9925E2420400F0E380 /* ColorEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CEDEB9825E2420400F0E380 /* ColorEntry.swift */; };
 		B459F5ADAA3EB45E4C5F651A /* Pods_Laputa_LaputaUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13D96F21E72EB2BD3175AE6B /* Pods_Laputa_LaputaUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -105,6 +105,9 @@
 		584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageInputCanvas.swift; sourceTree = "<group>"; };
 		584E47F225E209AF005EDC0E /* SessionPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageView.swift; sourceTree = "<group>"; };
 		585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPageInputCanvas.swift; sourceTree = "<group>"; };
+		589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Host+CoreDataClass.swift"; path = "Laputa/CoreData/Host+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Host+CoreDataProperties.swift"; path = "Laputa/CoreData/Host+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilKitDrawingView.swift; sourceTree = "<group>"; };
 		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/Terminal/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
 		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
 		759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalView.swift; path = Laputa/View/Terminal/SSHTerminalView.swift; sourceTree = SOURCE_ROOT; };
@@ -112,18 +115,15 @@
 		9C488E2525D0DCBA00662F1E /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		9C488E3125D1081C00662F1E /* CodeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeCardView.swift; sourceTree = "<group>"; };
 		9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9CEDEA1225E07FCE00F0E380 /* CodeCard+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeCard+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		9CEDEA1325E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CodeCard+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
-		9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Canvas+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
-		9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Canvas+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		9C60057F25F5B242007997FB /* CanvasViewWithNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewWithNavigation.swift; sourceTree = "<group>"; };
+		9C7B158425F18FB500E88B09 /* CodeCard+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CodeCard+CoreDataClass.swift"; path = "Laputa/CoreData/CodeCard+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		9C7B158525F18FB500E88B09 /* CodeCard+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CodeCard+CoreDataProperties.swift"; path = "Laputa/CoreData/CodeCard+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		9C7B158E25F1901D00E88B09 /* Canvas+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+CoreDataClass.swift"; path = "Laputa/CoreData/Canvas+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
+		9C7B158F25F1901D00E88B09 /* Canvas+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+CoreDataProperties.swift"; path = "Laputa/CoreData/Canvas+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		9C7B15AB25F1E1D400E88B09 /* SessionPageInputHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionPageInputHost.swift; sourceTree = "<group>"; };
+		9C7B160025F4950600E88B09 /* HostList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostList.swift; sourceTree = "<group>"; };
+		9C7B160525F4951000E88B09 /* CanvasList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasList.swift; sourceTree = "<group>"; };
 		9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDebugView.swift; sourceTree = "<group>"; };
-		9CEDEB7925E2404500F0E380 /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
-		9CEDEB7E25E2408A00F0E380 /* DrawingPad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingPad.swift; sourceTree = "<group>"; };
-		9CEDEB8325E2413D00F0E380 /* Drawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawing.swift; sourceTree = "<group>"; };
-		9CEDEB8825E2417700F0E380 /* DrawingControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingControls.swift; sourceTree = "<group>"; };
-		9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPicker.swift; sourceTree = "<group>"; };
-		9CEDEB9225E241C500F0E380 /* ColorProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorProvider.swift; sourceTree = "<group>"; };
-		9CEDEB9825E2420400F0E380 /* ColorEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorEntry.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,10 +207,7 @@
 		1A64C88A25CA2EE50082FEA7 /* Laputa */ = {
 			isa = PBXGroup;
 			children = (
-				9CEDEA1225E07FCE00F0E380 /* CodeCard+CoreDataClass.swift */,
-				9CEDEA1325E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift */,
-				9CEDEA1425E07FCE00F0E380 /* Canvas+CoreDataClass.swift */,
-				9CEDEA1525E07FCE00F0E380 /* Canvas+CoreDataProperties.swift */,
+				9C7B158025F18EDF00E88B09 /* CoreData */,
 				584E47B125D39A3D005EDC0E /* View */,
 				1A84751A25CCF6EB004169AC /* Services */,
 				1A84751725CCF6D7004169AC /* Model */,
@@ -300,6 +297,8 @@
 				584E47D925DCDC0A005EDC0E /* MainPageInputView.swift */,
 				584E47E125DCEFEC005EDC0E /* MainPageInputHost.swift */,
 				584E47E625DCF523005EDC0E /* MainPageInputCanvas.swift */,
+				9C7B160025F4950600E88B09 /* HostList.swift */,
+				9C7B160525F4951000E88B09 /* CanvasList.swift */,
 			);
 			path = MainPage;
 			sourceTree = "<group>";
@@ -307,6 +306,7 @@
 		584E47F125E2099C005EDC0E /* SessionPage */ = {
 			isa = PBXGroup;
 			children = (
+				9C7B15AB25F1E1D400E88B09 /* SessionPageInputHost.swift */,
 				584E47F225E209AF005EDC0E /* SessionPageView.swift */,
 				585B34C725E370040095DD2C /* SessionPageInputCanvas.swift */,
 			);
@@ -326,6 +326,19 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		9C7B158025F18EDF00E88B09 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */,
+				589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */,
+				9C7B158E25F1901D00E88B09 /* Canvas+CoreDataClass.swift */,
+				9C7B158F25F1901D00E88B09 /* Canvas+CoreDataProperties.swift */,
+				9C7B158425F18FB500E88B09 /* CodeCard+CoreDataClass.swift */,
+				9C7B158525F18FB500E88B09 /* CodeCard+CoreDataProperties.swift */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
 		9CEDEB7025E23DD900F0E380 /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
@@ -333,6 +346,7 @@
 				9C488E3125D1081C00662F1E /* CodeCardView.swift */,
 				9C488E2525D0DCBA00662F1E /* CanvasView.swift */,
 				9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */,
+				9C60057F25F5B242007997FB /* CanvasViewWithNavigation.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -340,13 +354,7 @@
 		9CEDEB9725E241EA00F0E380 /* Drawing */ = {
 			isa = PBXGroup;
 			children = (
-				9CEDEB7925E2404500F0E380 /* DrawingView.swift */,
-				9CEDEB7E25E2408A00F0E380 /* DrawingPad.swift */,
-				9CEDEB8325E2413D00F0E380 /* Drawing.swift */,
-				9CEDEB8825E2417700F0E380 /* DrawingControls.swift */,
-				9CEDEB8D25E2419F00F0E380 /* ColorPicker.swift */,
-				9CEDEB9225E241C500F0E380 /* ColorProvider.swift */,
-				9CEDEB9825E2420400F0E380 /* ColorEntry.swift */,
+				75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */,
 			);
 			path = Drawing;
 			sourceTree = "<group>";
@@ -594,24 +602,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CEDEA1925E07FCE00F0E380 /* Canvas+CoreDataProperties.swift in Sources */,
-				9CEDEB8925E2417700F0E380 /* DrawingControls.swift in Sources */,
-				9CEDEA1625E07FCE00F0E380 /* CodeCard+CoreDataClass.swift in Sources */,
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
-				9CEDEB9925E2420400F0E380 /* ColorEntry.swift in Sources */,
-				9CEDEB7A25E2404500F0E380 /* DrawingView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
+				9C60058025F5B242007997FB /* CanvasViewWithNavigation.swift in Sources */,
+				9C7B160625F4951000E88B09 /* CanvasList.swift in Sources */,
+				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
+				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
+				9C7B160125F4950600E88B09 /* HostList.swift in Sources */,
+				9C7B15AC25F1E1D400E88B09 /* SessionPageInputHost.swift in Sources */,
 				1A64C89525CA2EE80082FEA7 /* Persistence.swift in Sources */,
-				9CEDEB7F25E2408A00F0E380 /* DrawingPad.swift in Sources */,
 				1A64C88E25CA2EE50082FEA7 /* ContentView.swift in Sources */,
-				9CEDEB9325E241C500F0E380 /* ColorProvider.swift in Sources */,
-				9CEDEB8E25E2419F00F0E380 /* ColorPicker.swift in Sources */,
-				9CEDEB8425E2413D00F0E380 /* Drawing.swift in Sources */,
+				9C7B158625F18FB500E88B09 /* CodeCard+CoreDataClass.swift in Sources */,
+				75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */,
 				1A64C89825CA2EE80082FEA7 /* Laputa.xcdatamodeld in Sources */,
 				9C488E2625D0DCBA00662F1E /* CanvasView.swift in Sources */,
-				9CEDEA1725E07FCE00F0E380 /* CodeCard+CoreDataProperties.swift in Sources */,
 				1A64C88C25CA2EE50082FEA7 /* LaputaApp.swift in Sources */,
-				9CEDEA1825E07FCE00F0E380 /* Canvas+CoreDataClass.swift in Sources */,
 				584E47C325D63214005EDC0E /* TestView.swift in Sources */,
 				584E47CD25D8BCD8005EDC0E /* MainPagePreview.swift in Sources */,
 				759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */,
@@ -620,12 +625,19 @@
 				584E47DA25DCDC0A005EDC0E /* MainPageInputView.swift in Sources */,
 				584E47D225D8CA48005EDC0E /* MainPageDetail.swift in Sources */,
 				584E47B325D39A49005EDC0E /* MainPageView.swift in Sources */,
+				9C7B159025F1901D00E88B09 /* Canvas+CoreDataClass.swift in Sources */,
+				1A64C89825CA2EE80082FEA7 /* Laputa.xcdatamodeld in Sources */,
 				584E47C825D6382C005EDC0E /* MainPageColumnView.swift in Sources */,
+				589AC31125F48D8700405E20 /* Host+CoreDataProperties.swift in Sources */,
 				585B34C825E370040095DD2C /* SessionPageInputCanvas.swift in Sources */,
 				584E47E225DCEFEC005EDC0E /* MainPageInputHost.swift in Sources */,
+				589AC31025F48D8700405E20 /* Host+CoreDataClass.swift in Sources */,
+				9C7B159125F1901D00E88B09 /* Canvas+CoreDataProperties.swift in Sources */,
 				584E47E725DCF523005EDC0E /* MainPageInputCanvas.swift in Sources */,
 				759EA50125D4C68400560D98 /* DataStructs.swift in Sources */,
 				1A83264D25EF308500C03A2C /* CodeCardTerminalViewController.swift in Sources */,
+				9C7B158725F18FB500E88B09 /* CodeCard+CoreDataProperties.swift in Sources */,
+				1A64C88C25CA2EE50082FEA7 /* LaputaApp.swift in Sources */,
 				759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */,
 				1A83264825EF300300C03A2C /* CodeCardTerminal.swift in Sources */,
 				1A24CDCD25D4CE130044044F /* SSHConnection.swift in Sources */,
@@ -796,7 +808,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Laputa.Laputa;
+				PRODUCT_BUNDLE_IDENTIFIER = Laputa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -819,7 +831,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Laputa.Laputa;
+				PRODUCT_BUNDLE_IDENTIFIER = Laputa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

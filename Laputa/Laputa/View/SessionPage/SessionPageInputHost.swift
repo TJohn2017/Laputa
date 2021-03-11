@@ -1,63 +1,58 @@
 //
-//  SessionPageInputCanvas.swift
+//  SessionPageInputHost.swift
 //  Laputa
 //
-//  Created by Daniel Guillen on 2/21/21.
+//  Created by Claire Mai on 3/3/21.
 //
 
 import SwiftUI
 
-struct SessionPageInputCanvas: View {
+struct SessionPageInputHost: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @FetchRequest(
-        entity: Canvas.entity(),
-        sortDescriptors: [NSSortDescriptor(key: "dateCreated", ascending: false)]
+        entity: Host.entity(),
+        sortDescriptors: [NSSortDescriptor(key: "username", ascending: false)]
     )
-    var canvases: FetchedResults<Canvas>
+    var hosts: FetchedResults<Host>
     
-    @Binding var canvas: Canvas?
-    @Binding var showCanvasSheet: Bool
+    @Binding var host: Host?
+    @Binding var showHostSheet: Bool
     @State private var showingInputSheet: Bool = false
     
     var body: some View {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .short
-        
         return VStack {
-            Text("Add a canvas in split view")
+            Text("Add a host in split view")
                 .font(.title)
                 .padding(.top, 50)
             ScrollView {
                 VStack {
-                    // Add a new canvas which will appear at the
+                    // Add a new host which will appear at the
                     // top of the list since it was most recently made
                     Button(action: {
                         showingInputSheet.toggle()
                     }) {
                         HStack {
                             Image(systemName: "plus.circle")
-                            Text("New Canvas")
+                            Text("New Host")
                         }
                         .font(.title)
                     }
                     .padding(50)
                     
-                    // Choose from an existing canvas
-                    ForEach(canvases) { canvas in
+                    ForEach(hosts) { host in
                         Button(action: {
-                            self.canvas = canvas
-                            showCanvasSheet.toggle()
+                            self.host = host
+                            showHostSheet.toggle()
                         }) {
                             VStack {
-                                Text("\(canvas.wrappedTitle)")
+                                Text("\(host.name)")
                                     .frame(width: 400.0, height: 200.0)
                                     .padding()
-                                    .background(Color.blue)
+                                    .background(Color.red)
                                     .foregroundColor(Color.black)
                                     .cornerRadius(10.0)
-                                Text("Created: \(dateFormatter.string(from: canvas.wrappedDate))")
+                                Text("Host: \(host.host)")
                                     .foregroundColor(Color.black)
                             }.padding()
                         }
@@ -66,13 +61,11 @@ struct SessionPageInputCanvas: View {
                 .sheet(
                     isPresented: $showingInputSheet,
                     onDismiss: {
-                        // TODO: Bring the user back to split view
-                        // with newly created canvas showing
+                        // TODO Bring the user back to split view with the newly made host
                     }
                 ) {
-                    MainPageInputCanvas(
-                        showingInputSheet: $showingInputSheet,
-                        selectedCanvas: $canvas
+                    MainPageInputHost(showingInputSheet: $showingInputSheet,
+                                      selectedHost: $host
                     )
                 }
             }
@@ -80,20 +73,20 @@ struct SessionPageInputCanvas: View {
     }
 }
 
-struct SessionPageInputCanvas_Previews: PreviewProvider {
+struct SessionPageInputHost_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWrapper()
     }
     
     struct PreviewWrapper: View {
-        @State var canvas: Canvas?
-        @State var showCanvasSheet: Bool = true
+        @State var host: Host?
+        @State var showHostSheet: Bool = true
         
         var body: some View {
             
-            return SessionPageInputCanvas(
-                canvas: $canvas,
-                showCanvasSheet: $showCanvasSheet
+            return SessionPageInputHost(
+                host: $host,
+                showHostSheet: $showHostSheet
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
