@@ -175,10 +175,11 @@ struct CodeCardView: View {
                         .border(self.deleting ? .red : (isResizing ? Color.yellow : Color.white))
                         
                         Image(systemName: "arrow.left.and.right.circle.fill")
+                            .font(.largeTitle)
                             .rotationEffect(.degrees(45))
                             .offset(
-                                x: max((width + resizeState.width), minWidth) / 2 - 20,
-                                y: max((height + resizeState.height), minHeight) / 2 - 20
+                                x: max((width + resizeState.width), minWidth) / 2 - 30,
+                                y: max((height + resizeState.height), minHeight) / 2 - 30
                             )
                             .foregroundColor(.yellow)
                             .gesture(resize)

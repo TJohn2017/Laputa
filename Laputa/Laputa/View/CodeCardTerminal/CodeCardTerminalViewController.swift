@@ -29,8 +29,8 @@ class CodeCardTerminalViewController: UIViewController {
     func makeFrame () -> CGRect
     {
         return CGRect (
-            x: view.safeAreaInsets.left,
-            y: view.safeAreaInsets.top,
+            x: 0,
+            y: 0,
             width: self.width,
             height: self.height)
     }
