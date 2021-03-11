@@ -7,48 +7,96 @@
 
 import SwiftUI
 
+// different sheets that can be active on the main page
+enum ActiveSheet: Identifiable {
+    // inputSheet: creating or editing host/canvas info
+    // selectCanvas: choosing a canvas to use in tandem with a selected host
+    // selectHost: choosing a host to use in tandem with a selected canvas
+    case inputSheet, selectCanvas, selectHost
+    
+    var id: Int {
+        hashValue
+    }
+}
+
 struct MainPageView: View {
     @State private var displayHosts: Bool = true
     @State private var showingInputSheet: Bool = false
+    
+    @State var canvas: Canvas? = nil
+    @State var host: Host? = nil
+    
     @State var selectedCanvas: Canvas? = nil
     @State var selectedHost: Host? = nil
+    
+    @State var activeSheet: ActiveSheet?
+    @State var navToSessionActive: Bool = false
     
     var body: some View {
         NavigationView {
             ZStack {
-                Color.black
-                HStack {
-                    MainPageColumnView(
+                displayHosts ?
+                    Color("HostMain") :
+                    Color("CanvasMain")
+                VStack {
+                    MainPageHeaderView(
                         displayHosts: $displayHosts,
-                        showingInputSheet: $showingInputSheet
+                        activeSheet: $activeSheet,
+                        selectedHost: $selectedHost,
+                        selectedCanvas: $selectedCanvas
                     )
-                    .padding(.leading, 40)
-                    
-                    Spacer()
-                    
-                    MainPageList(displayHosts: $displayHosts,
-                                 showingInputSheet: $showingInputSheet,
-                                 selectedHost: $selectedHost,
-                                 selectedCanvas: $selectedCanvas)
+                    MainPageList(
+                        displayHosts: $displayHosts,
+                        activeSheet: $activeSheet,
+                        selectedHost: $selectedHost,
+                        selectedCanvas: $selectedCanvas
+                    )
                 }
             }
             .navigationBarTitle("")
             .navigationBarHidden(true)
-            .edgesIgnoringSafeArea(.top) // Add to cover-up status bar.
-            .sheet(
-                isPresented: $showingInputSheet,
-                onDismiss: {
-                    selectedHost = nil
-                    selectedCanvas = nil
+            .edgesIgnoringSafeArea(.all) // Add to cover-up status bar.
+            
+            .sheet(item: $activeSheet) { item in
+                switch item {
+                // creating/editing host/canvas info
+                case .inputSheet:
+                    EntityInputView(
+                        displayHosts: $displayHosts,
+                        activeSheet: $activeSheet,
+                        selectedHost: $selectedHost,
+                        selectedCanvas: $selectedCanvas
+                    )
+                // choosing canvas to use with a host
+                case .selectCanvas:
+                    SelectCanvasView(
+                        selectedHost: $selectedHost,
+                        selectedCanvas: $selectedCanvas,
+                        navToSessionActive: $navToSessionActive,
+                        activeSheet: $activeSheet
+                    )
+                // choosing host to use with a canvas
+                case .selectHost:
+                    SelectHostView(
+                        selectedHost: $selectedHost,
+                        selectedCanvas: $selectedCanvas,
+                        navToSessionActive: $navToSessionActive,
+                        activeSheet: $activeSheet
+                    )
                 }
-            ) {
-                MainPageInputView(
-                    displayHosts: $displayHosts,
-                    showingInputSheet: $showingInputSheet,
-                    selectedHost: $selectedHost,
-                    selectedCanvas: $selectedCanvas
-                )
             }
+            
+            // because we can't navigate to an outer view from a sheet directly, this
+            // allows us to activate navigation to the session page from the
+            // SelectCanvas and SelectHost sheets
+            .background(
+                NavigationLink(
+                    destination: SessionPageView(host: selectedHost, canvas: selectedCanvas),
+                    isActive: $navToSessionActive
+                ) {
+                    EmptyView()
+                }
+            )
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }

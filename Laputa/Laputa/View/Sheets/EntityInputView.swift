@@ -1,5 +1,5 @@
 //
-//  MainPageInputView.swift
+//  EntityInputView.swift
 //  Laputa
 //
 //  Created by Daniel Guillen on 2/16/21.
@@ -7,34 +7,34 @@
 
 import SwiftUI
 
-struct MainPageInputView: View {
+struct EntityInputView: View {
     @Binding var displayHosts: Bool
-    @Binding var showingInputSheet: Bool
+    @Binding var activeSheet: ActiveSheet?
     @Binding var selectedHost: Host?
     @Binding var selectedCanvas: Canvas?
     
     var body: some View {
         if (displayHosts) {
-            MainPageInputHost(showingInputSheet: $showingInputSheet, selectedHost: $selectedHost)
+            InputHostView(activeSheet: $activeSheet, parentActiveSheet: .constant(nil), selectedHost: $selectedHost)
         } else {
-            MainPageInputCanvas(showingInputSheet: $showingInputSheet, selectedCanvas: $selectedCanvas)
+            InputCanvasView(activeSheet: $activeSheet, parentActiveSheet: .constant(nil), selectedCanvas: $selectedCanvas)
         }
     }
 }
 
-struct MainPageInputView_Previews: PreviewProvider {
+struct EntityInputView_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWrapper()
     }
     
     struct PreviewWrapper: View {
         @State private var displayHosts: Bool = false
-        @State private var showingInputSheet: Bool = false
+        @State var activeSheet: ActiveSheet?
         
         var body: some View {
-            MainPageInputView(
+            EntityInputView(
                 displayHosts: $displayHosts,
-                showingInputSheet: $showingInputSheet,
+                activeSheet: $activeSheet,
                 selectedHost: .constant(nil),
                 selectedCanvas: .constant(nil)
             ).environment(

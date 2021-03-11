@@ -10,7 +10,8 @@ import SwiftUI
 struct HostList: View {
     @Environment(\.managedObjectContext) private var viewContext
     
-    @Binding var showingInputSheet: Bool
+    @Binding var activeSheet: ActiveSheet?
+    
     // passed up to MainPageView where editing host info sheet is located
     @Binding var selectedHost: Host?
     
@@ -25,27 +26,46 @@ struct HostList: View {
     var hosts: FetchedResults<Host>
     
     var body: some View {
+        
         VStack {
+            Spacer().frame(height: 20)
             ForEach(hosts) { host in
                 HStack {
+                    Spacer()
                     NavigationLink(
                         destination: SessionPageView(host: host)
                     ) {
-                        VStack {
-                            Text("\(host.name)")
-                                .frame(width: 400.0, height: 200.0)
+                        ZStack(alignment: Alignment(horizontal: .leading, vertical: .center)) {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 600.0, height: 100.0)
                                 .padding()
-                                .background(Color.red)
-                                .foregroundColor(Color.black)
-                                .cornerRadius(10.0)
-                                .font(.largeTitle)
-                            Text("\(host.host) | \(host.username)")
                                 .foregroundColor(Color.white)
-                        }.padding()
+                                .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: -3, y: 3)
+                            HStack {
+                                Image(systemName: "chevron.right.square.fill")
+                                    .font(.largeTitle)
+                                    .foregroundColor(Color("HostMain"))
+                                VStack(alignment: .leading) {
+                                    Text("\(host.name)")
+                                        .font(.title)
+                                        .foregroundColor(Color.black)
+                                    Text("\(host.host) | \(host.username)")
+                                        .foregroundColor(Color.gray)
+                                        .padding(2)
+                                }
+                                .padding()
+                            }
+                            .padding(.leading, 50)
+                        }
                     }
+                    
                     Menu() {
+                        Button("Open with a canvas", action: {
+                            activeSheet = .selectCanvas
+                            selectedHost = host
+                        })
                         Button("Edit host", action: {
-                            showingInputSheet.toggle()
+                            activeSheet = .inputSheet
                             selectedHost = host
                         })
                         Button("Delete host", action: {
@@ -65,6 +85,8 @@ struct HostList: View {
                             .font(.largeTitle)
                             .foregroundColor(.white)
                     }
+                    
+                    Spacer()
                 }.alert(isPresented: $showDeleteAlert) {
                     Alert(
                         title: Text("Host \"\(deletedName)\" deleted"),
@@ -82,10 +104,13 @@ struct HostList_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State private var showingInputSheet: Bool = false
+        @State private var activeSheet: ActiveSheet?
         
         var body: some View {
-            HostList(showingInputSheet: $showingInputSheet, selectedHost: .constant(nil)).environment(
+            HostList(
+                activeSheet: $activeSheet,
+                selectedHost: .constant(nil)
+            ).environment(
                 \.managedObjectContext,
                 PersistenceController.preview.container.viewContext
             )

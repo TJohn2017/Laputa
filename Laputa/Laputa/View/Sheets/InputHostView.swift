@@ -1,5 +1,5 @@
 //
-//  MainPageInputHost.swift
+//  InputHostView.swift
 //  Laputa
 //
 //  Created by Daniel Guillen on 2/16/21.
@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-struct MainPageInputHost: View {
+struct InputHostView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
-    @Binding var showingInputSheet: Bool
+    @Binding var activeSheet: ActiveSheet?
+    @Binding var parentActiveSheet: ActiveSheet?
     // if this is not nil, we are editing an existing host
     @Binding var selectedHost: Host?
 
@@ -67,7 +68,8 @@ struct MainPageInputHost: View {
         do {
             try viewContext.save()
             print("Host w/ name: \(self.name) saved.")
-            showingInputSheet.toggle()
+            activeSheet = nil
+            parentActiveSheet = nil
         } catch {
             print(error.localizedDescription)
         }
@@ -139,18 +141,20 @@ struct MainPageInputHost: View {
     }
 }
 
-struct MainPageInputHost_Previews: PreviewProvider {
+struct InputHostView_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWrapper()
     }
     
     struct PreviewWrapper: View {
-        @State var showingInputSheet = true
+        @State var activeSheet: ActiveSheet?
+        @State var parentActiveSheet: ActiveSheet?
 
         var body: some View {
             
-            return MainPageInputHost(
-                showingInputSheet: $showingInputSheet,
+            return InputHostView(
+                activeSheet: $activeSheet,
+                parentActiveSheet: $parentActiveSheet,
                 selectedHost: .constant(nil)
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }

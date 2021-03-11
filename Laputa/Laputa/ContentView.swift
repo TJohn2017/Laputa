@@ -20,7 +20,7 @@ import CoreData
       entities or update entity in the mainPageInput[Host/Canvas]
     - TODO: Add delete functionality to remove entity optionally.
  
- - MainPageInputCanvas
+ - InputCanvasView
    - TODO: Merge Canvas core data functionality.
  */
 

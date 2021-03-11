@@ -10,7 +10,8 @@ import SwiftUI
 struct CanvasList: View {
     @Environment(\.managedObjectContext) private var viewContext
     
-    @Binding var showingInputSheet: Bool
+    @Binding var activeSheet: ActiveSheet?
+    
     // passed up to MainPageView where editing canvas info sheet is located
     @Binding var selectedCanvas: Canvas?
     
@@ -29,53 +30,71 @@ struct CanvasList: View {
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .short
         
-        return VStack {
-            ForEach(canvases) { canvas in
-                HStack {
-                    NavigationLink(
-                        destination: SessionPageView(canvas: canvas)
-                    ) {
-                        VStack {
-                            Text("\(canvas.wrappedTitle)")
-                                .frame(width: 400.0, height: 200.0)
-                                .padding()
-                                .background(Color.blue)
-                                .foregroundColor(Color.black)
-                                .cornerRadius(10.0)
-                                .font(.largeTitle)
-                            Text("Created: \(dateFormatter.string(from: canvas.wrappedDate))")
-                                .foregroundColor(Color.white)
-                        }.padding()
-                    }
-                    Menu() {
-                        Button("Edit canvas", action: {
-                            showingInputSheet.toggle()
-                            selectedCanvas = canvas
-                        })
-                        Button("Delete canvas", action: {
-                            deletedName = canvas.wrappedTitle
-                            viewContext.delete(canvas)
-                            
-                            do {
-                                try viewContext.save()
-                                showDeleteAlert.toggle()
-                                print("Canvas \"\(deletedName)\" deleted.")
-                            } catch {
-                                print(error.localizedDescription)
+        let columns = [
+            GridItem(.flexible(minimum: 300, maximum: 500)),
+            GridItem(.flexible(minimum: 300, maximum: 350))
+            ]
+        
+        return ScrollView {
+            Spacer().frame(height: 20)
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(canvases) { canvas in
+                    HStack {
+                        NavigationLink(
+                            destination: SessionPageView(canvas: canvas)
+                        ) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .frame(width: 300.0, height: 170.0)
+                                    .padding()
+                                    .foregroundColor(Color.white)
+                                    .shadow(color: Color(white: 0, opacity: 0.3), radius: 4, x: -3, y: 3)
+                                VStack {
+                                    Text("\(canvas.wrappedTitle)")
+                                        .font(.title)
+                                        .foregroundColor(.black)
+                                    Text("Created: \(dateFormatter.string(from: canvas.wrappedDate))")
+                                        .foregroundColor(Color.gray)
+                                        .padding(2)
+                                }.padding()
                             }
-                        })
-                    } label: {
-                        Label("", systemImage: "ellipsis.circle")
-                            .font(.largeTitle)
-                            .foregroundColor(.white)
+                        }
+                        
+                        Menu() {
+                            Button("Open with a host", action: {
+                                activeSheet = .selectHost
+                                selectedCanvas = canvas
+                            })
+                            Button("Edit canvas", action: {
+                                activeSheet = .inputSheet
+                                selectedCanvas = canvas
+                            })
+                            Button("Delete canvas", action: {
+                                deletedName = canvas.wrappedTitle
+                                viewContext.delete(canvas)
+
+                                do {
+                                    try viewContext.save()
+                                    showDeleteAlert.toggle()
+                                    print("Canvas \"\(deletedName)\" deleted.")
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
+                            })
+                        } label: {
+                            Label("", systemImage: "ellipsis.circle")
+                                .font(.largeTitle)
+                                .foregroundColor(.white)
+                        }
                     }
-                }.alert(isPresented: $showDeleteAlert) {
-                    Alert(
-                        title: Text("Canvas \"\(deletedName)\" deleted"),
-                        dismissButton: .default(Text("OK"))
-                    )
                 }
             }
+        }
+        .alert(isPresented: $showDeleteAlert) {
+            Alert(
+                title: Text("Canvas \"\(deletedName)\" deleted"),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
 }
@@ -86,10 +105,13 @@ struct CanvasList_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State private var showingInputSheet: Bool = false
+        @State private var activeSheet: ActiveSheet?
         
         var body: some View {
-            CanvasList(showingInputSheet: $showingInputSheet, selectedCanvas: .constant(nil)).environment(
+            CanvasList(
+                activeSheet: $activeSheet,
+                selectedCanvas: .constant(nil)
+            ).environment(
                 \.managedObjectContext,
                 PersistenceController.preview.container.viewContext
             )

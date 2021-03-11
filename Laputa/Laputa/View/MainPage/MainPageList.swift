@@ -11,7 +11,8 @@ struct MainPageList: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @Binding var displayHosts: Bool
-    @Binding var showingInputSheet: Bool
+    // the currently active sheet over MainPageView
+    @Binding var activeSheet: ActiveSheet?
     
     // passed up to MainPageView where editing host/canvas info sheet is located
     @Binding var selectedHost: Host?
@@ -21,9 +22,9 @@ struct MainPageList: View {
         return ScrollView {
             VStack {
                 if (displayHosts) {
-                    HostList(showingInputSheet: $showingInputSheet, selectedHost: $selectedHost)
+                    HostList(activeSheet: $activeSheet, selectedHost: $selectedHost)
                 } else {
-                    CanvasList(showingInputSheet: $showingInputSheet, selectedCanvas: $selectedCanvas)
+                    CanvasList(activeSheet: $activeSheet, selectedCanvas: $selectedCanvas)
                 }
             }
         }
@@ -38,12 +39,12 @@ struct MainPageList_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State private var displayHosts: Bool = false
-        @State private var showingInputSheet: Bool = false
+        @State private var activeSheet: ActiveSheet?
         
         var body: some View {
             MainPageList(
                 displayHosts: $displayHosts,
-                showingInputSheet: $showingInputSheet,
+                activeSheet: $activeSheet,
                 selectedHost: .constant(nil),
                 selectedCanvas: .constant(nil)
             ).environment(
