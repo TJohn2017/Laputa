@@ -41,7 +41,9 @@ class CodeCardTerminalViewController: UIViewController {
         self.width = newWidth
         self.height = newHeight
         self.view.frame = self.makeFrame()
-        self.terminalView?.frame = self.view.frame
+        self.terminalView? = createDummyTerminal()!
+        view.subviews.forEach({ $0.removeFromSuperview() })
+        view.addSubview(self.terminalView!)
     }
     
     // Starts an instance of CodeCardTerminalView and provides the content to be displayed
