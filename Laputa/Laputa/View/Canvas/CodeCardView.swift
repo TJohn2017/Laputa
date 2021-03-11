@@ -49,9 +49,11 @@ struct CodeCardView: View {
     @State var height: CGFloat = 500
     
     // Sets initial card position saved in CoreData
-    func setInitialOffset() {
+    func setInitialOffsetAndSize() {
         self.viewState.width = CGFloat(codeCard.locX)
         self.viewState.height = CGFloat(codeCard.locY)
+        self.width = CGFloat(codeCard.width)
+        self.height = CGFloat(codeCard.height)
     }
     
     // Sets code card zIndex to the max, bringing
@@ -71,6 +73,14 @@ struct CodeCardView: View {
         viewContext.performAndWait {
             codeCard.locX = newLocX
             codeCard.locY = newLocY
+            try? viewContext.save()
+        }
+    }
+    
+    func updateCardSize() {
+        viewContext.performAndWait {
+            codeCard.width = Float(width)
+            codeCard.height = Float(height)
             try? viewContext.save()
         }
     }
@@ -131,10 +141,9 @@ struct CodeCardView: View {
                         CodeCardTerminal(content: codeCard.wrappedText, width: $width, height: $height)
                             .border(self.deleting ? .red : Color.white)
                         
-                       // Text("MOVE ME").foregroundColor(.white)
-                        Image(systemName: "bitcoinsign.circle")
+                        Image(systemName: "viewfinder.circle.fill")
                             .offset(x: width/2 - 20, y: height/2 - 20)
-                            .foregroundColor(.red)
+                            .foregroundColor(.yellow)
                             .gesture(resize)
                     }
                     
@@ -164,7 +173,7 @@ struct CodeCardView: View {
                 // don't allow dragging while delete button is visible
                 .gesture(self.deleting ? nil : drag)
                 .shadow(radius: dragState.isDragging ? 8 : 0)
-                .onAppear(perform: setInitialOffset)
+                .onAppear(perform: setInitialOffsetAndSize)
                 .frame(width: width, height: height, alignment: .center)
             }
             .zIndex(codeCard.zIndex)
@@ -184,6 +193,7 @@ struct CodeCardView: View {
                 
                 width += value.translation.width
                 height += value.translation.height
+                updateCardSize()
                 print("LOG:  new width = \(width), new height = \(height)")
             }
     }

@@ -255,7 +255,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             }
             newCard.zIndex = maxZIndex
             newCard.text = lastResponse
-
+        
             do {
                 try viewContext!.save()
             } catch {

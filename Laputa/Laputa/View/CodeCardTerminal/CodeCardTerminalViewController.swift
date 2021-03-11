@@ -40,7 +40,8 @@ class CodeCardTerminalViewController: UIViewController {
     func updateDimensions(newWidth: CGFloat, newHeight: CGFloat) {
         self.width = newWidth
         self.height = newHeight
-        self.view.frame = makeFrame()
+        self.view.frame = self.makeFrame()
+        self.terminalView?.frame = self.view.frame
     }
     
     // Starts an instance of CodeCardTerminalView and provides the content to be displayed
