@@ -79,7 +79,10 @@ struct CodeCardTerminal: UIViewControllerRepresentable {
     }
     
     // Need for conformity
-    func updateUIViewController(_ uiViewController: CodeCardTerminalViewController, context: UIViewControllerRepresentableContext<CodeCardTerminal>) {}
+    func updateUIViewController(_ uiViewController: CodeCardTerminalViewController, context: UIViewControllerRepresentableContext<CodeCardTerminal>) {
+        // Tell the view controller to update its size in case of a resize
+        uiViewController.updateDimensions(newWidth: width, newHeight: height)
+    }
 }
 
 //struct CodeCardTerminal_Previews: PreviewProvider {

@@ -31,10 +31,17 @@ class CodeCardTerminalViewController: UIViewController {
         return CGRect (
             x: view.safeAreaInsets.left,
             y: view.safeAreaInsets.top,
-            width: width,
-            height: height)
+            width: self.width,
+            height: self.height)
     }
     
+    // Given a new width and height as parameters sets the member variables accordingly
+    // and recreates the frame so that the view size is updated.
+    func updateDimensions(newWidth: CGFloat, newHeight: CGFloat) {
+        self.width = newWidth
+        self.height = newHeight
+        self.view.frame = makeFrame()
+    }
     
     // Starts an instance of CodeCardTerminalView and provides the content to be displayed
     func createDummyTerminal() -> CodeCardTerminalView? {
