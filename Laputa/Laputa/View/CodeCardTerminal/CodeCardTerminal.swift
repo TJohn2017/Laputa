@@ -70,8 +70,8 @@ struct CodeCardTerminal: UIViewControllerRepresentable {
     typealias UIViewControllerType = CodeCardTerminalViewController
     
     @State var content: String // All of the contents to be displayed
-    @State var width: CGFloat // The width that the terminal should fill
-    @State var height: CGFloat // The height that the terminal should fill
+    @Binding var width: CGFloat // The width that the terminal should fill
+    @Binding var height: CGFloat // The height that the terminal should fill
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<CodeCardTerminal>) -> CodeCardTerminalViewController {
         let viewController = CodeCardTerminalViewController(content: content, width: width, height: height)
@@ -82,8 +82,10 @@ struct CodeCardTerminal: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: CodeCardTerminalViewController, context: UIViewControllerRepresentableContext<CodeCardTerminal>) {}
 }
 
-struct CodeCardTerminal_Previews: PreviewProvider {
-    static var previews: some View {
-        CodeCardTerminal(content: "PREVIEW", width: 500, height: 500)
-    }
-}
+//struct CodeCardTerminal_Previews: PreviewProvider {
+//    @Binding var width : CGFloat
+//    @Binding var height : CGFloat
+//    static var previews: some View {
+//        CodeCardTerminal(content: "PREVIEW", width: $width, height: $height)
+//    }
+//}

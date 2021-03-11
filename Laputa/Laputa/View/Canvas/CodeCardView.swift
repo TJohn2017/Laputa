@@ -127,8 +127,17 @@ struct CodeCardView: View {
                         .gesture(dismissDelete)
                 }
                 HStack() {
-                    CodeCardTerminal(content: codeCard.wrappedText, width: width, height: height)
-                        .border(self.deleting ? .red : Color.white)
+                    ZStack () {
+                        CodeCardTerminal(content: codeCard.wrappedText, width: $width, height: $height)
+                            .border(self.deleting ? .red : Color.white)
+                        
+                       // Text("MOVE ME").foregroundColor(.white)
+                        Image(systemName: "bitcoinsign.circle")
+                            .offset(x: width/2 - 20, y: height/2 - 20)
+                            .foregroundColor(.red)
+                            .gesture(resize)
+                    }
+                    
                     if self.deleting {
                         Button(action: {
                             viewContext.delete(codeCard)
@@ -160,7 +169,26 @@ struct CodeCardView: View {
             }
             .zIndex(codeCard.zIndex)
     }
+    
+    @GestureState var resizeState = CGSize.zero
+    var resize: some Gesture {
+        DragGesture()
+            .updating($resizeState) { value, state, transaction in
+                state = value.translation
+                print("value.translation: \(value.translation)")
+            }
+            .onEnded() { value in
+//                self.viewState.width += value.translation.width
+//                self.viewState.height += value.translation.height
+                // update state vars
+                
+                width += value.translation.width
+                height += value.translation.height
+                print("LOG:  new width = \(width), new height = \(height)")
+            }
+    }
 }
+
 
 struct CodeCardView_Previews: PreviewProvider {
     static var previews: some View {
