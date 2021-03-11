@@ -45,21 +45,28 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    let navigationBarHeight: CGFloat = 74
+    
     // Makes the terminal gui frame
     func makeFrame (keyboardDelta: CGFloat, keyboardWillHide: Bool) -> CGRect
     {
         var view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
         if (self.modifyTerminalHeight && keyboardDelta > 0) { // set height when keyboard shows up to fill the screen til the keyboard
-            view_height += keyboardDelta*0.53 // TODO makes screen start too low
+            view_height += keyboardDelta*0.5 // TODO makes screen start too low
         } else if (keyboardWillHide && previous_height != nil) { // set height to be the previous terminal view height before the keyboard appeared
             view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top - 30 // WEIRD OFFSET
         } else if (view_height < 5) { // if view height too small, set minimum height of 50
             view_height = 50
         }
         
+        var origin_y = view.safeAreaInsets.top
+        if (origin_y > navigationBarHeight) {
+            origin_y = navigationBarHeight
+        }
+        
         return CGRect (
             x: view.safeAreaInsets.left,
-            y: view.safeAreaInsets.top,
+            y: origin_y,
             width: view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right,
             height: view_height)
     }

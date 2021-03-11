@@ -35,7 +35,7 @@ struct SessionPageView: View {
             // Case: a terminal-only session with an active connection
             return AnyView(
                 ZStack {
-                    Color.purple // TODO change back to Color.black
+                    Color.black
                     SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: false)
                 }
                 .navigationBarTitle("\(host!.name)")
