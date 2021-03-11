@@ -69,10 +69,12 @@ public class CodeCardTerminalView: TerminalView, TerminalViewDelegate {
 struct CodeCardTerminal: UIViewControllerRepresentable {
     typealias UIViewControllerType = CodeCardTerminalViewController
     
-    @State var content: String
+    @State var content: String // All of the contents to be displayed
+    @State var width: CGFloat // The width that the terminal should fill
+    @State var height: CGFloat // The height that the terminal should fill
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<CodeCardTerminal>) -> CodeCardTerminalViewController {
-        let viewController = CodeCardTerminalViewController(content: content)
+        let viewController = CodeCardTerminalViewController(content: content, width: width, height: height)
         return viewController
     }
     
@@ -82,6 +84,6 @@ struct CodeCardTerminal: UIViewControllerRepresentable {
 
 struct CodeCardTerminal_Previews: PreviewProvider {
     static var previews: some View {
-        CodeCardTerminal(content: "PREVIEW")
+        CodeCardTerminal(content: "PREVIEW", width: 500, height: 500)
     }
 }

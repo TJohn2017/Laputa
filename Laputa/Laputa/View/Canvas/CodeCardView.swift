@@ -44,6 +44,9 @@ struct CodeCardView: View {
     @State var viewState = CGSize.zero
     // Whether or not a user is currently able to delete a card
     @State var deleting = false
+    // Size state variables
+    @State var width: CGFloat = 500
+    @State var height: CGFloat = 500
     
     // Sets initial card position saved in CoreData
     func setInitialOffset() {
@@ -124,7 +127,7 @@ struct CodeCardView: View {
                         .gesture(dismissDelete)
                 }
                 HStack() {
-                    CodeCardTerminal(content: codeCard.wrappedText)
+                    CodeCardTerminal(content: codeCard.wrappedText, width: width, height: height)
                         .border(self.deleting ? .red : Color.white)
                     if self.deleting {
                         Button(action: {
@@ -153,7 +156,7 @@ struct CodeCardView: View {
                 .gesture(self.deleting ? nil : drag)
                 .shadow(radius: dragState.isDragging ? 8 : 0)
                 .onAppear(perform: setInitialOffset)
-                .frame(width: 500, height: 500, alignment: .center)
+                .frame(width: width, height: height, alignment: .center)
             }
             .zIndex(codeCard.zIndex)
     }
