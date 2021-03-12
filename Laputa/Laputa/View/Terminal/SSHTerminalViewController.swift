@@ -289,11 +289,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
-    private func getStartEndRowIndex (translation: CGPoint, rows: Int) -> (startRowIndex: Int, endRowIndex: Int) {
+    private func getStartEndRowIndex (startPoint: CGPoint, translation: CGPoint, rows: Int) -> (startRowIndex: Int, endRowIndex: Int) {
         let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
         let rowHeightInPixels = viewHeight / CGFloat(rows)
-        let startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
-        let endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
+        let startRowIndex = Int((startPoint.y / rowHeightInPixels).rounded(.down))
+        let endRowIndex = Int(((startPoint.y + translation.y) / rowHeightInPixels).rounded(.down))
         return (startRowIndex, endRowIndex)
     }
 
@@ -301,6 +301,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // Allows less sensitivity when pan gesture is recognized so that we only scroll
     // up or down 1 line every other time didPan is called for scrolling.
     var shouldScroll: Bool = false
+    var lastScrollPoint : CGPoint?
     
     // Handles the pan gesture. Used when we are in output catching mode to capture
     // the rows from the terminal that the user crossed in their pan gesture and save
@@ -312,24 +313,28 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         
         case .began:
             initialDragPoint = sender.location(in: view)
+            lastScrollPoint = sender.location(in: view)
             
         case .changed:
             // Scrolling
             if (!isCatchingOutput) {
-                // .began failed to get any starting drag point location, i.e. something went wrong!
-                if (initialDragPoint == nil) {
+                // .began failed to get last drag point location from previous tick, i.e. something went wrong!
+                if (lastScrollPoint == nil) {
                     return
                 }
                 let terminal = terminalView!.getTerminal()
                 let (_, rows) = terminal.getDims()
-                let result = getStartEndRowIndex(translation: sender.translation(in: view), rows: rows)
+                var (startRowIndex, endRowIndex) = getStartEndRowIndex(startPoint: lastScrollPoint!, translation: sender.translation(in: view), rows: rows)
+                startRowIndex = abs(startRowIndex)
+                endRowIndex = abs(endRowIndex)
                 
-                if (result.startRowIndex > result.endRowIndex && shouldScroll) { // scrolling down
+                if (startRowIndex > endRowIndex && shouldScroll){ // scrolling down
                     terminalView?.scrollDown(lines: 1)
-                } else if (result.startRowIndex < result.endRowIndex && shouldScroll) { // scrolling up
+                } else if (startRowIndex < endRowIndex && shouldScroll) { // scrolling up
                     terminalView?.scrollUp(lines: 1)
                 }
                 shouldScroll.toggle()
+                lastScrollPoint = sender.location(in: view)
             }
             
         case .ended,
@@ -347,7 +352,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             // Use gesture data to calculate which rows were selected
             let terminal = terminalView!.getTerminal()
             let (_, rows) = terminal.getDims()
-            var (startRowIndex, endRowIndex) = getStartEndRowIndex(translation: sender.translation(in: view), rows: rows)
+            var (startRowIndex, endRowIndex) = getStartEndRowIndex(startPoint: initialDragPoint!, translation: sender.translation(in: view), rows: rows)
             if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
                 swap(&startRowIndex, &endRowIndex)
             }
