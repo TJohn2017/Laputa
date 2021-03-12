@@ -16,7 +16,7 @@ struct CanvasViewWithNavigation: View {
     var canvasHeight: CGFloat
     var canvasWidth: CGFloat
     
-    @Binding var showHostSheet: Bool
+    @Binding var activeSheet: ActiveSheet?
     
     // Binding variables for PKCanvasView
     @Binding var isDraw : Bool
@@ -111,7 +111,7 @@ struct CanvasViewWithNavigation: View {
                         }
                         
                         Button(action: {
-                            showHostSheet.toggle()
+                            activeSheet = .selectHost
                         }) { // Add terminal to session
                             Label {
                                 Text("Add terminal")
@@ -133,7 +133,7 @@ struct CanvasViewWithNavigation_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
-        @State var showHostSheet: Bool = false
+        @State var activeSheet: ActiveSheet?
         @State var isDraw = true
         @State var isErase = false
         @State var color : Color = Color.black
@@ -149,7 +149,7 @@ struct CanvasViewWithNavigation_Previews: PreviewProvider {
             newCanvas.dateCreated = Date()
             newCanvas.title = "Test Canvas"
             
-            return CanvasViewWithNavigation(canvas: newCanvas, canvasHeight: UIScreen.main.bounds.height, canvasWidth: UIScreen.main.bounds.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasViewWithNavigation(canvas: newCanvas, canvasHeight: UIScreen.main.bounds.height, canvasWidth: UIScreen.main.bounds.width, activeSheet: $activeSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }

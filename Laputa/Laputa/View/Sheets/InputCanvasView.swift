@@ -1,5 +1,5 @@
 //
-//  MainPageInputCanvas.swift
+//  InputCanvasView.swift
 //  Laputa
 //
 //  Created by Daniel Guillen on 2/16/21.
@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-struct MainPageInputCanvas: View {
+struct InputCanvasView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
-    @Binding var showingInputSheet: Bool
+    @Binding var activeSheet: ActiveSheet?
+    @Binding var parentActiveSheet: ActiveSheet?
     // if this is not nil, we are editing an existing canvas
     @Binding var selectedCanvas: Canvas?
 
@@ -37,9 +38,10 @@ struct MainPageInputCanvas: View {
         
         // Save the created canvas
         do {
+            activeSheet = nil
+            parentActiveSheet = nil
             try viewContext.save()
             print("Canvas w/ name: \(self.name) saved.")
-            showingInputSheet.toggle()
         } catch {
             print(error.localizedDescription)
         }
@@ -62,18 +64,20 @@ struct MainPageInputCanvas: View {
     }
 }
 
-struct MainPageInputCanvas_Previews: PreviewProvider {
+struct InputCanvasView_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWrapper()
     }
     
     struct PreviewWrapper: View {
-        @State var showingInputSheet = true
+        @State var activeSheet: ActiveSheet?
+        @State var parentActiveSheet: ActiveSheet?
 
         var body: some View {
             
-            return MainPageInputCanvas(
-                showingInputSheet: $showingInputSheet,
+            return InputCanvasView(
+                activeSheet: $activeSheet,
+                parentActiveSheet: $parentActiveSheet,
                 selectedCanvas: .constant(nil)
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }

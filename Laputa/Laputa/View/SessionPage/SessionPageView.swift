@@ -13,9 +13,8 @@ struct SessionPageView: View {
     @State var host: Host?
     @State var canvas: Canvas?
     @State var session: SSHConnection?
-    @State var showCanvasSheet: Bool = false
-    @State var showHostSheet: Bool = false
     @State var hideNavBar : Bool = false
+    @State var activeSheet: ActiveSheet?
     
     // State vars for PKDrawingView
     @State var isDraw = true
@@ -31,6 +30,7 @@ struct SessionPageView: View {
     var body: some View {
         // TODO TJ right now we're only checking nil session, not connection status
         //  - BUG: the terminal view post-refactor has weird dead area at the top of it like a margin
+        
         if (host != nil && session != nil && canvas == nil) {
             // Case: a terminal-only session with an active connection
             return AnyView(
@@ -51,36 +51,36 @@ struct SessionPageView: View {
                         }) {
                             Image(systemName: "chevron.left").font(.title2)
                         },trailing:
-                        Menu {
-                            Button(action: {
-                                // TODO stop this if we already added a canvas
-                                showCanvasSheet.toggle()
-                            }) { // Add canvas to session
-                                Label {
-                                    Text("Add canvas")
-                                } icon : {
-                                    Image(systemName: "rectangle")
+                            Menu {
+                                Button(action: {
+                                    // TODO stop this if we already added a canvas
+                                    activeSheet = .selectCanvas
+                                }) { // Add canvas to session
+                                    Label {
+                                        Text("Add canvas")
+                                    } icon : {
+                                        Image(systemName: "rectangle")
+                                    }
                                 }
-                            }
-                            
-                            Button(action: {
-                                // TODO toggle show terminal sheet
-                                // can only be implemented after multiple terminals is implemented
-                            }) { // Add terminal to session
-                                Label {
-                                    Text("Add terminal")
-                                } icon : {
-                                    Image(systemName: "greaterthan.square.fill")
+                                
+                                Button(action: {
+                                    // TODO toggle show terminal sheet
+                                    // can only be implemented after multiple terminals is implemented
+                                }) { // Add terminal to session
+                                    Label {
+                                        Text("Add terminal")
+                                    } icon : {
+                                        Image(systemName: "greaterthan.square.fill")
+                                    }
                                 }
-                            }
-                        } label : {
-                            Image(systemName: "plus").font(.title)
-                        })
+                            } label : {
+                                Image(systemName: "plus").font(.title)
+                            })
                 .edgesIgnoringSafeArea(.top)  //TODO not sure why this is here
                 .sheet(
-                    isPresented: $showCanvasSheet
-                ) {
-                    SessionPageInputCanvas(canvas: $canvas, showCanvasSheet: $showCanvasSheet)
+                    item: $activeSheet
+                ) { item in
+                    SelectCanvasView(selectedHost: $host, selectedCanvas: $canvas, navToSessionActive: .constant(false), activeSheet: $activeSheet)
                 }
             )
         } else if (host != nil && session == nil && canvas == nil) {
@@ -88,7 +88,7 @@ struct SessionPageView: View {
             // Case: a terminal-only session without an active connection
             return AnyView(
                 Text("Not connected.")
-                .onAppear(perform: establishConnection)
+                    .onAppear(perform: establishConnection)
             )
         } else if (host == nil && canvas != nil) {
             // Case: a canvas-only session.
@@ -97,12 +97,12 @@ struct SessionPageView: View {
                     // if we are saving the drawing / exiting, change the background to white
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
-                    CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
-                    .sheet(
-                        isPresented: $showHostSheet
-                    ) {
-                        SessionPageInputHost(host: $host, showHostSheet: $showHostSheet)
-                    }
+                    CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height, canvasWidth: geometry.size.width, activeSheet: $activeSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
+                        .sheet(
+                            item: $activeSheet
+                        ) { _ in
+                            SelectHostView(selectedHost: $host, selectedCanvas: $canvas, navToSessionActive: .constant(false), activeSheet: $activeSheet)
+                        }
                 }
             )
         } else if (host != nil && session != nil && canvas != nil){
@@ -114,7 +114,7 @@ struct SessionPageView: View {
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
                     VStack {
-                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
+                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, activeSheet: $activeSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
                         SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: true)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
@@ -129,7 +129,7 @@ struct SessionPageView: View {
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
                     VStack {
-                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, showHostSheet: $showHostSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
+                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, activeSheet: $activeSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
                         Text("Not connected.")
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
@@ -138,6 +138,7 @@ struct SessionPageView: View {
             )
         }
     }
+    
     
     
     // This function should be run on the appearance of any of the above views which have a terminal.
