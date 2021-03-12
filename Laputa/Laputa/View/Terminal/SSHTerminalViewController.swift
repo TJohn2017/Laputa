@@ -302,7 +302,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // up or down 1 line every other time didPan is called for scrolling.
     var shouldScroll: Bool = false
     var lastScrollPoint : CGPoint?
-    
+    var highlightRects : [CGRect] = []
     // Handles the pan gesture. Used when we are in output catching mode to capture
     // the rows from the terminal that the user crossed in their pan gesture and save
     // their content to a new code card on the current canvas. If not in output catching mode
@@ -335,6 +335,15 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 }
                 shouldScroll.toggle()
                 lastScrollPoint = sender.location(in: view)
+            } else { // capturing output, highlight the rows that are currently selected
+                let terminal = terminalView!.getTerminal()
+                let (_, rows) = terminal.getDims()
+                let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+                let rowHeightInPixels = viewHeight / CGFloat(rows)
+                let highlighRect = CGRect(x: view.safeAreaInsets.left, y: lastScrollPoint!.y, width: view.frame.width, height: rowHeightInPixels)
+                highlightRects.append(highlighRect)
+//                let startRowIndex = Int((startPoint.y / rowHeightInPixels).rounded(.down))
+//                let endRowIndex = Int(((startPoint.y + translation.y) / rowHeightInPixels).rounded(.down))
             }
             
         case .ended,
