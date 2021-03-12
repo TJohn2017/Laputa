@@ -67,13 +67,9 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
         print ("didReadError: \(error)")
     }
     
-    public func scrolled(source: TerminalView, position: Double) {
-        print ("scrolled, position: \(position)")
-    }
+    public func scrolled(source: TerminalView, position: Double) {}
     
-    public func setTerminalTitle(source: TerminalView, title: String) {
-        //
-    }
+    public func setTerminalTitle(source: TerminalView, title: String) {}
     
     public func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
         let resizeSuccess = ssh_session?.requestTerminalSize(width: UInt(newCols), height: UInt(newRows))
@@ -82,9 +78,7 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
         
     }
     
-    public func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
-        //
-    }
+    public func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {}
     
     public func send(source: TerminalView, data: ArraySlice<UInt8>) {
         do {

@@ -82,6 +82,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         return (tv, tv.isConnected())
     }
     
+    // Adds keyboard observers for when the keyboard appears and disappears
     func addKeyboard() {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver (self,
@@ -96,6 +97,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         
     }
     
+    var keyboardDelta: CGFloat = 0
+    
+    // Called when the keyboard is about to hide. Makes a new terminal frame to fill the screen
     @objc func handleKeyboardWillHide() {
         keyboardDelta = 0
         if (terminalView != nil) {
@@ -103,7 +107,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
-    var keyboardDelta: CGFloat = 0
+    // Called when the keyboard is about to appear.
+    //Makes a new smaller frame for the terminal to compensate for the keyboard filling the screen.
     @objc
     func keyboardNotification(_ notification: NSNotification) {
         if let userInfo = notification.userInfo {
@@ -131,8 +136,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
+    // Called once when the view is first loaded
     override func loadView() {
-        print("LOG: loadView called")
         super.loadView()
         if (self.modifyTerminalHeight) {
             previous_height = self.view.bounds.height * 0.49
@@ -145,6 +150,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
+    // Called every time the screen is rotated
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -175,6 +181,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }, completion: nil)
     }
     
+    // Called once after the view is first loaded
     // Loads terminal gui into the view
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -208,10 +215,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             initializeKeyboardButton(t: t)
             view.addSubview(keyboardButton)
             self.terminalView?.becomeFirstResponder()
-            
-            // Initialize Swipe Gesture Recognizer -- for catching output and saving on canvas
+
+            // Initialize Swipe Gesture Recognizer -- for catching output and saving on canvas and for scrolling the terminal
             let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
             t.addGestureRecognizer(panGestureRecognizer)
+          
         } else {
             view.addSubview(self.errorView)
         }
@@ -281,38 +289,74 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
-    // Handles the pan gesture. Only used when we are in output catching mode to capture
+    private func getStartEndRowIndex (startPoint: CGPoint, translation: CGPoint, rows: Int) -> (startRowIndex: Int, endRowIndex: Int) {
+        let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+        let rowHeightInPixels = viewHeight / CGFloat(rows)
+        let startRowIndex = Int((startPoint.y / rowHeightInPixels).rounded(.down))
+        let endRowIndex = Int(((startPoint.y + translation.y) / rowHeightInPixels).rounded(.down))
+        return (startRowIndex, endRowIndex)
+    }
+
+    // Bollean to determine if we should be scrolling.
+    // Allows less sensitivity when pan gesture is recognized so that we only scroll
+    // up or down 1 line every other time didPan is called for scrolling.
+    var shouldScroll: Bool = false
+    var lastScrollPoint : CGPoint?
+    
+    // Handles the pan gesture. Used when we are in output catching mode to capture
     // the rows from the terminal that the user crossed in their pan gesture and save
-    // their content to a new code card on the current canvas.
+    // their content to a new code card on the current canvas. If not in output catching mode
+    // then it's used for scrolling the terminal up and down.
     @objc
     private func didPan(_ sender: UIPanGestureRecognizer) {
-        // If we aren't in output catching mode we don't need to do anything
-        if (!isCatchingOutput) {
-            return
-        }
-        
         switch sender.state {
+        
         case .began:
             initialDragPoint = sender.location(in: view)
+            lastScrollPoint = sender.location(in: view)
+            
+        case .changed:
+            // Scrolling
+            if (!isCatchingOutput) {
+                // .began failed to get last drag point location from previous tick, i.e. something went wrong!
+                if (lastScrollPoint == nil) {
+                    return
+                }
+                let terminal = terminalView!.getTerminal()
+                let (_, rows) = terminal.getDims()
+                var (startRowIndex, endRowIndex) = getStartEndRowIndex(startPoint: lastScrollPoint!, translation: sender.translation(in: view), rows: rows)
+                startRowIndex = abs(startRowIndex)
+                endRowIndex = abs(endRowIndex)
+                
+                if (startRowIndex > endRowIndex && shouldScroll){ // scrolling down
+                    terminalView?.scrollDown(lines: 1)
+                } else if (startRowIndex < endRowIndex && shouldScroll) { // scrolling up
+                    terminalView?.scrollUp(lines: 1)
+                }
+                shouldScroll.toggle()
+                lastScrollPoint = sender.location(in: view)
+            }
+            
         case .ended,
              .cancelled:
+            // Leave if we're not catching output
+            if(!isCatchingOutput) {
+                return
+            }
+            
             // Something went wrong, we need a starting point
             if (initialDragPoint == nil) {
                 return
             }
 
             // Use gesture data to calculate which rows were selected
-            let translation = sender.translation(in: view)
             let terminal = terminalView!.getTerminal()
             let (_, rows) = terminal.getDims()
-            let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
-            let rowHeightInPixels = viewHeight / CGFloat(rows)
-            var startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
-            var endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
+            var (startRowIndex, endRowIndex) = getStartEndRowIndex(startPoint: initialDragPoint!, translation: sender.translation(in: view), rows: rows)
             if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
                 swap(&startRowIndex, &endRowIndex)
             }
-            
+
             // Get content from row data
             var content = ""
             for i in startRowIndex...endRowIndex { // Loop over each row and concatenate it
