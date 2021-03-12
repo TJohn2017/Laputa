@@ -21,6 +21,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // Variables for catching last output to save it to a code card in an accompanying canvas
     var outputCatchButton: UIButton
     var isCatchingOutput: Bool = false
+    var initialDragPoint: CGPoint? = nil
     
     var connected: Bool
     var errorView: UIView
@@ -188,8 +189,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // Initialize default-failure page (in case of no connection).
         self.errorView = self.generateErrorView()
         
-        
-        
         // Otherwise, display the terminal view.
         if (self.connected) {
             guard let t = terminalView else {
@@ -212,7 +211,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             
             // Initialize Swipe Gesture Recognizer -- for catching output and saving on canvas
             let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
-            view.addGestureRecognizer(panGestureRecognizer)
+            t.addGestureRecognizer(panGestureRecognizer)
         } else {
             self.errorView.center = CGPoint(x: view.frame.size.width / 2, y: view.frame.size.height / 2)
             view.addSubview(self.errorView)
@@ -249,6 +248,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // so that a user can save content from the terminal to a code card on a canvas.
     @objc
     func toggleOutputCatching() {
+        self.initialDragPoint = nil
         self.isCatchingOutput = !self.isCatchingOutput
     }
     
@@ -283,23 +283,47 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // their content to a new code card on the current canvas.
     @objc
     private func didPan(_ sender: UIPanGestureRecognizer) {
-        print("TYLER: DID PAN")
+        // If we aren't in output catching mode we don't need to do anything
+        if (!isCatchingOutput) {
+            return
+        }
+        
         switch sender.state {
         case .began:
-            break
-//            initialCenter = pannableView.center
-        case .changed:
-            break
-//            let translation = sender.translation(in: view)
-//            pannableView.center = CGPoint(x: initialCenter.x + translation.x,
-//                                          y: initialCenter.y + translation.y)
+            initialDragPoint = sender.location(in: view)
         case .ended,
              .cancelled:
-            let translation = sender.translation(in: view)
-            if (isCatchingOutput) {
-                print("TYLER: \(translation.x) \(translation.y)")
+            // Something went wrong, we need a starting point
+            if (initialDragPoint == nil) {
+                return
             }
-            break
+
+            // Use gesture data to calculate which rows were selected
+            let translation = sender.translation(in: view)
+            let terminal = terminalView!.getTerminal()
+            let (_, rows) = terminal.getDims()
+            let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+            let rowHeightInPixels = viewHeight / CGFloat(rows)
+            var startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
+            var endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
+            if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
+                swap(&startRowIndex, &endRowIndex)
+            }
+            
+            // Get content from row data
+            var content = ""
+            print("TYLER: getting lines from \(startRowIndex) to \(endRowIndex)")
+            for i in startRowIndex...endRowIndex { // Loop over each row and concatenate it
+                let row = terminal.getLine(row: i)
+                if (row != nil) {
+                    print("TYLER: appending line \(i)")
+                    content += row!.translateToString()
+                    if (i != endRowIndex) {
+                        content += "\n" // We need to manually append a new line character
+                    }
+                }
+            }
+            print("TYLER: \(content)")
         default:
             break
         }
