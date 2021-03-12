@@ -219,7 +219,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             // Initialize Swipe Gesture Recognizer -- for catching output and saving on canvas and for scrolling the terminal
             let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
             t.addGestureRecognizer(panGestureRecognizer)
-
+          
         } else {
             view.addSubview(self.errorView)
         }
@@ -356,7 +356,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
                 swap(&startRowIndex, &endRowIndex)
             }
-        
+
             // Get content from row data
             var content = ""
             for i in startRowIndex...endRowIndex { // Loop over each row and concatenate it
@@ -372,12 +372,10 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             // Save the content to a code card and exit output catching mode
             saveContentToCodeCard(content: content)
             toggleOutputCatching()
-            
         default:
             break
         }
     }
-    
     
     func generateErrorView() -> UIView {
         let errorView = UIView()
