@@ -15,9 +15,13 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var connection: SSHConnection?
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
-    var outputCatchButton: UIButton
     var modifyTerminalHeight: Bool
     var previous_height : CGFloat?
+    
+    // Variables for catching last output to save it to a code card in an accompanying canvas
+    var outputCatchButton: UIButton
+    var isCatchingOutput: Bool = false
+    var initialDragPoint: CGPoint? = nil
     
     var connected: Bool
     var errorView: UIView
@@ -173,7 +177,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Loads terminal gui into the view
     override func viewDidLoad() {
-        print("LOG: viewDidLoad called")
         super.viewDidLoad()
         addKeyboard()
         
@@ -182,15 +185,12 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // start ssh session and add it ot the view
         let (terminalView, connected) = startSSHSession()
         self.connected = connected
-        print("LOG: terminalView = \(terminalView != nil)")
-        print("LOG: self.connected = \(self.connected)")
         
         // Initialize default-failure page (in case of no connection).
         self.errorView = self.generateErrorView()
         
         // Otherwise, display the terminal view.
         if (self.connected) {
-            print("LOG: connected in viewDidLoad")
             guard let t = terminalView else {
                 return
             }
@@ -208,6 +208,10 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             initializeKeyboardButton(t: t)
             view.addSubview(keyboardButton)
             self.terminalView?.becomeFirstResponder()
+            
+            // Initialize Swipe Gesture Recognizer -- for catching output and saving on canvas
+            let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+            t.addGestureRecognizer(panGestureRecognizer)
         } else {
             view.addSubview(self.errorView)
         }
@@ -236,20 +240,26 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         outputCatchButton.layer.masksToBounds = true
         outputCatchButton.setImage(UIImage(systemName: "arrow.triangle.branch"), for: .normal)
         outputCatchButton.backgroundColor = UIColor.white
-        outputCatchButton.addTarget(self, action: #selector(catchOutput), for: .touchUpInside)
+        outputCatchButton.addTarget(self, action: #selector(toggleOutputCatching), for: .touchUpInside)
     }
     
-    // Attempt to execute the current command prompt and catch the output
-    // so that it can be displayed in its own canvas card instead of in the
-    // terminal view.
+    // Toggle output catching mode: when on we will be watching for drag gestures
+    // so that a user can save content from the terminal to a code card on a canvas.
     @objc
-    func catchOutput() {
-        let lastResponse = terminalView?.lastResponse()
-        
-        // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
-        if (lastResponse != nil && canvas != nil && viewContext != nil) {
-            print("We are attempting to create a card")
-            print("last response: \(lastResponse ?? "")")
+    func toggleOutputCatching() {
+        self.initialDragPoint = nil
+        self.isCatchingOutput = !self.isCatchingOutput
+        if (self.isCatchingOutput) {
+            outputCatchButton.backgroundColor = UIColor.gray
+        } else {
+            outputCatchButton.backgroundColor = UIColor.white
+        }
+    }
+    
+    // Given the content from a terminal in string form saves it to a code card on the
+    // current if one exists. If no canvas or view context is present does nothing.
+    func saveContentToCodeCard(content: String) {
+        if (canvas != nil && viewContext != nil) {
             let newCard = CodeCard(context: viewContext!)
             newCard.id = UUID()
             newCard.origin = canvas
@@ -260,7 +270,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 maxZIndex = cards[0].zIndex + 1.0
             }
             newCard.zIndex = maxZIndex
-            newCard.text = lastResponse
+            newCard.text = content
         
             do {
                 try viewContext!.save()
@@ -268,6 +278,58 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
+        }
+    }
+    
+    // Handles the pan gesture. Only used when we are in output catching mode to capture
+    // the rows from the terminal that the user crossed in their pan gesture and save
+    // their content to a new code card on the current canvas.
+    @objc
+    private func didPan(_ sender: UIPanGestureRecognizer) {
+        // If we aren't in output catching mode we don't need to do anything
+        if (!isCatchingOutput) {
+            return
+        }
+        
+        switch sender.state {
+        case .began:
+            initialDragPoint = sender.location(in: view)
+        case .ended,
+             .cancelled:
+            // Something went wrong, we need a starting point
+            if (initialDragPoint == nil) {
+                return
+            }
+
+            // Use gesture data to calculate which rows were selected
+            let translation = sender.translation(in: view)
+            let terminal = terminalView!.getTerminal()
+            let (_, rows) = terminal.getDims()
+            let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+            let rowHeightInPixels = viewHeight / CGFloat(rows)
+            var startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
+            var endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
+            if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
+                swap(&startRowIndex, &endRowIndex)
+            }
+            
+            // Get content from row data
+            var content = ""
+            for i in startRowIndex...endRowIndex { // Loop over each row and concatenate it
+                let row = terminal.getLine(row: i)
+                if (row != nil) {
+                    content += row!.translateToString()
+                    if (i != endRowIndex) {
+                        content += "\n" // We need to manually append a new line character
+                    }
+                }
+            }
+            
+            // Save the content to a code card and exit output catching mode
+            saveContentToCodeCard(content: content)
+            toggleOutputCatching()
+        default:
+            break
         }
     }
     
