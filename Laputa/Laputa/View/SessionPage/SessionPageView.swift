@@ -16,12 +16,6 @@ struct SessionPageView: View {
     @State var hideNavBar : Bool = false
     @State var activeSheet: ActiveSheet?
     
-    // State vars for PKDrawingView
-    @State var isDraw = true
-    @State var isErase = false
-    @State var color : Color = Color.black
-    @State var type : PKInkingTool.InkType = .pencil
-    
     // passed into CanvasView/PKDrawingView so that when it is toggled by the
     // back button, the view will update and save the current drawing
     @State var savingDrawing = false
@@ -97,7 +91,7 @@ struct SessionPageView: View {
                     // if we are saving the drawing / exiting, change the background to white
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
-                    CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height, canvasWidth: geometry.size.width, activeSheet: $activeSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
+                    CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height, canvasWidth: geometry.size.width, activeSheet: $activeSheet, savingDrawing: $savingDrawing, session: $session)
                         .sheet(
                             item: $activeSheet
                         ) { _ in
@@ -114,7 +108,7 @@ struct SessionPageView: View {
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
                     VStack {
-                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, activeSheet: $activeSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
+                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, activeSheet: $activeSheet, savingDrawing: $savingDrawing, session: $session)
                         SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: true)
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
@@ -129,7 +123,7 @@ struct SessionPageView: View {
                     // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
                     savingDrawing ? Color.white : Color.black
                     VStack {
-                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, activeSheet: $activeSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session)
+                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, activeSheet: $activeSheet, savingDrawing: $savingDrawing, session: $session)
                         Text("Not connected.")
                             .frame(width: geometry.size.width, height: geometry.size.height / 2)
                     }
