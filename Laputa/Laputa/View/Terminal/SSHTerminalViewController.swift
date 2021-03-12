@@ -250,6 +250,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     func toggleOutputCatching() {
         self.initialDragPoint = nil
         self.isCatchingOutput = !self.isCatchingOutput
+        if (self.isCatchingOutput) {
+            outputCatchButton.backgroundColor = UIColor.gray
+        } else {
+            outputCatchButton.backgroundColor = UIColor.white
+        }
     }
     
     // Given the content from a terminal in string form saves it to a code card on the
@@ -323,7 +328,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             
             // Save the content to a code card and exit output catching mode
             saveContentToCodeCard(content: content)
-            self.isCatchingOutput = false
+            toggleOutputCatching()
         default:
             break
         }
