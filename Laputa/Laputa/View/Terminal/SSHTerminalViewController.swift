@@ -252,11 +252,10 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         self.isCatchingOutput = !self.isCatchingOutput
     }
     
-    // TODO TJ comment
-    func saveSelectedOutput() {
-        let lastResponse = terminalView?.lastResponse()
-        
-        if (lastResponse != nil && canvas != nil && viewContext != nil) {
+    // Given the content from a terminal in string form saves it to a code card on the
+    // current if one exists. If no canvas or view context is present does nothing.
+    func saveContentToCodeCard(content: String) {
+        if (canvas != nil && viewContext != nil) {
             let newCard = CodeCard(context: viewContext!)
             newCard.id = UUID()
             newCard.origin = canvas
@@ -267,7 +266,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 maxZIndex = cards[0].zIndex + 1.0
             }
             newCard.zIndex = maxZIndex
-            newCard.text = lastResponse
+            newCard.text = content
         
             do {
                 try viewContext!.save()
@@ -312,18 +311,19 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             
             // Get content from row data
             var content = ""
-            print("TYLER: getting lines from \(startRowIndex) to \(endRowIndex)")
             for i in startRowIndex...endRowIndex { // Loop over each row and concatenate it
                 let row = terminal.getLine(row: i)
                 if (row != nil) {
-                    print("TYLER: appending line \(i)")
                     content += row!.translateToString()
                     if (i != endRowIndex) {
                         content += "\n" // We need to manually append a new line character
                     }
                 }
             }
-            print("TYLER: \(content)")
+            
+            // Save the content to a code card and exit output catching mode
+            saveContentToCodeCard(content: content)
+            self.isCatchingOutput = false
         default:
             break
         }
