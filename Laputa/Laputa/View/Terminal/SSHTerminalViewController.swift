@@ -209,7 +209,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             view.addSubview(keyboardButton)
             self.terminalView?.becomeFirstResponder()
         } else {
-            self.errorView.center = CGPoint(x: view.frame.size.width / 2, y: view.frame.size.height / 2)
             view.addSubview(self.errorView)
         }
     }
@@ -275,7 +274,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     func generateErrorView() -> UIView {
         let errorView = UIView()
         errorView.backgroundColor = .black
-        errorView.frame = CGRect(x: 0, y:0, width: 700, height: 700)
+        errorView.frame = CGRect(x: 0, y:0, width: view.bounds.width, height: view.bounds.height)
         
         // Set error symbol.
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
