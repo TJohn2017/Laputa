@@ -208,6 +208,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             initializeKeyboardButton(t: t)
             view.addSubview(keyboardButton)
             self.terminalView?.becomeFirstResponder()
+
+            // Initialize Swipe Gesture Recognizer -- for catching output and saving on canvas and for scrolling the terminal
+            let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+            t.addGestureRecognizer(panGestureRecognizer)
+
         } else {
             view.addSubview(self.errorView)
         }
@@ -268,6 +273,92 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
+        }
+    }
+
+    var willScroll: Bool = false
+    // Handles the pan gesture. Only used when we are in output catching mode to capture
+    // the rows from the terminal that the user crossed in their pan gesture and save
+    // their content to a new code card on the current canvas.
+    @objc
+    private func didPan(_ sender: UIPanGestureRecognizer) {
+        // If we aren't in output catching mode we don't need to do anything
+//        if (!isCatchingOutput) {
+//            return
+//        }
+        
+        switch sender.state {
+        case .began:
+            initialDragPoint = sender.location(in: view)
+            
+        case .changed:
+            // Scrolling
+            if (!isCatchingOutput) {
+                initialDragPoint = sender.location(in: view)
+                let translation = sender.translation(in: view)
+                let terminal = terminalView!.getTerminal()
+                let (_, rows) = terminal.getDims()
+                let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+                let rowHeightInPixels = viewHeight / CGFloat(rows)
+                var startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
+                var endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
+            
+                let numRows = abs(startRowIndex - endRowIndex)
+                
+                if (startRowIndex > endRowIndex && willScroll) { // scrolling down
+                    terminalView?.scrollDown(lines: 1)
+                    willScroll.toggle()
+                } else if (startRowIndex < endRowIndex && willScroll) { // scrolling up
+                    terminalView?.scrollUp(lines: 1)
+                    willScroll.toggle()
+                } else {
+                    willScroll.toggle()
+                }
+            }
+            
+        case .ended,
+             .cancelled:
+            
+            if(!isCatchingOutput) {
+                return
+            }
+            
+            // Something went wrong, we need a starting point
+            if (initialDragPoint == nil) {
+                return
+            }
+
+            // Use gesture data to calculate which rows were selected
+            let translation = sender.translation(in: view)
+            let terminal = terminalView!.getTerminal()
+            let (_, rows) = terminal.getDims()
+            let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+            let rowHeightInPixels = viewHeight / CGFloat(rows)
+            var startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
+            var endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
+           
+            if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
+                swap(&startRowIndex, &endRowIndex)
+            }
+        
+            // Get content from row data
+            var content = ""
+            for i in startRowIndex...endRowIndex { // Loop over each row and concatenate it
+                let row = terminal.getLine(row: i)
+                if (row != nil) {
+                    content += row!.translateToString()
+                    if (i != endRowIndex) {
+                        content += "\n" // We need to manually append a new line character
+                    }
+                }
+            }
+            
+            // Save the content to a code card and exit output catching mode
+            saveContentToCodeCard(content: content)
+            toggleOutputCatching()
+            
+        default:
+            break
         }
     }
     
