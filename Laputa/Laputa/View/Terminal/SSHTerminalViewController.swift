@@ -176,7 +176,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Loads terminal gui into the view
     override func viewDidLoad() {
-        print("LOG: viewDidLoad called")
         super.viewDidLoad()
         addKeyboard()
         
@@ -185,15 +184,14 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // start ssh session and add it ot the view
         let (terminalView, connected) = startSSHSession()
         self.connected = connected
-        print("LOG: terminalView = \(terminalView != nil)")
-        print("LOG: self.connected = \(self.connected)")
         
         // Initialize default-failure page (in case of no connection).
         self.errorView = self.generateErrorView()
         
+        
+        
         // Otherwise, display the terminal view.
         if (self.connected) {
-            print("LOG: connected in viewDidLoad")
             guard let t = terminalView else {
                 return
             }
@@ -211,6 +209,10 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             initializeKeyboardButton(t: t)
             view.addSubview(keyboardButton)
             self.terminalView?.becomeFirstResponder()
+            
+            // Initialize Swipe Gesture Recognizer -- for catching output and saving on canvas
+            let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan(_:)))
+            view.addGestureRecognizer(panGestureRecognizer)
         } else {
             self.errorView.center = CGPoint(x: view.frame.size.width / 2, y: view.frame.size.height / 2)
             view.addSubview(self.errorView)
@@ -273,6 +275,33 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
+        }
+    }
+    
+    // Handles the pan gesture. Only used when we are in output catching mode to capture
+    // the rows from the terminal that the user crossed in their pan gesture and save
+    // their content to a new code card on the current canvas.
+    @objc
+    private func didPan(_ sender: UIPanGestureRecognizer) {
+        print("TYLER: DID PAN")
+        switch sender.state {
+        case .began:
+            break
+//            initialCenter = pannableView.center
+        case .changed:
+            break
+//            let translation = sender.translation(in: view)
+//            pannableView.center = CGPoint(x: initialCenter.x + translation.x,
+//                                          y: initialCenter.y + translation.y)
+        case .ended,
+             .cancelled:
+            let translation = sender.translation(in: view)
+            if (isCatchingOutput) {
+                print("TYLER: \(translation.x) \(translation.y)")
+            }
+            break
+        default:
+            break
         }
     }
     
