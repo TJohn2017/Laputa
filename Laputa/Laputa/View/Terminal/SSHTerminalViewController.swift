@@ -15,9 +15,13 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var connection: SSHConnection?
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
-    var outputCatchButton: UIButton
     var modifyTerminalHeight: Bool
     var previous_height : CGFloat?
+    
+    // Variables for catching last output to save it to a code card in an accompanying canvas
+    var outputCatchButton: UIButton
+    var isCatchingOutput: Bool = false
+    var initialDragPoint: CGPoint? = nil
     
     var connected: Bool
     var errorView: UIView
@@ -78,6 +82,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         return (tv, tv.isConnected())
     }
     
+    // Adds keyboard observers for when the keyboard appears and disappears
     func addKeyboard() {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver (self,
@@ -92,6 +97,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         
     }
     
+    var keyboardDelta: CGFloat = 0
+    
+    // Called when the keyboard is about to hide. Makes a new terminal frame to fill the screen
     @objc func handleKeyboardWillHide() {
         keyboardDelta = 0
         if (terminalView != nil) {
@@ -99,7 +107,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
-    var keyboardDelta: CGFloat = 0
+    // Called when the keyboard is about to appear.
+    //Makes a new smaller frame for the terminal to compensate for the keyboard filling the screen.
     @objc
     func keyboardNotification(_ notification: NSNotification) {
         if let userInfo = notification.userInfo {
@@ -127,8 +136,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
+    // Called once when the view is first loaded
     override func loadView() {
-        print("LOG: loadView called")
         super.loadView()
         if (self.modifyTerminalHeight) {
             previous_height = self.view.bounds.height * 0.49
@@ -141,6 +150,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
+    // Called every time the screen is rotated
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -171,9 +181,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }, completion: nil)
     }
     
+    // Called once after the view is first loaded
     // Loads terminal gui into the view
     override func viewDidLoad() {
-        print("LOG: viewDidLoad called")
         super.viewDidLoad()
         addKeyboard()
         
@@ -182,15 +192,12 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         // start ssh session and add it ot the view
         let (terminalView, connected) = startSSHSession()
         self.connected = connected
-        print("LOG: terminalView = \(terminalView != nil)")
-        print("LOG: self.connected = \(self.connected)")
         
         // Initialize default-failure page (in case of no connection).
         self.errorView = self.generateErrorView()
         
         // Otherwise, display the terminal view.
         if (self.connected) {
-            print("LOG: connected in viewDidLoad")
             guard let t = terminalView else {
                 return
             }
@@ -241,20 +248,26 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         outputCatchButton.layer.masksToBounds = true
         outputCatchButton.setImage(UIImage(systemName: "arrow.triangle.branch"), for: .normal)
         outputCatchButton.backgroundColor = UIColor.white
-        outputCatchButton.addTarget(self, action: #selector(catchOutput), for: .touchUpInside)
+        outputCatchButton.addTarget(self, action: #selector(toggleOutputCatching), for: .touchUpInside)
     }
     
-    // Attempt to execute the current command prompt and catch the output
-    // so that it can be displayed in its own canvas card instead of in the
-    // terminal view.
+    // Toggle output catching mode: when on we will be watching for drag gestures
+    // so that a user can save content from the terminal to a code card on a canvas.
     @objc
-    func catchOutput() {
-        let lastResponse = terminalView?.lastResponse()
-        
-        // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
-        if (lastResponse != nil && canvas != nil && viewContext != nil) {
-            print("We are attempting to create a card")
-            print("last response: \(lastResponse ?? "")")
+    func toggleOutputCatching() {
+        self.initialDragPoint = nil
+        self.isCatchingOutput = !self.isCatchingOutput
+        if (self.isCatchingOutput) {
+            outputCatchButton.backgroundColor = UIColor.gray
+        } else {
+            outputCatchButton.backgroundColor = UIColor.white
+        }
+    }
+    
+    // Given the content from a terminal in string form saves it to a code card on the
+    // current if one exists. If no canvas or view context is present does nothing.
+    func saveContentToCodeCard(content: String) {
+        if (canvas != nil && viewContext != nil) {
             let newCard = CodeCard(context: viewContext!)
             newCard.id = UUID()
             newCard.origin = canvas
@@ -265,7 +278,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 maxZIndex = cards[0].zIndex + 1.0
             }
             newCard.zIndex = maxZIndex
-            newCard.text = lastResponse
+            newCard.text = content
         
             do {
                 try viewContext!.save()
@@ -275,50 +288,53 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             }
         }
     }
+    
+    private func getStartEndRowIndex (translation: CGPoint, rows: Int) -> (startRowIndex: Int, endRowIndex: Int) {
+        let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+        let rowHeightInPixels = viewHeight / CGFloat(rows)
+        let startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
+        let endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
+        return (startRowIndex, endRowIndex)
+    }
 
-    var willScroll: Bool = false
-    // Handles the pan gesture. Only used when we are in output catching mode to capture
+    // Bollean to determine if we should be scrolling.
+    // Allows less sensitivity when pan gesture is recognized so that we only scroll
+    // up or down 1 line every other time didPan is called for scrolling.
+    var shouldScroll: Bool = false
+    
+    // Handles the pan gesture. Used when we are in output catching mode to capture
     // the rows from the terminal that the user crossed in their pan gesture and save
-    // their content to a new code card on the current canvas.
+    // their content to a new code card on the current canvas. If not in output catching mode
+    // then it's used for scrolling the terminal up and down.
     @objc
     private func didPan(_ sender: UIPanGestureRecognizer) {
-        // If we aren't in output catching mode we don't need to do anything
-//        if (!isCatchingOutput) {
-//            return
-//        }
-        
         switch sender.state {
+        
         case .began:
             initialDragPoint = sender.location(in: view)
             
         case .changed:
             // Scrolling
             if (!isCatchingOutput) {
-                initialDragPoint = sender.location(in: view)
-                let translation = sender.translation(in: view)
+                // .began failed to get any starting drag point location, i.e. something went wrong!
+                if (initialDragPoint == nil) {
+                    return
+                }
                 let terminal = terminalView!.getTerminal()
                 let (_, rows) = terminal.getDims()
-                let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
-                let rowHeightInPixels = viewHeight / CGFloat(rows)
-                var startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
-                var endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
-            
-                let numRows = abs(startRowIndex - endRowIndex)
+                let result = getStartEndRowIndex(translation: sender.translation(in: view), rows: rows)
                 
-                if (startRowIndex > endRowIndex && willScroll) { // scrolling down
+                if (result.startRowIndex > result.endRowIndex && shouldScroll) { // scrolling down
                     terminalView?.scrollDown(lines: 1)
-                    willScroll.toggle()
-                } else if (startRowIndex < endRowIndex && willScroll) { // scrolling up
+                } else if (result.startRowIndex < result.endRowIndex && shouldScroll) { // scrolling up
                     terminalView?.scrollUp(lines: 1)
-                    willScroll.toggle()
-                } else {
-                    willScroll.toggle()
                 }
+                shouldScroll.toggle()
             }
             
         case .ended,
              .cancelled:
-            
+            // Leave if we're not catching output
             if(!isCatchingOutput) {
                 return
             }
@@ -329,14 +345,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             }
 
             // Use gesture data to calculate which rows were selected
-            let translation = sender.translation(in: view)
             let terminal = terminalView!.getTerminal()
             let (_, rows) = terminal.getDims()
-            let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
-            let rowHeightInPixels = viewHeight / CGFloat(rows)
-            var startRowIndex = Int((initialDragPoint!.y / rowHeightInPixels).rounded(.down))
-            var endRowIndex = Int(((initialDragPoint!.y + translation.y) / rowHeightInPixels).rounded(.down))
-           
+            var (startRowIndex, endRowIndex) = getStartEndRowIndex(translation: sender.translation(in: view), rows: rows)
             if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
                 swap(&startRowIndex, &endRowIndex)
             }
@@ -361,6 +372,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             break
         }
     }
+    
     
     func generateErrorView() -> UIView {
         let errorView = UIView()
