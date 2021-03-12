@@ -15,9 +15,12 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     var connection: SSHConnection?
     var terminalView: SSHTerminalView?
     var keyboardButton: UIButton
-    var outputCatchButton: UIButton
     var modifyTerminalHeight: Bool
     var previous_height : CGFloat?
+    
+    // Variables for catching last output to save it to a code card in an accompanying canvas
+    var outputCatchButton: UIButton
+    var isCatchingOutput: Bool = false
     
     var connected: Bool
     var errorView: UIView
@@ -237,20 +240,21 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         outputCatchButton.layer.masksToBounds = true
         outputCatchButton.setImage(UIImage(systemName: "arrow.triangle.branch"), for: .normal)
         outputCatchButton.backgroundColor = UIColor.white
-        outputCatchButton.addTarget(self, action: #selector(catchOutput), for: .touchUpInside)
+        outputCatchButton.addTarget(self, action: #selector(toggleOutputCatching), for: .touchUpInside)
     }
     
-    // Attempt to execute the current command prompt and catch the output
-    // so that it can be displayed in its own canvas card instead of in the
-    // terminal view.
+    // Toggle output catching mode: when on we will be watching for drag gestures
+    // so that a user can save content from the terminal to a code card on a canvas.
     @objc
-    func catchOutput() {
+    func toggleOutputCatching() {
+        self.isCatchingOutput = !self.isCatchingOutput
+    }
+    
+    // TODO TJ comment
+    func saveSelectedOutput() {
         let lastResponse = terminalView?.lastResponse()
         
-        // TODO TJ: remove this and replace it with real code once last response tracking works. For now, just using dummy data.
         if (lastResponse != nil && canvas != nil && viewContext != nil) {
-            print("We are attempting to create a card")
-            print("last response: \(lastResponse ?? "")")
             let newCard = CodeCard(context: viewContext!)
             newCard.id = UUID()
             newCard.origin = canvas
