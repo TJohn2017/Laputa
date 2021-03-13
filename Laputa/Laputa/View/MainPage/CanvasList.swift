@@ -53,7 +53,7 @@ struct CanvasList: View {
                                     Text("\(canvas.wrappedTitle)")
                                         .font(.title)
                                         .foregroundColor(.black)
-                                    Text("Created: \(dateFormatter.string(from: canvas.wrappedDate))")
+                                    Text("Created: \(dateFormatter.string(from: canvas.dateCreated))")
                                         .foregroundColor(Color.gray)
                                         .padding(2)
                                 }.padding()

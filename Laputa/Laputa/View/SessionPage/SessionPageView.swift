@@ -9,131 +9,334 @@ import SwiftUI
 import UIKit
 import PencilKit
 
+enum SessionState: String {
+    case terminalOnlyConnected      // A terminal-only session w/ active connection.
+    case terminalOnlyNotConnected   // A terminal-only session w/ non-active connection.
+    case canvasOnly                 // A canvas-only session.
+    case splitConnected             // A connected terminal and canvas session.
+    case splitNotConnected          // A non-connected terminal and canvas session.
+    case error
+}
+
 struct SessionPageView: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.undoManager) private var undoManager
+
     @State var host: Host?
     @State var canvas: Canvas?
     @State var session: SSHConnection?
-    @State var hideNavBar : Bool = false
     @State var activeSheet: ActiveSheet?
     
-    // passed into CanvasView/PKDrawingView so that when it is toggled by the
-    // back button, the view will update and save the current drawing
-    @State var savingDrawing = false
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    // State vars for PKDrawingView
+    @State var isDraw = true
+    @State var isErase = false
+    @State var color : Color = Color.black
+    @State var type : PKInkingTool.InkType = .pencil
+    @State var pkCanvas = PKCanvasView()
+    
+    // backButtonPressed is passed into CanvasView/PKDrawingView so that
+    // when it is toggled by the back button, the view will update and
+    // save the current drawing.
+    @State var backButtonPressed : Bool = false
     
     var body: some View {
-        // TODO TJ right now we're only checking nil session, not connection status
-        //  - BUG: the terminal view post-refactor has weird dead area at the top of it like a margin
-        
-        if (host != nil && session != nil && canvas == nil) {
-            // Case: a terminal-only session with an active connection
-            return AnyView(
-                ZStack {
-                    Color.black
-                    SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: false)
-                }
-                .navigationBarTitle("\(host!.name)")
+        ZStack {
+            Color("CanvasMain")
+            self.sessionInstance
+                .navigationBarTitle("")
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationBarHidden(hideNavBar)
                 .navigationBarBackButtonHidden(true)
+                .navigationBarHidden(self.backButtonPressed)
                 .navigationBarItems(
-                    leading:
-                        Button(action: {
-                            session?.disconnect()
-                            hideNavBar.toggle()
-                            self.presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Image(systemName: "chevron.left").font(.title2)
-                        },trailing:
-                            Menu {
-                                Button(action: {
-                                    // TODO stop this if we already added a canvas
-                                    activeSheet = .selectCanvas
-                                }) { // Add canvas to session
-                                    Label {
-                                        Text("Add canvas")
-                                    } icon : {
-                                        Image(systemName: "rectangle")
-                                    }
-                                }
-                                
-                                Button(action: {
-                                    // TODO toggle show terminal sheet
-                                    // can only be implemented after multiple terminals is implemented
-                                }) { // Add terminal to session
-                                    Label {
-                                        Text("Add terminal")
-                                    } icon : {
-                                        Image(systemName: "greaterthan.square.fill")
-                                    }
-                                }
-                            } label : {
-                                Image(systemName: "plus").font(.title)
-                            })
-                .edgesIgnoringSafeArea(.top)  //TODO not sure why this is here
-                .sheet(
-                    item: $activeSheet
-                ) { item in
-                    SelectCanvasView(selectedHost: $host, selectedCanvas: $canvas, navToSessionActive: .constant(false), activeSheet: $activeSheet)
+                    leading: self.navigationBarLeadingButtons,
+                    trailing: self.navigationBarTrailingButtons
+                )
+                .sheet(item: $activeSheet) { item in
+                    switch item {
+                    // Choosing canvas to use with a host.
+                    case .selectCanvas:
+                        SelectCanvasView(
+                            selectedHost: $host,
+                            selectedCanvas: $canvas,
+                            navToSessionActive: .constant(false),
+                            activeSheet: $activeSheet
+                        )
+                    // Choosing host to use with a canvas.
+                    case .selectHost:
+                        SelectHostView(
+                            selectedHost: $host,
+                            selectedCanvas: $canvas,
+                            navToSessionActive: .constant(false),
+                            activeSheet: $activeSheet
+                        )
+                    default:
+                        EmptyView()
+                    }
                 }
+        }
+    }
+    
+    var sessionInstance: some View {
+        let sessionState = self.getSessionState()
+        
+        switch sessionState {
+        case .terminalOnlyConnected:
+            return AnyView(
+                SwiftUITerminal(
+                    canvas: $canvas,
+                    connection: $session,
+                    modifyTerminalHeight: false
+                )
             )
-        } else if (host != nil && session == nil && canvas == nil) {
-            // TODO replace with a real not connected view
-            // Case: a terminal-only session without an active connection
+        case .terminalOnlyNotConnected:
             return AnyView(
                 Text("Not connected.")
                     .onAppear(perform: establishConnection)
             )
-        } else if (host == nil && canvas != nil) {
-            // Case: a canvas-only session.
+        case .canvasOnly:
             return AnyView(
                 GeometryReader { geometry in
-                    // if we are saving the drawing / exiting, change the background to white
-                    // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
-                    savingDrawing ? Color.white : Color.black
-                    CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height, canvasWidth: geometry.size.width, activeSheet: $activeSheet, savingDrawing: $savingDrawing, session: $session)
-                        .sheet(
-                            item: $activeSheet
-                        ) { _ in
-                            SelectHostView(selectedHost: $host, selectedCanvas: $canvas, navToSessionActive: .constant(false), activeSheet: $activeSheet)
-                        }
-                }
-            )
-        } else if (host != nil && session != nil && canvas != nil){
-            print("LOG: about to render both host and canvas with session = \(session != nil)")
-            // Case: a canvas-and-terminal session with an active connection.
-            return AnyView(
-                GeometryReader { geometry in
-                    // if we are saving the drawing / exiting, change the background to white
-                    // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
-                    savingDrawing ? Color.white : Color.black
                     VStack {
-                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, activeSheet: $activeSheet, savingDrawing: $savingDrawing, session: $session)
-                        SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: true)
-                            .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                        CanvasView(
+                            canvasId: canvas!.id,
+                            height: geometry.size.height,
+                            width: geometry.size.width,
+                            pkCanvas: $pkCanvas,
+                            isDraw: $isDraw,
+                            isErase: $isErase,
+                            color: $color,
+                            type: $type,
+                            savingDrawing: $backButtonPressed
+                        )
+                        .frame(
+                            width: geometry.size.width,
+                            height: geometry.size.height
+                        )
                     }
                 }
             )
-        } else {
-            // TODO replace with a real not connected view
-            // Case: a canvas-and-terminal session without an active connection.
+        case .splitConnected:
             return AnyView(
                 GeometryReader { geometry in
-                    // if we are saving the drawing / exiting, change the background to white
-                    // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
-                    savingDrawing ? Color.white : Color.black
                     VStack {
-                        CanvasViewWithNavigation(canvas: canvas!, canvasHeight: geometry.size.height / 2, canvasWidth: geometry.size.width, activeSheet: $activeSheet, savingDrawing: $savingDrawing, session: $session)
+                        CanvasView(
+                            canvasId: canvas!.id,
+                            height: geometry.size.height / 2,
+                            width: geometry.size.width,
+                            pkCanvas: $pkCanvas,
+                            isDraw: $isDraw,
+                            isErase: $isErase,
+                            color: $color,
+                            type: $type,
+                            savingDrawing: $backButtonPressed
+                        )
+                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                        SwiftUITerminal(
+                            canvas: $canvas,
+                            connection: $session,
+                            modifyTerminalHeight: true
+                        )
+                        .frame(
+                            width: geometry.size.width,
+                            height: geometry.size.height / 2
+                        )
+                    }
+                }
+            )
+        case .splitNotConnected:
+            return AnyView(
+                GeometryReader { geometry in
+                    VStack {
+                        CanvasView(
+                            canvasId: canvas!.id,
+                            height: geometry.size.height / 2,
+                            width: geometry.size.width,
+                            pkCanvas: $pkCanvas,
+                            isDraw: $isDraw,
+                            isErase: $isErase,
+                            color: $color,
+                            type: $type,
+                            savingDrawing: $backButtonPressed
+                        )
+                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
                         Text("Not connected.")
-                            .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height / 2
+                            )
                     }
                     .onAppear(perform: establishConnection)
                 }
             )
+        default:
+            return AnyView(
+                Text("Something went wrong!").foregroundColor(.purple)
+            )
+        }
+    }
+
+    func getSessionState() -> SessionState {
+        if (self.host != nil && self.session != nil && self.canvas == nil) {
+            return SessionState.terminalOnlyConnected
+        } else if (host != nil && session == nil && canvas == nil) {
+            return SessionState.terminalOnlyNotConnected
+        } else if (host == nil && canvas != nil) {
+            return SessionState.canvasOnly
+        } else if (host != nil && session != nil && canvas != nil) {
+            return SessionState.splitConnected
+        } else if (host != nil && session == nil && canvas != nil) {
+            return SessionState.splitNotConnected
+        } else {
+            return SessionState.error
         }
     }
     
+    func getNavigationBarTitle() -> String {
+        let sessionState = self.getSessionState()
+        switch sessionState {
+        case SessionState.terminalOnlyConnected:
+            return "\(host!.name)"
+        case SessionState.terminalOnlyNotConnected:
+            return "\(host!.name)"
+        case SessionState.canvasOnly:
+            return "\(canvas!.wrappedTitle)"
+        case SessionState.splitConnected:
+            return "\(canvas!.wrappedTitle)  |  \(host!.name)"
+        case SessionState.splitNotConnected:
+            return "\(canvas!.wrappedTitle)  |  \(host!.name)"
+        default:
+            return ""
+        }
+    }
     
+    var navigationBarLeadingButtons: some View {
+        HStack(spacing: 15) {
+            Button(action: {
+                self.backButtonPressed.toggle()
+                
+                // Disconnect from session, if connected.
+                if (self.session != nil) {
+                    self.session?.disconnect()
+                }
+                
+                self.presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "chevron.left").font(.title2)
+            }
+            
+            Text("\(self.getNavigationBarTitle())")
+        }
+    }
+    
+    var navigationBarTrailingButtons: some View {
+        let sessionState = self.getSessionState()
+        let canvasIsActive: Bool = (
+            sessionState == SessionState.canvasOnly
+                || sessionState == SessionState.splitConnected
+                || sessionState == SessionState.splitNotConnected
+        )
+        
+        return HStack(spacing: 15) {
+            if (canvasIsActive) {
+                // Undo button.
+                Button(action: {
+                    undoManager?.undo()
+                }) {
+                    Image(systemName: "arrow.counterclockwise")
+                }
+                
+                // Redo button.
+                Button(action: {
+                    undoManager?.redo()
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                }
+                
+                // Pencil button.
+                Button(action: {
+                    self.isDraw = true
+                    self.isErase = false
+                    self.type = .pencil
+                }) {
+                    Image(systemName: "pencil")
+                        .foregroundColor(self.isDraw && self.type == .pencil ? .blue : .black)
+                }
+                
+                // Pen button.
+                Button(action: {
+                    self.isDraw = true
+                    self.isErase = false
+                    self.type = .pen
+                }) {
+                    Image(systemName: "pencil.tip")
+                        .foregroundColor(self.isDraw && self.type == .pen ? .blue : .black)
+                }
+                
+                // Marker button.
+                Button(action: {
+                    self.isDraw = true
+                    self.isErase = false
+                    self.type = .marker
+                }) {
+                    Image(systemName: "highlighter")
+                        .foregroundColor(self.isDraw && self.type == .marker ? .blue : .black)
+                }
+                
+                // Eraser button.
+                Button(action: {
+                    self.isDraw = false
+                    self.isErase = true
+                }) {
+                    Image("erase_icon")
+                        .resizable()
+                        .frame(width: 35, height: 35)
+                        .foregroundColor(self.isErase ? .blue : .black)
+                }
+                
+                // Lasso cut tool.
+                Button(action: {
+                    self.isDraw = false
+                    self.isErase = false
+                }) {
+                    Image(systemName: "scissors")
+                        .font(.title2)
+                        .foregroundColor(!self.isErase && !self.isDraw ? .blue : .black)
+                }
+                
+                ColorPicker("", selection: $color)
+            }
+            
+            Menu {
+                // Add canvas to session.
+                Button(action: {
+                    // TODO: add more than one canvas.
+                    if (!canvasIsActive) {
+                        self.activeSheet = ActiveSheet.selectCanvas
+                    }
+                }) {
+                    Label {
+                        Text("Add Canvas")
+                        
+                    } icon : { Image(systemName: "rectangle")}
+                }
+                
+                // Add terminal to session.
+                Button(action: {
+                    // TODO: add more than one terminal.
+                    if (sessionState == SessionState.canvasOnly) {
+                        self.activeSheet = ActiveSheet.selectHost
+                    }
+                }) {
+                    Label {
+                        Text("Add Terminal")
+                        
+                    } icon: { Image(systemName: "greaterthan.square.fill")}
+                }
+            } label : {
+                Image(systemName: "plus").font(.title)
+            }
+        }
+    }
     
     // This function should be run on the appearance of any of the above views which have a terminal.
     // It is used to establish the ssh connection for the terminal from the given host data.
