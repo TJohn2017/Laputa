@@ -20,6 +20,7 @@ enum SessionState: String {
 
 struct SessionPageView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.undoManager) private var undoManager
 
     @State var host: Host?
     @State var canvas: Canvas?
@@ -40,12 +41,12 @@ struct SessionPageView: View {
     
     var body: some View {
         self.sessionInstance
-            .navigationBarTitle(self.getNavigationBarTitle())
+            .navigationBarTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
             .navigationBarHidden(self.backButtonPressed)
             .navigationBarItems(
-                leading: self.navigationBarBackButton,
+                leading: self.navigationBarLeadingButtons,
                 trailing: self.navigationBarTrailingButtons
             )
             .sheet(item: $activeSheet) { item in
@@ -192,26 +193,30 @@ struct SessionPageView: View {
         case SessionState.canvasOnly:
             return "\(canvas!.wrappedTitle)"
         case SessionState.splitConnected:
-            return "\(canvas!.wrappedTitle)"
+            return "\(canvas!.wrappedTitle)  |  \(host!.name)"
         case SessionState.splitNotConnected:
-            return "\(canvas!.wrappedTitle)"
+            return "\(canvas!.wrappedTitle)  |  \(host!.name)"
         default:
             return ""
         }
     }
     
-    var navigationBarBackButton: some View {
-        Button(action: {
-            self.backButtonPressed.toggle()
-            
-            // Disconnect from session, if connected.
-            if (self.session != nil) {
-                self.session?.disconnect()
+    var navigationBarLeadingButtons: some View {
+        HStack(spacing: 15) {
+            Button(action: {
+                self.backButtonPressed.toggle()
+                
+                // Disconnect from session, if connected.
+                if (self.session != nil) {
+                    self.session?.disconnect()
+                }
+                
+                self.presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "chevron.left").font(.title2)
             }
             
-            self.presentationMode.wrappedValue.dismiss()
-        }) {
-            Image(systemName: "chevron.left").font(.title2)
+            Text("\(self.getNavigationBarTitle())")
         }
     }
     
@@ -225,6 +230,20 @@ struct SessionPageView: View {
         
         return HStack(spacing: 15) {
             if (canvasIsActive) {
+                // Undo button.
+                Button(action: {
+                    undoManager?.undo()
+                }) {
+                    Image(systemName: "arrow.counterclockwise")
+                }
+                
+                // Redo button.
+                Button(action: {
+                    undoManager?.redo()
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                }
+                
                 // Pencil button.
                 Button(action: {
                     self.isDraw = true

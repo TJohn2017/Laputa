@@ -38,10 +38,6 @@ extension Canvas {
         })
     }
     
-    public var wrappedDate: Date {
-        dateCreated 
-    }
-    
     public var wrappedMagnification: Double {
         return magnification == 0 ? 1.0 : magnification
     }

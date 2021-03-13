@@ -39,7 +39,7 @@ struct MainPagePreview: View {
                     .foregroundColor(Color.black)
                     .cornerRadius(10.0)
                     .font(.largeTitle)
-                Text("Created: \(dateFormatter.string(from: canvas!.wrappedDate))")
+                Text("Created: \(dateFormatter.string(from: canvas!.dateCreated))")
                     .foregroundColor(Color.white)
             }.padding()
         }
