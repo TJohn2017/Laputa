@@ -39,6 +39,25 @@ struct SessionPageView: View {
     // save the current drawing.
     @State var backButtonPressed : Bool = false
     
+    // gesture to drag split pane up or down
+    @GestureState var dragState = CGSize.zero
+    @State var splitState = CGSize.zero
+    @State var splitFrac: CGFloat = 0.5
+    var resizeSplit: some Gesture {
+        DragGesture()
+            .updating($dragState) { value, state, transaction in
+                state = value.translation
+            }
+            .onEnded() { value in
+//                self.splitState.width += value.translation.width
+//                self.splitState.height += value.translation.height
+                
+                // TODO: account for navigation bar width
+                // TODO: account for rotation
+                splitFrac += value.translation.height / UIScreen.main.bounds.height
+            }
+    }
+    
     var body: some View {
         ZStack {
             Color("CanvasMain")
@@ -74,6 +93,14 @@ struct SessionPageView: View {
                     }
                 }
         }
+    }
+    
+    var ResizeDragger: some View {
+        return RoundedRectangle(cornerRadius: 10)
+            .frame(width: 100, height: 20)
+            .foregroundColor(.red)
+            .offset(x: .zero, y: -(0.5 - splitFrac - (dragState.height / UIScreen.main.bounds.height)) * UIScreen.main.bounds.height)
+            .gesture(resizeSplit)
     }
     
     var sessionInstance: some View {
@@ -118,52 +145,64 @@ struct SessionPageView: View {
         case .splitConnected:
             return AnyView(
                 GeometryReader { geometry in
-                    VStack {
-                        CanvasView(
-                            canvasId: canvas!.id,
-                            height: geometry.size.height / 2,
-                            width: geometry.size.width,
-                            pkCanvas: $pkCanvas,
-                            isDraw: $isDraw,
-                            isErase: $isErase,
-                            color: $color,
-                            type: $type,
-                            savingDrawing: $backButtonPressed
-                        )
-                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        SwiftUITerminal(
-                            canvas: $canvas,
-                            connection: $session,
-                            modifyTerminalHeight: true
-                        )
-                        .frame(
-                            width: geometry.size.width,
-                            height: geometry.size.height / 2
-                        )
+                    ZStack {
+                        VStack {
+                            CanvasView(
+                                canvasId: canvas!.id,
+                                height: geometry.size.height * (splitFrac + (dragState.height / UIScreen.main.bounds.height)),
+                                width: geometry.size.width,
+                                pkCanvas: $pkCanvas,
+                                isDraw: $isDraw,
+                                isErase: $isErase,
+                                color: $color,
+                                type: $type,
+                                savingDrawing: $backButtonPressed
+                            )
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height * (splitFrac + (dragState.height / UIScreen.main.bounds.height))
+                            )
+                            SwiftUITerminal(
+                                canvas: $canvas,
+                                connection: $session,
+                                modifyTerminalHeight: true
+                            )
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height * (1 - (splitFrac + (dragState.height / UIScreen.main.bounds.height)))
+                            )
+                        }
+                        ResizeDragger
                     }
                 }
             )
         case .splitNotConnected:
             return AnyView(
                 GeometryReader { geometry in
-                    VStack {
-                        CanvasView(
-                            canvasId: canvas!.id,
-                            height: geometry.size.height / 2,
-                            width: geometry.size.width,
-                            pkCanvas: $pkCanvas,
-                            isDraw: $isDraw,
-                            isErase: $isErase,
-                            color: $color,
-                            type: $type,
-                            savingDrawing: $backButtonPressed
-                        )
-                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        Text("Not connected.")
+                    ZStack {
+                        VStack {
+                            CanvasView(
+                                canvasId: canvas!.id,
+                                height: geometry.size.height / 2,
+                                width: geometry.size.width,
+                                pkCanvas: $pkCanvas,
+                                isDraw: $isDraw,
+                                isErase: $isErase,
+                                color: $color,
+                                type: $type,
+                                savingDrawing: $backButtonPressed
+                            )
                             .frame(
                                 width: geometry.size.width,
-                                height: geometry.size.height / 2
+                                height: geometry.size.height * splitFrac
                             )
+                            Text("Not connected.")
+                                .frame(
+                                    width: geometry.size.width,
+                                    height: geometry.size.height * (1 - splitFrac)
+                                )
+                        }
+                        ResizeDragger
                     }
                     .onAppear(perform: establishConnection)
                 }
