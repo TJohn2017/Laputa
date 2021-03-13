@@ -313,7 +313,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // up or down 1 line every other time didPan is called for scrolling.
     var shouldScroll: Bool = false
     var lastScrollPoint : CGPoint?
-    var highlightRects : [UIView] = []
+    var highlightView: UIView?
     // Handles the pan gesture. Used when we are in output catching mode to capture
     // the rows from the terminal that the user crossed in their pan gesture and save
     // their content to a new code card on the current canvas. If not in output catching mode
@@ -333,12 +333,13 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             }
             let terminal = terminalView!.getTerminal()
             let (_, rows) = terminal.getDims()
-            var (startRowIndex, endRowIndex, rowHeightInPixels) = getStartEndRowIndex(startPoint: lastScrollPoint!, translation: sender.translation(in: view), rows: rows)
-            startRowIndex = abs(startRowIndex)
-            endRowIndex = abs(endRowIndex)
+            
             
             // Scrolling
             if (!isCatchingOutput) {
+                var (startRowIndex, endRowIndex, rowHeightInPixels) = getStartEndRowIndex(startPoint: lastScrollPoint!, translation: sender.translation(in: view), rows: rows)
+                startRowIndex = abs(startRowIndex)
+                endRowIndex = abs(endRowIndex)
                 if (startRowIndex > endRowIndex && shouldScroll){ // scrolling down
                     terminalView?.scrollDown(lines: 1)
                 } else if (startRowIndex < endRowIndex && shouldScroll) { // scrolling up
@@ -347,20 +348,22 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 shouldScroll.toggle()
                 lastScrollPoint = sender.location(in: view)
             } else { // capturing output, highlight the rows that are currently selected
-                if (startRowIndex < endRowIndex) {
-                    for index in startRowIndex...endRowIndex {
-                        let highlight_origin_y = CGFloat(index)*rowHeightInPixels
-                        let highlightView = generateHighlightRectView(origin_y: highlight_origin_y + 4, height: rowHeightInPixels)
-                        highlightRects.append(highlightView)
-                        view.addSubview(highlightView)
-                    }
-                } else {
-                    for index in stride(from: startRowIndex, through: endRowIndex, by: -1) {
-                        let highlight_origin_y = CGFloat(index)*rowHeightInPixels
-                        let highlightView = generateHighlightRectView(origin_y: highlight_origin_y + 4, height: rowHeightInPixels)
-                        highlightRects.append(highlightView)
-                        view.addSubview(highlightView)
-                    }
+                var (startRowIndex, endRowIndex, rowHeightInPixels) = getStartEndRowIndex(startPoint: initialDragPoint!, translation: sender.translation(in: view), rows: rows)
+                startRowIndex = abs(startRowIndex)
+                endRowIndex = abs(endRowIndex)
+                if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
+                    swap(&startRowIndex, &endRowIndex)
+                }
+                let numRows = abs(endRowIndex - startRowIndex) + 1
+                let origin_y = CGFloat(startRowIndex)*rowHeightInPixels
+             
+                if (highlightView != nil && highlightView!.isDescendant(of: view)) {
+                    highlightView!.frame = CGRect(x: view.safeAreaInsets.left, y: origin_y + 4, width: view.frame.width, height: CGFloat(numRows)*rowHeightInPixels)
+                } else if (numRows > 0){
+                    highlightView = UIView(frame: CGRect(x: view.safeAreaInsets.left, y: origin_y + 4, width: view.frame.width, height: CGFloat(numRows)*rowHeightInPixels))
+                    highlightView!.backgroundColor = .white
+                    highlightView!.alpha = 0.25
+                    view.addSubview(highlightView!)
                 }
             }
             
@@ -399,12 +402,12 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             // Save the content to a code card and exit output catching mode
             saveContentToCodeCard(content: content)
             toggleOutputCatching()
-            
-            // Deletes all the rectangle views used to highlight the output lines
-            for highlightView in highlightRects {
-                highlightView.removeFromSuperview()
+        
+            // Deletes the rectangle view used to highlight the terminal lines
+            if (highlightView != nil) {
+                highlightView!.removeFromSuperview()
+                highlightView = nil
             }
-            highlightRects = []
         default:
             break
         }
