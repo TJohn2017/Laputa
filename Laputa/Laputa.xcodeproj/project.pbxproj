@@ -40,7 +40,6 @@
 		759EA50625D4C9ED00560D98 /* SSHTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50525D4C9ED00560D98 /* SSHTerminalView.swift */; };
 		9C488E2625D0DCBA00662F1E /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C488E2525D0DCBA00662F1E /* CanvasView.swift */; };
 		9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C488E3125D1081C00662F1E /* CodeCardView.swift */; };
-		9C60058025F5B242007997FB /* CanvasViewWithNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C60057F25F5B242007997FB /* CanvasViewWithNavigation.swift */; };
 		9C7B158625F18FB500E88B09 /* CodeCard+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158425F18FB500E88B09 /* CodeCard+CoreDataClass.swift */; };
 		9C7B158725F18FB500E88B09 /* CodeCard+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158525F18FB500E88B09 /* CodeCard+CoreDataProperties.swift */; };
 		9C7B159025F1901D00E88B09 /* Canvas+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7B158E25F1901D00E88B09 /* Canvas+CoreDataClass.swift */; };
@@ -116,7 +115,6 @@
 		9C488E2525D0DCBA00662F1E /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		9C488E3125D1081C00662F1E /* CodeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeCardView.swift; sourceTree = "<group>"; };
 		9C5FAA47EB2A9210EEE0DB17 /* Pods_Laputa.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Laputa.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9C60057F25F5B242007997FB /* CanvasViewWithNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewWithNavigation.swift; sourceTree = "<group>"; };
 		9C7B158425F18FB500E88B09 /* CodeCard+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CodeCard+CoreDataClass.swift"; path = "Laputa/CoreData/CodeCard+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		9C7B158525F18FB500E88B09 /* CodeCard+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CodeCard+CoreDataProperties.swift"; path = "Laputa/CoreData/CodeCard+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
 		9C7B158E25F1901D00E88B09 /* Canvas+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Canvas+CoreDataClass.swift"; path = "Laputa/CoreData/Canvas+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
@@ -357,7 +355,6 @@
 				9C488E3125D1081C00662F1E /* CodeCardView.swift */,
 				9C488E2525D0DCBA00662F1E /* CanvasView.swift */,
 				9CEDEB7125E23DFA00F0E380 /* CanvasDebugView.swift */,
-				9C60057F25F5B242007997FB /* CanvasViewWithNavigation.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -615,7 +612,6 @@
 			files = (
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
-				9C60058025F5B242007997FB /* CanvasViewWithNavigation.swift in Sources */,
 				9C7B160625F4951000E88B09 /* CanvasList.swift in Sources */,
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,

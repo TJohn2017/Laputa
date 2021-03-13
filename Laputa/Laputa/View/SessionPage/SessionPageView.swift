@@ -32,9 +32,135 @@ struct SessionPageView: View {
     @State var color : Color = Color.black
     @State var type : PKInkingTool.InkType = .pencil
     
-    // backButtonPressed is passed into CanvasView/PKDrawingView so that when it is toggled by the
-    // back button, the view will update and save the current drawing.
+    // backButtonPressed is passed into CanvasView/PKDrawingView so that
+    // when it is toggled by the back button, the view will update and
+    // save the current drawing.
     @State var backButtonPressed : Bool = false
+    
+    var body: some View {
+        self.sessionInstance
+            .navigationBarTitle(self.getNavigationBarTitle())
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarHidden(self.backButtonPressed)
+            .navigationBarItems(
+                leading: self.navigationBarBackButton,
+                trailing: self.navigationBarTrailingButtons
+            )
+            .sheet(item: $activeSheet) { item in
+                switch item {
+                // Choosing canvas to use with a host.
+                case .selectCanvas:
+                    SelectCanvasView(
+                        selectedHost: $host,
+                        selectedCanvas: $canvas,
+                        navToSessionActive: .constant(false),
+                        activeSheet: $activeSheet
+                    )
+                // Choosing host to use with a canvas.
+                case .selectHost:
+                    SelectHostView(
+                        selectedHost: $host,
+                        selectedCanvas: $canvas,
+                        navToSessionActive: .constant(false),
+                        activeSheet: $activeSheet
+                    )
+                default:
+                    EmptyView()
+                }
+            }
+    }
+    
+    var sessionInstance: some View {
+        let sessionState = self.getSessionState()
+        
+        switch sessionState {
+        case .terminalOnlyConnected:
+            return AnyView(
+                SwiftUITerminal(
+                    canvas: $canvas,
+                    connection: $session,
+                    modifyTerminalHeight: false
+                )
+            )
+        case .terminalOnlyNotConnected:
+            return AnyView(
+                Text("Not connected.")
+                    .onAppear(perform: establishConnection)
+            )
+        case .canvasOnly:
+            return AnyView(
+                GeometryReader { geometry in
+                    CanvasView(
+                        canvasId: canvas!.id,
+                        height: geometry.size.height,
+                        width: geometry.size.width,
+                        isDraw: $isDraw,
+                        isErase: $isErase,
+                        color: $color,
+                        type: $type,
+                        savingDrawing: $backButtonPressed
+                    )
+                    .frame(width: geometry.size.height, height: geometry.size.width)
+                }
+            )
+        case .splitConnected:
+            return AnyView(
+                GeometryReader { geometry in
+                    VStack {
+                        CanvasView(
+                            canvasId: canvas!.id,
+                            height: geometry.size.height / 2,
+                            width: geometry.size.width,
+                            isDraw: $isDraw,
+                            isErase: $isErase,
+                            color: $color,
+                            type: $type,
+                            savingDrawing: $backButtonPressed
+                        )
+                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                        SwiftUITerminal(
+                            canvas: $canvas,
+                            connection: $session,
+                            modifyTerminalHeight: true
+                        )
+                        .frame(
+                            width: geometry.size.width,
+                            height: geometry.size.height / 2
+                        )
+                    }
+                }
+            )
+        case .splitNotConnected:
+            return AnyView(
+                GeometryReader { geometry in
+                    VStack {
+                        CanvasView(
+                            canvasId: canvas!.id,
+                            height: geometry.size.height / 2,
+                            width: geometry.size.width,
+                            isDraw: $isDraw,
+                            isErase: $isErase,
+                            color: $color,
+                            type: $type,
+                            savingDrawing: $backButtonPressed
+                        )
+                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
+                        Text("Not connected.")
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height / 2
+                            )
+                    }
+                    .onAppear(perform: establishConnection)
+                }
+            )
+        default:
+            return AnyView(
+                Text("Something went wrong!").foregroundColor(.purple)
+            )
+        }
+    }
 
     func getSessionState() -> SessionState {
         if (self.host != nil && self.session != nil && self.canvas == nil) {
@@ -180,152 +306,6 @@ struct SessionPageView: View {
             }
         }
     }
-    
-    var body: some View {
-        self.sessionInstance
-            .navigationBarTitle(self.getNavigationBarTitle())
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .navigationBarHidden(self.backButtonPressed)
-            .navigationBarItems(
-                leading: self.navigationBarBackButton,
-                trailing: self.navigationBarTrailingButtons
-            )
-            .sheet(item: $activeSheet) { item in
-                switch item {
-                // Choosing canvas to use with a host.
-                case .selectCanvas:
-                    SelectCanvasView(
-                        selectedHost: $host,
-                        selectedCanvas: $canvas,
-                        navToSessionActive: .constant(false),
-                        activeSheet: $activeSheet
-                    )
-                // Choosing host to use with a canvas.
-                case .selectHost:
-                    SelectHostView(
-                        selectedHost: $host,
-                        selectedCanvas: $canvas,
-                        navToSessionActive: .constant(false),
-                        activeSheet: $activeSheet
-                    )
-                default:
-                    EmptyView()
-                }
-            }
-    }
-
-    
-    var sessionInstance: some View {
-        // TODO TJ right now we're only checking nil session, not connection status
-        
-        let sessionState = self.getSessionState()
-        
-        if (sessionState == SessionState.terminalOnlyConnected) {
-            return AnyView(
-                SwiftUITerminal(
-                    canvas: $canvas,
-                    connection: $session,
-                    modifyTerminalHeight: false
-                )
-            )
-        } else if (sessionState == SessionState.terminalOnlyNotConnected) {
-            // TODO replace with a real not connected view
-            return AnyView(
-                Text("Not connected.")
-                    .onAppear(perform: establishConnection)
-            )
-        } else if (sessionState == SessionState.canvasOnly) {
-            // Case: a canvas-only session.
-            return AnyView(
-                GeometryReader { geometry in
-                    // If the back button has been pressed, then we change the background to white
-                    // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
-                    backButtonPressed ? Color.white : Color.black
-                    CanvasViewWithNavigation(
-                        canvas: canvas!,
-                        canvasHeight: geometry.size.height,
-                        canvasWidth: geometry.size.width,
-                        activeSheet: $activeSheet,
-                        isDraw: $isDraw,
-                        isErase: $isErase,
-                        color: $color,
-                        type: $type,
-                        savingDrawing: $backButtonPressed,
-                        session: $session
-                    )
-                }
-            )
-        } else if (sessionState == SessionState.splitConnected){
-            print("LOG: about to render both host and canvas with session = \(session != nil)")
-            return AnyView(
-                GeometryReader { geometry in
-                    // If the back button has been pressed, then we change the background to white
-                    // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
-                    backButtonPressed ? Color.white : Color.black
-                    VStack {
-                        CanvasViewWithNavigation(
-                            canvas: canvas!,
-                            canvasHeight: geometry.size.height / 2,
-                            canvasWidth: geometry.size.width,
-                            activeSheet: $activeSheet,
-                            isDraw: $isDraw,
-                            isErase: $isErase,
-                            color: $color,
-                            type: $type,
-                            savingDrawing: $backButtonPressed,
-                            session: $session
-                        )
-                        SwiftUITerminal(
-                            canvas: $canvas,
-                            connection: $session,
-                            modifyTerminalHeight: true
-                        )
-                        .frame(
-                            width: geometry.size.width,
-                            height: geometry.size.height / 2
-                        )
-                    }
-                }
-            )
-        } else if (sessionState == SessionState.splitNotConnected){
-            // TODO replace with a real not connected view
-            // Case: a canvas-and-terminal session without an active connection.
-            return AnyView(
-                GeometryReader { geometry in
-                    // If the back button has been pressed, then we change the background to white
-                    // so that the canvas (zoomed out to avoid overhang) doesn't look weird.
-                    backButtonPressed ? Color.white : Color.black
-                    VStack {
-                        CanvasViewWithNavigation(
-                            canvas: canvas!,
-                            canvasHeight: geometry.size.height / 2,
-                            canvasWidth: geometry.size.width,
-                            activeSheet: $activeSheet,
-                            isDraw: $isDraw,
-                            isErase: $isErase,
-                            color: $color,
-                            type: $type,
-                            savingDrawing: $backButtonPressed,
-                            session: $session
-                        )
-                        Text("Not connected.")
-                            .frame(
-                                width: geometry.size.width,
-                                height: geometry.size.height / 2
-                            )
-                    }
-                    .onAppear(perform: establishConnection)
-                }
-            )
-        } else {
-            return AnyView(
-                Text("Something went wrong!").foregroundColor(.purple)
-            )
-        }
-    }
-    
-    
     
     // This function should be run on the appearance of any of the above views which have a terminal.
     // It is used to establish the ssh connection for the terminal from the given host data.
