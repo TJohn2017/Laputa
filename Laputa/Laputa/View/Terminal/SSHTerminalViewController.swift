@@ -337,7 +337,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             
             // Scrolling
             if (!isCatchingOutput) {
-                var (startRowIndex, endRowIndex, rowHeightInPixels) = getStartEndRowIndex(startPoint: lastScrollPoint!, translation: sender.translation(in: view), rows: rows)
+                var (startRowIndex, endRowIndex, _) = getStartEndRowIndex(startPoint: lastScrollPoint!, translation: sender.translation(in: view), rows: rows)
                 startRowIndex = abs(startRowIndex)
                 endRowIndex = abs(endRowIndex)
                 if (startRowIndex > endRowIndex && shouldScroll){ // scrolling down
@@ -411,15 +411,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         default:
             break
         }
-    }
-    
-    // Generates a rectangle view that will highlight the current row
-    func generateHighlightRectView(origin_y: CGFloat, height: CGFloat) -> UIView {
-        let highlightRectView = UIView()
-        highlightRectView.backgroundColor = .white
-        highlightRectView.alpha = 0.005
-        highlightRectView.frame = CGRect(x: view.safeAreaInsets.left, y: origin_y, width: view.frame.width, height: height)
-        return highlightRectView
     }
     
     func generateErrorView() -> UIView {
