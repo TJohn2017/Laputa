@@ -29,6 +29,7 @@ struct CanvasView: View {
     var canvasWidth: CGFloat
     
     // Binding variables for PKCanvasView
+    @Binding var pkCanvas: PKCanvasView
     @Binding var isDraw : Bool
     @Binding var isErase : Bool
     @Binding var color : Color
@@ -38,10 +39,11 @@ struct CanvasView: View {
     // back button, the view will update and save the current drawing
     @Binding var savingDrawing: Bool
     
-    init(canvasId: UUID, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>, savingDrawing: Binding<Bool>) {
+    init(canvasId: UUID, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, pkCanvas: Binding<PKCanvasView>, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>, savingDrawing: Binding<Bool>) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
         canvasHeight = height!
         canvasWidth = width!
+        self._pkCanvas = pkCanvas
         self._isDraw = isDraw
         self._isErase = isErase
         self._color = color
@@ -125,7 +127,16 @@ struct CanvasView: View {
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
-                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode, canvasId: canvas.id, savingDrawing: $savingDrawing)
+                    PKDrawingView(
+                        pkCanvas: $pkCanvas,
+                        isDraw: $isDraw,
+                        isErase: $isErase,
+                        color: $color,
+                        type: $type,
+                        isInDrawingMode: $isInDrawingMode,
+                        canvasId: canvas.id,
+                        savingDrawing: $savingDrawing
+                    )
                         .background(Color.white.opacity(0.01))
                         .zIndex(maxZIndex + 1)
                         .allowsHitTesting(isInDrawingMode)
@@ -189,6 +200,7 @@ struct Canvas_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
+        @State var pkCanvas = PKCanvasView()
         @State var isDraw = true
         @State var isErase = false
         @State var color : Color = Color.black
@@ -201,7 +213,7 @@ struct Canvas_Previews: PreviewProvider {
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasView(canvasId: newCanvas.id, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasView(canvasId: newCanvas.id, pkCanvas: $pkCanvas, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }

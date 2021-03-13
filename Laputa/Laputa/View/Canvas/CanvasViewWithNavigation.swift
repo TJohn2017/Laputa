@@ -18,12 +18,14 @@ struct CanvasViewWithNavigation: View {
     
     @Binding var activeSheet: ActiveSheet?
     
-    // Binding variables for PKCanvasView
-    @Binding var isDraw : Bool
-    @Binding var isErase : Bool
-    @Binding var color : Color
-    @Binding var type : PKInkingTool.InkType
+    // State vars for PKDrawingView
+    @State var isDraw = true
+    @State var isErase = false
+    @State var color : Color = Color.black
+    @State var type : PKInkingTool.InkType = .pencil
     
+    @Environment(\.undoManager) private var undoManager
+    @State var pkCanvas = PKCanvasView()
     
     // passed into PKDrawingView so that when it is toggled by the
     // back button, the view will update and save the current drawing
@@ -32,14 +34,24 @@ struct CanvasViewWithNavigation: View {
     @Binding var session : SSHConnection?
     
     var body: some View {
-        CanvasView(canvasId: canvas.id, height: canvasHeight, width: canvasWidth, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing)
+        CanvasView(
+            canvasId: canvas.id,
+            height: canvasHeight,
+            width: canvasWidth,
+            pkCanvas: $pkCanvas,
+            isDraw: $isDraw,
+            isErase: $isErase,
+            color: $color,
+            type: $type,
+            savingDrawing: $savingDrawing
+        )
             .frame(width: canvasWidth, height: canvasHeight)
             .navigationBarHidden(savingDrawing)
             .navigationBarTitle("\(canvas.wrappedTitle)")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
             .navigationBarItems(
-                leading:
+                leading: HStack(spacing: 15) {
                     Button(action: {
                         savingDrawing.toggle()
                         if (session != nil) {
@@ -48,7 +60,22 @@ struct CanvasViewWithNavigation: View {
                         self.presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "chevron.left").font(.title2)
-                    },
+                    }
+                    
+                    Spacer().frame(width: 30)
+                    
+                    Button(action: { // undo
+                        undoManager?.undo()
+                    }) {
+                        Image(systemName: "arrow.counterclockwise")
+                    }
+                    
+                    Button(action: { // undo
+                        undoManager?.redo()
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                },
                 trailing: HStack(spacing: 15) {
                     Button(action: { // pencil
                         isDraw = true
@@ -134,10 +161,6 @@ struct CanvasViewWithNavigation_Previews: PreviewProvider {
     
     struct PreviewWrapper: View {
         @State var activeSheet: ActiveSheet?
-        @State var isDraw = true
-        @State var isErase = false
-        @State var color : Color = Color.black
-        @State var type : PKInkingTool.InkType = .pencil
         @State var savingDrawing: Bool = false
         @State var session : SSHConnection?
         
@@ -149,7 +172,17 @@ struct CanvasViewWithNavigation_Previews: PreviewProvider {
             newCanvas.dateCreated = Date()
             newCanvas.title = "Test Canvas"
             
-            return CanvasViewWithNavigation(canvas: newCanvas, canvasHeight: UIScreen.main.bounds.height, canvasWidth: UIScreen.main.bounds.width, activeSheet: $activeSheet, isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, savingDrawing: $savingDrawing, session: $session).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasViewWithNavigation(
+                canvas: newCanvas,
+                canvasHeight: UIScreen.main.bounds.height,
+                canvasWidth: UIScreen.main.bounds.width,
+                activeSheet: $activeSheet,
+                savingDrawing: $savingDrawing,
+                session: $session
+            ).environment(
+                \.managedObjectContext,
+                PersistenceController.preview.container.viewContext
+            )
         }
     }
 }

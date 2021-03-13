@@ -23,6 +23,7 @@ struct CanvasDebugView: View {
     var cards: [CodeCard] { canvas.cardArray }
 
     // added state vars for CanvasView
+    @State var pkCanvas = PKCanvasView()
     @State var isDraw = true
     @State var isErase = false
     @State var color : Color = Color.black
@@ -72,7 +73,7 @@ struct CanvasDebugView: View {
         }
         
         return ZStack {
-            CanvasView(canvasId: canvas.id, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing)
+            CanvasView(canvasId: canvas.id, pkCanvas: $pkCanvas, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing)
             HStack {
                 Button(action: addExampleCard) {
                     Text("Add card")
