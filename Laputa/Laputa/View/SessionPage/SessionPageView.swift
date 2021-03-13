@@ -21,7 +21,7 @@ enum SessionState: String {
 struct SessionPageView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.undoManager) private var undoManager
-
+    
     @State var host: Host?
     @State var canvas: Canvas?
     @State var session: SSHConnection?
@@ -38,6 +38,47 @@ struct SessionPageView: View {
     // when it is toggled by the back button, the view will update and
     // save the current drawing.
     @State var backButtonPressed : Bool = false
+    
+    // gesture to drag split pane up or down
+    @GestureState var dragState = CGSize.zero
+    @State var splitFrac: CGFloat = 0.5
+    @State var height: CGFloat = UIScreen.main.bounds.height
+    
+    func getResizeGesture(geoHeight: CGFloat) -> some Gesture {
+        return DragGesture()
+            .updating($dragState) { value, state, transaction in
+                state = value.translation
+            }
+            .onEnded() { value in
+                splitFrac += value.translation.height / geoHeight
+            }
+    }
+    
+    func getResizeDragger(geoHeight: CGFloat) -> some View {
+        return ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .frame(width: 100, height: 20)
+                .foregroundColor(Color.gray)
+            HStack {
+                Rectangle()
+                    .frame(width: 2, height: 12)
+                Spacer()
+                    .frame(width: 2)
+                Rectangle()
+                    .frame(width: 2, height: 12)
+                Spacer()
+                    .frame(width: 2)
+                Rectangle()
+                    .frame(width: 2, height: 12)
+            }
+            .foregroundColor(Color(white: 0, opacity: 0.3))
+        }
+        .offset(
+            x: .zero,
+            y: (splitFrac + (dragState.height / geoHeight) - 0.5) * geoHeight
+        )
+        .gesture(getResizeGesture(geoHeight: geoHeight))
+    }
     
     var body: some View {
         ZStack {
@@ -118,52 +159,64 @@ struct SessionPageView: View {
         case .splitConnected:
             return AnyView(
                 GeometryReader { geometry in
-                    VStack {
-                        CanvasView(
-                            canvasId: canvas!.id,
-                            height: geometry.size.height / 2,
-                            width: geometry.size.width,
-                            pkCanvas: $pkCanvas,
-                            isDraw: $isDraw,
-                            isErase: $isErase,
-                            color: $color,
-                            type: $type,
-                            savingDrawing: $backButtonPressed
-                        )
-                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        SwiftUITerminal(
-                            canvas: $canvas,
-                            connection: $session,
-                            modifyTerminalHeight: true
-                        )
-                        .frame(
-                            width: geometry.size.width,
-                            height: geometry.size.height / 2
-                        )
+                    ZStack {
+                        VStack {
+                            CanvasView(
+                                canvasId: canvas!.id,
+                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height)),
+                                width: geometry.size.width,
+                                pkCanvas: $pkCanvas,
+                                isDraw: $isDraw,
+                                isErase: $isErase,
+                                color: $color,
+                                type: $type,
+                                savingDrawing: $backButtonPressed
+                            )
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height))
+                            )
+                            SwiftUITerminal(
+                                canvas: $canvas,
+                                connection: $session,
+                                modifyTerminalHeight: true
+                            )
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
+                            )
+                        }
+                        getResizeDragger(geoHeight: geometry.size.height)
                     }
                 }
             )
         case .splitNotConnected:
             return AnyView(
                 GeometryReader { geometry in
-                    VStack {
-                        CanvasView(
-                            canvasId: canvas!.id,
-                            height: geometry.size.height / 2,
-                            width: geometry.size.width,
-                            pkCanvas: $pkCanvas,
-                            isDraw: $isDraw,
-                            isErase: $isErase,
-                            color: $color,
-                            type: $type,
-                            savingDrawing: $backButtonPressed
-                        )
-                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        Text("Not connected.")
+                    ZStack {
+                        VStack {
+                            CanvasView(
+                                canvasId: canvas!.id,
+                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height)),
+                                width: geometry.size.width,
+                                pkCanvas: $pkCanvas,
+                                isDraw: $isDraw,
+                                isErase: $isErase,
+                                color: $color,
+                                type: $type,
+                                savingDrawing: $backButtonPressed
+                            )
                             .frame(
                                 width: geometry.size.width,
-                                height: geometry.size.height / 2
+                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height))
                             )
+                            Text("Not connected.")
+                                .frame(
+                                    width: geometry.size.width,
+                                    height: geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
+                                )
+                        }
+                        getResizeDragger(geoHeight: geometry.size.height)
                     }
                     .onAppear(perform: establishConnection)
                 }
@@ -174,7 +227,7 @@ struct SessionPageView: View {
             )
         }
     }
-
+    
     func getSessionState() -> SessionState {
         if (self.host != nil && self.session != nil && self.canvas == nil) {
             return SessionState.terminalOnlyConnected
