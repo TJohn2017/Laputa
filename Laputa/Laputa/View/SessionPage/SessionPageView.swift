@@ -167,7 +167,7 @@ struct SessionPageView: View {
                 Button(action: {
                     // TODO: add more than one terminal.
                     if (sessionState == SessionState.canvasOnly) {
-                        self.activeSheet = ActiveSheet.selectCanvas
+                        self.activeSheet = ActiveSheet.selectHost
                     }
                 }) {
                     Label {
