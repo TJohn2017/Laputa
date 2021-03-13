@@ -104,13 +104,18 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         keyboardDelta = 0
         if (terminalView != nil) {
             terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
+            if (self.modifyTerminalHeight) {
+                outputCatchButton.frame = CGRect(x: terminalView!.frame.width - 100, y: terminalView!.frame.height - 100 - ((terminalView!.frame.width/15) * 1.3), width: terminalView!.frame.width/15, height: terminalView!.frame.width/15)
+            }
         }
+        keyboardButton.isHidden = false
     }
     
     // Called when the keyboard is about to appear.
     //Makes a new smaller frame for the terminal to compensate for the keyboard filling the screen.
     @objc
     func keyboardNotification(_ notification: NSNotification) {
+        
         if let userInfo = notification.userInfo {
             let keyboardSize = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
             let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
@@ -125,6 +130,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             }
             if (terminalView != nil) {
                 terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
+                if (self.modifyTerminalHeight) { // update catch output button so it's above the keyboard
+                    outputCatchButton.frame = CGRect(x: terminalView!.frame.width - 100, y: terminalView!.frame.height - 100, width: terminalView!.frame.width/15, height: terminalView!.frame.width/15)
+                }
                 UIView.animate(withDuration: duration,
                                            delay: TimeInterval(0),
                                            options: animationCurve,
@@ -132,6 +140,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 
                                             self.view.layoutIfNeeded() },
                                            completion: nil)
+                keyboardButton.isHidden = true
             }
         }
     }
@@ -171,9 +180,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 // reset terminal view frame
                 self.terminalView!.frame = self.view.frame
                 // reset buttons in terminal view
-                self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 120, width: self.view.frame.width/15, height: self.view.frame.width/15)
+                self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 100, width: self.view.frame.width/15, height: self.view.frame.width/15)
                 if (self.modifyTerminalHeight) {
-                    self.outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 220, width: self.view.frame.width/15, height: self.view.frame.width/15)
+                    self.outputCatchButton.frame = CGRect(x: self.terminalView!.frame.width - 100, y: self.terminalView!.frame.height - 100 - ((self.terminalView!.frame.width/15) * 1.3), width: self.terminalView!.frame.width/15, height: self.terminalView!.frame.width/15)
                 }
             } else {
                 self.errorView.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
@@ -243,10 +252,10 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Setup the output catch button UI and behavior
     private func initializeOutputCatchButton(t: TerminalView) {
-        outputCatchButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 220, width: t.frame.width/15, height: t.frame.width/15)
+        outputCatchButton.frame = CGRect(x: t.frame.width - 100, y: t.frame.height - 150, width: t.frame.width/15, height: t.frame.width/15)
         outputCatchButton.layer.cornerRadius = 15
         outputCatchButton.layer.masksToBounds = true
-        outputCatchButton.setImage(UIImage(systemName: "arrow.triangle.branch"), for: .normal)
+        outputCatchButton.setImage(UIImage(systemName: "rectangle.stack.badge.plus"), for: .normal)
         outputCatchButton.backgroundColor = UIColor.white
         outputCatchButton.addTarget(self, action: #selector(toggleOutputCatching), for: .touchUpInside)
     }
@@ -256,6 +265,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     @objc
     func toggleOutputCatching() {
         self.initialDragPoint = nil
+        self.lastScrollPoint = nil
         self.isCatchingOutput = !self.isCatchingOutput
         if (self.isCatchingOutput) {
             outputCatchButton.backgroundColor = UIColor.gray
@@ -289,12 +299,13 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         }
     }
     
-    private func getStartEndRowIndex (startPoint: CGPoint, translation: CGPoint, rows: Int) -> (startRowIndex: Int, endRowIndex: Int) {
+    // Gets the row indices for the start and end rows of the text we're highlighting
+    private func getStartEndRowIndex (startPoint: CGPoint, translation: CGPoint, rows: Int) -> (startRowIndex: Int, endRowIndex: Int, rowHeightInPixels: CGFloat) {
         let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
         let rowHeightInPixels = viewHeight / CGFloat(rows)
         let startRowIndex = Int((startPoint.y / rowHeightInPixels).rounded(.down))
         let endRowIndex = Int(((startPoint.y + translation.y) / rowHeightInPixels).rounded(.down))
-        return (startRowIndex, endRowIndex)
+        return (startRowIndex, endRowIndex, rowHeightInPixels)
     }
 
     // Bollean to determine if we should be scrolling.
@@ -302,7 +313,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // up or down 1 line every other time didPan is called for scrolling.
     var shouldScroll: Bool = false
     var lastScrollPoint : CGPoint?
-    
+    var highlightView: UIView?
     // Handles the pan gesture. Used when we are in output catching mode to capture
     // the rows from the terminal that the user crossed in their pan gesture and save
     // their content to a new code card on the current canvas. If not in output catching mode
@@ -316,18 +327,19 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             lastScrollPoint = sender.location(in: view)
             
         case .changed:
+            // .began failed to get last drag point location from previous tick, i.e. something went wrong!
+            if (lastScrollPoint == nil) {
+                return
+            }
+            let terminal = terminalView!.getTerminal()
+            let (_, rows) = terminal.getDims()
+            
+            
             // Scrolling
             if (!isCatchingOutput) {
-                // .began failed to get last drag point location from previous tick, i.e. something went wrong!
-                if (lastScrollPoint == nil) {
-                    return
-                }
-                let terminal = terminalView!.getTerminal()
-                let (_, rows) = terminal.getDims()
-                var (startRowIndex, endRowIndex) = getStartEndRowIndex(startPoint: lastScrollPoint!, translation: sender.translation(in: view), rows: rows)
+                var (startRowIndex, endRowIndex, rowHeightInPixels) = getStartEndRowIndex(startPoint: lastScrollPoint!, translation: sender.translation(in: view), rows: rows)
                 startRowIndex = abs(startRowIndex)
                 endRowIndex = abs(endRowIndex)
-                
                 if (startRowIndex > endRowIndex && shouldScroll){ // scrolling down
                     terminalView?.scrollDown(lines: 1)
                 } else if (startRowIndex < endRowIndex && shouldScroll) { // scrolling up
@@ -335,6 +347,24 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 }
                 shouldScroll.toggle()
                 lastScrollPoint = sender.location(in: view)
+            } else { // capturing output, highlight the rows that are currently selected
+                var (startRowIndex, endRowIndex, rowHeightInPixels) = getStartEndRowIndex(startPoint: initialDragPoint!, translation: sender.translation(in: view), rows: rows)
+                startRowIndex = abs(startRowIndex)
+                endRowIndex = abs(endRowIndex)
+                if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
+                    swap(&startRowIndex, &endRowIndex)
+                }
+                let numRows = abs(endRowIndex - startRowIndex) + 1
+                let origin_y = CGFloat(startRowIndex)*rowHeightInPixels
+             
+                if (highlightView != nil && highlightView!.isDescendant(of: view)) {
+                    highlightView!.frame = CGRect(x: view.safeAreaInsets.left, y: origin_y + 4, width: view.frame.width, height: CGFloat(numRows)*rowHeightInPixels)
+                } else if (numRows > 0){
+                    highlightView = UIView(frame: CGRect(x: view.safeAreaInsets.left, y: origin_y + 4, width: view.frame.width, height: CGFloat(numRows)*rowHeightInPixels))
+                    highlightView!.backgroundColor = .white
+                    highlightView!.alpha = 0.25
+                    view.addSubview(highlightView!)
+                }
             }
             
         case .ended,
@@ -352,7 +382,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             // Use gesture data to calculate which rows were selected
             let terminal = terminalView!.getTerminal()
             let (_, rows) = terminal.getDims()
-            var (startRowIndex, endRowIndex) = getStartEndRowIndex(startPoint: initialDragPoint!, translation: sender.translation(in: view), rows: rows)
+            var (startRowIndex, endRowIndex, _) = getStartEndRowIndex(startPoint: initialDragPoint!, translation: sender.translation(in: view), rows: rows)
             if (startRowIndex > endRowIndex) { // We need start row index to be the lesser value for our range
                 swap(&startRowIndex, &endRowIndex)
             }
@@ -372,9 +402,24 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             // Save the content to a code card and exit output catching mode
             saveContentToCodeCard(content: content)
             toggleOutputCatching()
+        
+            // Deletes the rectangle view used to highlight the terminal lines
+            if (highlightView != nil) {
+                highlightView!.removeFromSuperview()
+                highlightView = nil
+            }
         default:
             break
         }
+    }
+    
+    // Generates a rectangle view that will highlight the current row
+    func generateHighlightRectView(origin_y: CGFloat, height: CGFloat) -> UIView {
+        let highlightRectView = UIView()
+        highlightRectView.backgroundColor = .white
+        highlightRectView.alpha = 0.005
+        highlightRectView.frame = CGRect(x: view.safeAreaInsets.left, y: origin_y, width: view.frame.width, height: height)
+        return highlightRectView
     }
     
     func generateErrorView() -> UIView {

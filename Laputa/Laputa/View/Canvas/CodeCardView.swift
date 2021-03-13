@@ -116,7 +116,7 @@ struct CodeCardView: View {
     var body: some View {
         // minimum size for a card
         let minWidth: CGFloat = 100
-        let minHeight: CGFloat = 100
+        let minHeight: CGFloat = 50
         
         let drag = DragGesture()
             .onChanged { _ in

@@ -18,9 +18,9 @@ public class CodeCardTerminalView: TerminalView, TerminalViewDelegate {
     init(content: String, frame: CGRect) {
         super.init(frame: frame) // init function of TerminalView
         terminalDelegate = self
-        
         print("content: \(content)")
         // Give it the static content
+        self.feed(text: "\n")
         self.feed(text: content)
     }
     
