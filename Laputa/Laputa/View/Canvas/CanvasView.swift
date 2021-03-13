@@ -54,6 +54,13 @@ struct CanvasView: View {
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
     
+    // save how zoomed in the user is to CoreData
+    func saveCanvasZoom() {
+        viewContext.performAndWait {
+            canvas.magnification = Double(magniScale)
+            try? viewContext.save()
+        }
+    }
     
     // gesture for pinching to zoom in/out
     @State var magniScale = CGFloat(1.0)
@@ -67,7 +74,18 @@ struct CanvasView: View {
                 let magni = (value - 1.0) * sensitivity + magniScale
                 // clamp it
                 magniScale = max(min(magni, maxZoomIn), maxZoomOut)
+                
+                saveCanvasZoom()
             }
+    }
+    
+    // saves user's location on canvas to CoreData
+    func saveCanvasPosition() {
+        viewContext.performAndWait {
+            canvas.locX = Double(viewState.width)
+            canvas.locY = Double(viewState.height)
+            try? viewContext.save()
+        }
     }
     
     // gesture to drag and move around
@@ -81,6 +99,8 @@ struct CanvasView: View {
             .onEnded() { value in
                 self.viewState.width += value.translation.width
                 self.viewState.height += value.translation.height
+                
+                saveCanvasPosition()
             }
     }
     
@@ -96,6 +116,8 @@ struct CanvasView: View {
     func resetView() {
         magniScale = 1.0
         viewState = CGSize.zero
+        saveCanvasPosition()
+        saveCanvasZoom()
     }
     
     func toggleDrawing() {
@@ -105,10 +127,16 @@ struct CanvasView: View {
     // Since cards are returned sorted by zIndex, this gets
     // the highest zIndex from all cards.
     @State var maxZIndex = 0.0
-    func setMaxZIndex() {
+    
+    // Set maxZindex, saved magnification, and saved position
+    func setup() {
         if !cards.isEmpty {
             self.maxZIndex = cards[0].zIndex
         }
+        
+        magniScale = CGFloat(canvas.wrappedMagnification)
+        viewState.width = CGFloat(canvas.locX)
+        viewState.height = CGFloat(canvas.locY)
     }
     
     var body: some View {
@@ -141,12 +169,12 @@ struct CanvasView: View {
                         .zIndex(maxZIndex + 1)
                         .allowsHitTesting(isInDrawingMode)
                 }
-                // if we're saving the drawing/exiting, zoom out all the way so that
+                // if we're saving the drawing/exiting, zoom to 0 so that
                 // the large canvas overhang doesn't mess up the exit animation
-                .scaleEffect(savingDrawing ? maxZoomOut : magniScale)
+                .scaleEffect(savingDrawing ? 0.0 : CGFloat(canvas.wrappedMagnification))
                 .offset(
-                    x: viewState.width + panState.width,
-                    y: viewState.height + panState.height
+                    x: CGFloat(canvas.locX) + panState.width,
+                    y: CGFloat(canvas.locY) + panState.height
                 )
                 .gesture(navigate)
                 .onTapGesture (count: 2, perform: {
@@ -186,7 +214,7 @@ struct CanvasView: View {
                     y: -canvasHeight / 2  + 70
                 )
             }
-            .onAppear(perform: setMaxZIndex)
+            .onAppear(perform: setup)
     }
 }
 
