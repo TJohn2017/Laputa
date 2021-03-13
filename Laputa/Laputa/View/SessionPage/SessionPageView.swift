@@ -21,7 +21,7 @@ enum SessionState: String {
 struct SessionPageView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.undoManager) private var undoManager
-
+    
     @State var host: Host?
     @State var canvas: Canvas?
     @State var session: SSHConnection?
@@ -41,21 +41,43 @@ struct SessionPageView: View {
     
     // gesture to drag split pane up or down
     @GestureState var dragState = CGSize.zero
-    @State var splitState = CGSize.zero
     @State var splitFrac: CGFloat = 0.5
-    var resizeSplit: some Gesture {
-        DragGesture()
+    @State var height: CGFloat = UIScreen.main.bounds.height
+    
+    func getResizeGesture(geoHeight: CGFloat) -> some Gesture {
+        return DragGesture()
             .updating($dragState) { value, state, transaction in
                 state = value.translation
             }
             .onEnded() { value in
-//                self.splitState.width += value.translation.width
-//                self.splitState.height += value.translation.height
-                
-                // TODO: account for navigation bar width
-                // TODO: account for rotation
-                splitFrac += value.translation.height / UIScreen.main.bounds.height
+                splitFrac += value.translation.height / geoHeight
             }
+    }
+    
+    func getResizeDragger(geoHeight: CGFloat) -> some View {
+        return ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .frame(width: 100, height: 20)
+                .foregroundColor(Color.gray)
+            HStack {
+                Rectangle()
+                    .frame(width: 2, height: 12)
+                Spacer()
+                    .frame(width: 2)
+                Rectangle()
+                    .frame(width: 2, height: 12)
+                Spacer()
+                    .frame(width: 2)
+                Rectangle()
+                    .frame(width: 2, height: 12)
+            }
+            .foregroundColor(Color(white: 0, opacity: 0.3))
+        }
+        .offset(
+            x: .zero,
+            y: (splitFrac + (dragState.height / geoHeight) - 0.5) * geoHeight
+        )
+        .gesture(getResizeGesture(geoHeight: geoHeight))
     }
     
     var body: some View {
@@ -95,13 +117,13 @@ struct SessionPageView: View {
         }
     }
     
-    var ResizeDragger: some View {
-        return RoundedRectangle(cornerRadius: 10)
-            .frame(width: 100, height: 20)
-            .foregroundColor(.red)
-            .offset(x: .zero, y: -(0.5 - splitFrac - (dragState.height / UIScreen.main.bounds.height)) * UIScreen.main.bounds.height)
-            .gesture(resizeSplit)
-    }
+//    var ResizeDragger: some View {
+//        return RoundedRectangle(cornerRadius: 10)
+//            .frame(width: 100, height: 20)
+//            .foregroundColor(.red)
+//            .offset(x: .zero, y: -(0.5 - splitFrac - (dragState.height / UIScreen.main.bounds.height)) * UIScreen.main.bounds.height)
+//            .gesture(resizeSplit)
+//    }
     
     var sessionInstance: some View {
         let sessionState = self.getSessionState()
@@ -149,7 +171,7 @@ struct SessionPageView: View {
                         VStack {
                             CanvasView(
                                 canvasId: canvas!.id,
-                                height: geometry.size.height * (splitFrac + (dragState.height / UIScreen.main.bounds.height)),
+                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height)),
                                 width: geometry.size.width,
                                 pkCanvas: $pkCanvas,
                                 isDraw: $isDraw,
@@ -160,7 +182,7 @@ struct SessionPageView: View {
                             )
                             .frame(
                                 width: geometry.size.width,
-                                height: geometry.size.height * (splitFrac + (dragState.height / UIScreen.main.bounds.height))
+                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height))
                             )
                             SwiftUITerminal(
                                 canvas: $canvas,
@@ -169,10 +191,10 @@ struct SessionPageView: View {
                             )
                             .frame(
                                 width: geometry.size.width,
-                                height: geometry.size.height * (1 - (splitFrac + (dragState.height / UIScreen.main.bounds.height)))
+                                height: geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
                             )
                         }
-                        ResizeDragger
+                        getResizeDragger(geoHeight: geometry.size.height)
                     }
                 }
             )
@@ -183,7 +205,7 @@ struct SessionPageView: View {
                         VStack {
                             CanvasView(
                                 canvasId: canvas!.id,
-                                height: geometry.size.height / 2,
+                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height)),
                                 width: geometry.size.width,
                                 pkCanvas: $pkCanvas,
                                 isDraw: $isDraw,
@@ -194,15 +216,15 @@ struct SessionPageView: View {
                             )
                             .frame(
                                 width: geometry.size.width,
-                                height: geometry.size.height * splitFrac
+                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height))
                             )
                             Text("Not connected.")
                                 .frame(
                                     width: geometry.size.width,
-                                    height: geometry.size.height * (1 - splitFrac)
+                                    height: geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
                                 )
                         }
-                        ResizeDragger
+                        getResizeDragger(geoHeight: geometry.size.height)
                     }
                     .onAppear(perform: establishConnection)
                 }
@@ -213,7 +235,7 @@ struct SessionPageView: View {
             )
         }
     }
-
+    
     func getSessionState() -> SessionState {
         if (self.host != nil && self.session != nil && self.canvas == nil) {
             return SessionState.terminalOnlyConnected
