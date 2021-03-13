@@ -36,7 +36,7 @@ extension Canvas {
     }
     
     public var wrappedDate: Date {
-        dateCreated ?? Date()
+        dateCreated 
     }
 
 }
