@@ -40,37 +40,40 @@ struct SessionPageView: View {
     @State var backButtonPressed : Bool = false
     
     var body: some View {
-        self.sessionInstance
-            .navigationBarTitle("")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .navigationBarHidden(self.backButtonPressed)
-            .navigationBarItems(
-                leading: self.navigationBarLeadingButtons,
-                trailing: self.navigationBarTrailingButtons
-            )
-            .sheet(item: $activeSheet) { item in
-                switch item {
-                // Choosing canvas to use with a host.
-                case .selectCanvas:
-                    SelectCanvasView(
-                        selectedHost: $host,
-                        selectedCanvas: $canvas,
-                        navToSessionActive: .constant(false),
-                        activeSheet: $activeSheet
-                    )
-                // Choosing host to use with a canvas.
-                case .selectHost:
-                    SelectHostView(
-                        selectedHost: $host,
-                        selectedCanvas: $canvas,
-                        navToSessionActive: .constant(false),
-                        activeSheet: $activeSheet
-                    )
-                default:
-                    EmptyView()
+        ZStack {
+            Color("CanvasMain")
+            self.sessionInstance
+                .navigationBarTitle("")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(true)
+                .navigationBarHidden(self.backButtonPressed)
+                .navigationBarItems(
+                    leading: self.navigationBarLeadingButtons,
+                    trailing: self.navigationBarTrailingButtons
+                )
+                .sheet(item: $activeSheet) { item in
+                    switch item {
+                    // Choosing canvas to use with a host.
+                    case .selectCanvas:
+                        SelectCanvasView(
+                            selectedHost: $host,
+                            selectedCanvas: $canvas,
+                            navToSessionActive: .constant(false),
+                            activeSheet: $activeSheet
+                        )
+                    // Choosing host to use with a canvas.
+                    case .selectHost:
+                        SelectHostView(
+                            selectedHost: $host,
+                            selectedCanvas: $canvas,
+                            navToSessionActive: .constant(false),
+                            activeSheet: $activeSheet
+                        )
+                    default:
+                        EmptyView()
+                    }
                 }
-            }
+        }
     }
     
     var sessionInstance: some View {
@@ -93,18 +96,23 @@ struct SessionPageView: View {
         case .canvasOnly:
             return AnyView(
                 GeometryReader { geometry in
-                    CanvasView(
-                        canvasId: canvas!.id,
-                        height: geometry.size.height,
-                        width: geometry.size.width,
-                        pkCanvas: $pkCanvas,
-                        isDraw: $isDraw,
-                        isErase: $isErase,
-                        color: $color,
-                        type: $type,
-                        savingDrawing: $backButtonPressed
-                    )
-                    .frame(width: geometry.size.height, height: geometry.size.width)
+                    VStack {
+                        CanvasView(
+                            canvasId: canvas!.id,
+                            height: geometry.size.height,
+                            width: geometry.size.width,
+                            pkCanvas: $pkCanvas,
+                            isDraw: $isDraw,
+                            isErase: $isErase,
+                            color: $color,
+                            type: $type,
+                            savingDrawing: $backButtonPressed
+                        )
+                        .frame(
+                            width: geometry.size.width,
+                            height: geometry.size.height
+                        )
+                    }
                 }
             )
         case .splitConnected:

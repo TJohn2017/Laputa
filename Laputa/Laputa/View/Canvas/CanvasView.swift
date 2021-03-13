@@ -187,7 +187,7 @@ struct CanvasView: View {
                         .padding(10)
                         .font(.title)
                         .foregroundColor(Color.white)
-                        .background(Color.red)
+                        .background(Color("HostMain"))
                 }
                 .cornerRadius(20)
                 .offset(
