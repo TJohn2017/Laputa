@@ -43,11 +43,12 @@ struct SessionPageView: View {
     @GestureState var dragState = CGSize.zero
     @State var splitFrac: CGFloat = 0.5
     @State var height: CGFloat = UIScreen.main.bounds.height
-    
+//    var updateDragState = true
+    var endDragStateHeight : CGFloat?
     func getResizeGesture(geoHeight: CGFloat) -> some Gesture {
         return DragGesture()
             .updating($dragState) { value, state, transaction in
-                state = value.translation
+//                state = value.translation
             }
             .onEnded() { value in
                 splitFrac += value.translation.height / geoHeight
@@ -130,7 +131,6 @@ struct SessionPageView: View {
         
         switch sessionState {
         case .terminalOnlyConnected:
-            print("SSHLOG: terminal only connected")
             return AnyView(
                 SwiftUITerminal(
                     canvas: $canvas,
@@ -167,10 +167,8 @@ struct SessionPageView: View {
                 }
             )
         case .splitConnected:
-            print("SSHLOG: split connected")
             return AnyView(
                 GeometryReader { geometry in
-//                    splitScreenHeight = geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
                     self.setSplitScreenHeight(geometry)
                     ZStack {
                         VStack {
@@ -193,16 +191,12 @@ struct SessionPageView: View {
                                 canvas: $canvas,
                                 connection: $session,
                                 modifyTerminalHeight: true,
-                                splitScreenHeight: $splitScreenHeight//geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
+                                splitScreenHeight: $splitScreenHeight
                             )
                             .frame(
                                 width: geometry.size.width,
                                 height: geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
                             )
-//                            .onAppear(perform: {
-//                                    splitScreenHeight = geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
-//                                }
-//                            )
                         }
                         getResizeDragger(geoHeight: geometry.size.height)
                     }
@@ -262,6 +256,7 @@ struct SessionPageView: View {
         } else if (host == nil && canvas != nil) {
             return SessionState.canvasOnly
         } else if (host != nil && session != nil && canvas != nil) {
+//            splitScreenHeight = UIScreen.main.bounds.height * (1 - (splitFrac + (dragState.height / UIScreen.main.bounds.height)))
             return SessionState.splitConnected
         } else if (host != nil && session == nil && canvas != nil) {
             return SessionState.splitNotConnected

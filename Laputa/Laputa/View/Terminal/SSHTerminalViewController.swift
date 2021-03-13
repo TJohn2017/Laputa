@@ -57,12 +57,12 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     func makeFrame (keyboardDelta: CGFloat, keyboardWillHide: Bool) -> CGRect
     {
         var view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
-        print("SSHLOG: make frame view height = \(view_height)")
+//        print("SSHLOG: make frame view height = \(view_height)")
         if (self.modifyTerminalHeight && keyboardDelta > 0) { // set height when keyboard shows up to fill the screen til the keyboard
 //            view_height += keyboardDelta*0.48 - 100 // TODO makes screen start too low
         } else if (keyboardWillHide && previous_height != nil) { // set height to be the previous terminal view height before the keyboard appeared
             view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top //- navigationBarHeight//30 // WEIRD OFFSET
-            print("SSHLOG: make frame, hide keyboard, prev height = \(String(describing: previous_height)), view height = \(view_height)")
+//            print("SSHLOG: make frame, hide keyboard, prev height = \(String(describing: previous_height)), view height = \(view_height)")
         } else if (view_height < 5) { // if view height too small, set minimum height of 50
             view_height = 50
         }
@@ -80,18 +80,29 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     }
     
     func updateTerminalFrame(height: CGFloat) {
-//        if (modifyTerminalHeight) {
-            view.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: height)
-            terminalView!.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: height)
-            if (keyboardButton.isHidden) {
-                outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 100, width: self.view.frame.width/15, height: self.view.frame.width/15)
-            } else {
-                keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 100, width: self.view.frame.width/15, height: self.view.frame.width/15)
-                outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 100 - ((self.view.frame.width/15) * 1.3), width: self.view.frame.width/15, height: self.view.frame.width/15)
-            }
+        if (height != terminalView!.frame.height) {
+            print("SSHLOG: update terminal frame, view frame and terminal view frame remade")
             
+            UIView.animate(withDuration: 0.1,
+                                       delay: 0,
+                                       options: .curveLinear,
+                                       animations: {
+
+                                        self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: height)
+                                        self.terminalView!.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: height)
+                                        
+                                       },
+                                       completion: nil)
+                
+                if (keyboardButton.isHidden) {
+                    outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 100, width: self.view.frame.width/15, height: self.view.frame.width/15)
+                } else {
+                    keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 100, width: self.view.frame.width/15, height: self.view.frame.width/15)
+                    outputCatchButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 100 - ((self.view.frame.width/15) * 1.3), width: self.view.frame.width/15, height: self.view.frame.width/15)
+                }
+                
              
-//        }
+        }
     }
     
     
@@ -120,13 +131,13 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Called when the keyboard is about to hide. Makes a new terminal frame to fill the screen
     @objc func handleKeyboardWillHide() {
-        print("SSHLOG: keyboard hide will remake frame, ")
         keyboardDelta = 0
         if (terminalView != nil) {
 //            terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
             if (self.modifyTerminalHeight) {
                 outputCatchButton.frame = CGRect(x: terminalView!.frame.width - 100, y: terminalView!.frame.height - 100 - ((terminalView!.frame.width/15) * 1.3), width: terminalView!.frame.width/15, height: terminalView!.frame.width/15)
             } else {
+                print("SSHLOG: keyboard hide will terminal view frame remade ")
                 terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
             }
             keyboardButton.frame = CGRect(x: terminalView!.frame.width - 100, y: terminalView!.frame.height - 100, width: terminalView!.frame.width/15, height: terminalView!.frame.width/15)
@@ -156,6 +167,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 if (self.modifyTerminalHeight) { // update catch output button so it's above the keyboard
                     outputCatchButton.frame = CGRect(x: terminalView!.frame.width - 100, y: terminalView!.frame.height - 100, width: terminalView!.frame.width/15, height: terminalView!.frame.width/15)
                 } else {
+                    print("SSHLOG: keyboard appears terminal view frame made")
                     terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
                 }
                 UIView.animate(withDuration: duration,
@@ -190,9 +202,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 width: size.width,
                 height: self.previous_height! //size.height * screenMultiplier - 30 // WEIRD OFFSET
             )
+            print("SSHLOG: view will transition view frame remade")
      
             if (self.connected) {
                 // reset terminal view frame
+                print("SSHLOG: view iwll transition terminal view frame remade")
                 self.terminalView!.frame = self.view.frame
                 // reset buttons in terminal view
                 self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100, y: self.view.frame.height - 100, width: self.view.frame.width/15, height: self.view.frame.width/15)
@@ -207,9 +221,10 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Called once when the view is first loaded
     override func loadView() {
-        print("SSHLOG: loadView called, with split screen height: \(splitScreenHeight)")
+//        print("SSHLOG: loadView called, with split screen height: \(splitScreenHeight)")
         super.loadView()
         if (self.modifyTerminalHeight) {
+            print("SSHLOG: load view changing view frame")
             previous_height = splitScreenHeight //self.view.bounds.height * 0.49
             self.view.frame = CGRect(
                 x: self.view.bounds.origin.x,
@@ -229,7 +244,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         addKeyboard()
         
 //        previous_height = view.frame.height
-        
+        print("SSHLOG: view did load made frame")
+
         // start ssh session and add it ot the view
         let (terminalView, connected) = startSSHSession()
         self.connected = connected
@@ -251,7 +267,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 initializeOutputCatchButton(t: t)
                 view.addSubview(outputCatchButton)
             }
-            
             // initiate keyboard button
             initializeKeyboardButton(t: t)
             view.addSubview(keyboardButton)
@@ -496,7 +511,7 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     // Need for conformity
     func updateUIViewController(_ uiViewController: SSHTerminalViewController, context: UIViewControllerRepresentableContext<SwiftUITerminal>) {
         if (modifyTerminalHeight) {
-            print("SSHLOG: update ui view controller called: split screen height = \(splitScreenHeight)")
+//            print("SSHLOG: update ui view controller called: split screen height = \(splitScreenHeight)")
             uiViewController.updateTerminalFrame(height: splitScreenHeight)
         }
     }
