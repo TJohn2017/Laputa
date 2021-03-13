@@ -31,6 +31,7 @@ struct SessionPageView: View {
     @State var isErase = false
     @State var color : Color = Color.black
     @State var type : PKInkingTool.InkType = .pencil
+    @State var pkCanvas = PKCanvasView()
     
     // backButtonPressed is passed into CanvasView/PKDrawingView so that
     // when it is toggled by the back button, the view will update and
@@ -95,6 +96,7 @@ struct SessionPageView: View {
                         canvasId: canvas!.id,
                         height: geometry.size.height,
                         width: geometry.size.width,
+                        pkCanvas: $pkCanvas,
                         isDraw: $isDraw,
                         isErase: $isErase,
                         color: $color,
@@ -112,6 +114,7 @@ struct SessionPageView: View {
                             canvasId: canvas!.id,
                             height: geometry.size.height / 2,
                             width: geometry.size.width,
+                            pkCanvas: $pkCanvas,
                             isDraw: $isDraw,
                             isErase: $isErase,
                             color: $color,
@@ -139,6 +142,7 @@ struct SessionPageView: View {
                             canvasId: canvas!.id,
                             height: geometry.size.height / 2,
                             width: geometry.size.width,
+                            pkCanvas: $pkCanvas,
                             isDraw: $isDraw,
                             isErase: $isErase,
                             color: $color,

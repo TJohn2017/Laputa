@@ -21,6 +21,9 @@ extension Canvas {
     @NSManaged public var title: String?
     @NSManaged public var cards: NSSet?
     @NSManaged public var drawingData: Data?
+    @NSManaged public var locX: Double
+    @NSManaged public var locY: Double
+    @NSManaged public var magnification: Double
     
     public var wrappedTitle: String {
         title ?? "Untitled canvas"
@@ -37,6 +40,10 @@ extension Canvas {
     
     public var wrappedDate: Date {
         dateCreated 
+    }
+    
+    public var wrappedMagnification: Double {
+        return magnification == 0 ? 1.0 : magnification
     }
 
 }

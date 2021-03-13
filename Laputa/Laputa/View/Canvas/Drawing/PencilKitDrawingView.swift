@@ -11,8 +11,7 @@ import UIKit
 
 
 struct PKDrawingView: View {
-    @State var canvas = PKCanvasView()
-    
+    @Binding var pkCanvas : PKCanvasView
     @Binding var isDraw : Bool
     @Binding var isErase : Bool
     @Binding var color : Color
@@ -25,7 +24,7 @@ struct PKDrawingView: View {
     @Binding var savingDrawing: Bool
     
     var body: some View {
-        PencilKitView(canvas: $canvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color, isInDrawingMode: $isInDrawingMode, canvasId: canvasId, savingDrawing: $savingDrawing)
+        PencilKitView(canvas: $pkCanvas, isDraw: $isDraw, isErase: $isErase, type: $type, color: $color, isInDrawingMode: $isInDrawingMode, canvasId: canvasId, savingDrawing: $savingDrawing)
     }
 }
 

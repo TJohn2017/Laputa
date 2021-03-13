@@ -29,6 +29,7 @@ struct CanvasView: View {
     var canvasWidth: CGFloat
     
     // Binding variables for PKCanvasView
+    @Binding var pkCanvas: PKCanvasView
     @Binding var isDraw : Bool
     @Binding var isErase : Bool
     @Binding var color : Color
@@ -38,10 +39,11 @@ struct CanvasView: View {
     // back button, the view will update and save the current drawing
     @Binding var savingDrawing: Bool
     
-    init(canvasId: UUID, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>, savingDrawing: Binding<Bool>) {
+    init(canvasId: UUID, height: CGFloat? = UIScreen.main.bounds.height, width: CGFloat? = UIScreen.main.bounds.width, pkCanvas: Binding<PKCanvasView>, isDraw: Binding<Bool>, isErase: Binding<Bool>, color : Binding<Color>, type : Binding<PKInkingTool.InkType>, savingDrawing: Binding<Bool>) {
         fetchRequest = FetchRequest<Canvas>(entity: Canvas.entity(), sortDescriptors: [], predicate: NSPredicate(format: "id == %@", canvasId as CVarArg))
         canvasHeight = height!
         canvasWidth = width!
+        self._pkCanvas = pkCanvas
         self._isDraw = isDraw
         self._isErase = isErase
         self._color = color
@@ -52,6 +54,13 @@ struct CanvasView: View {
     var canvas: Canvas { fetchRequest.wrappedValue[0] }
     var cards: [CodeCard] { canvas.cardArray }
     
+    // save how zoomed in the user is to CoreData
+    func saveCanvasZoom() {
+        viewContext.performAndWait {
+            canvas.magnification = Double(magniScale)
+            try? viewContext.save()
+        }
+    }
     
     // gesture for pinching to zoom in/out
     @State var magniScale = CGFloat(1.0)
@@ -65,7 +74,18 @@ struct CanvasView: View {
                 let magni = (value - 1.0) * sensitivity + magniScale
                 // clamp it
                 magniScale = max(min(magni, maxZoomIn), maxZoomOut)
+                
+                saveCanvasZoom()
             }
+    }
+    
+    // saves user's location on canvas to CoreData
+    func saveCanvasPosition() {
+        viewContext.performAndWait {
+            canvas.locX = Double(viewState.width)
+            canvas.locY = Double(viewState.height)
+            try? viewContext.save()
+        }
     }
     
     // gesture to drag and move around
@@ -79,6 +99,8 @@ struct CanvasView: View {
             .onEnded() { value in
                 self.viewState.width += value.translation.width
                 self.viewState.height += value.translation.height
+                
+                saveCanvasPosition()
             }
     }
     
@@ -94,6 +116,8 @@ struct CanvasView: View {
     func resetView() {
         magniScale = 1.0
         viewState = CGSize.zero
+        saveCanvasPosition()
+        saveCanvasZoom()
     }
     
     func toggleDrawing() {
@@ -103,10 +127,16 @@ struct CanvasView: View {
     // Since cards are returned sorted by zIndex, this gets
     // the highest zIndex from all cards.
     @State var maxZIndex = 0.0
-    func setMaxZIndex() {
+    
+    // Set maxZindex, saved magnification, and saved position
+    func setup() {
         if !cards.isEmpty {
             self.maxZIndex = cards[0].zIndex
         }
+        
+        magniScale = CGFloat(canvas.wrappedMagnification)
+        viewState.width = CGFloat(canvas.locX)
+        viewState.height = CGFloat(canvas.locY)
     }
     
     var body: some View {
@@ -125,17 +155,26 @@ struct CanvasView: View {
                     ForEach(canvas.cardArray) { card in
                         CodeCardView(codeCard: card, maxZIndex: $maxZIndex)
                     }
-                    PKDrawingView(isDraw: $isDraw, isErase: $isErase, color: $color, type: $type, isInDrawingMode: $isInDrawingMode, canvasId: canvas.id, savingDrawing: $savingDrawing)
+                    PKDrawingView(
+                        pkCanvas: $pkCanvas,
+                        isDraw: $isDraw,
+                        isErase: $isErase,
+                        color: $color,
+                        type: $type,
+                        isInDrawingMode: $isInDrawingMode,
+                        canvasId: canvas.id,
+                        savingDrawing: $savingDrawing
+                    )
                         .background(Color.white.opacity(0.01))
                         .zIndex(maxZIndex + 1)
                         .allowsHitTesting(isInDrawingMode)
                 }
-                // if we're saving the drawing/exiting, zoom out all the way so that
+                // if we're saving the drawing/exiting, zoom to 0 so that
                 // the large canvas overhang doesn't mess up the exit animation
-                .scaleEffect(savingDrawing ? maxZoomOut : magniScale)
+                .scaleEffect(savingDrawing ? 0.0 : CGFloat(canvas.wrappedMagnification))
                 .offset(
-                    x: viewState.width + panState.width,
-                    y: viewState.height + panState.height
+                    x: CGFloat(canvas.locX) + panState.width,
+                    y: CGFloat(canvas.locY) + panState.height
                 )
                 .gesture(navigate)
                 .onTapGesture (count: 2, perform: {
@@ -175,7 +214,7 @@ struct CanvasView: View {
                     y: -canvasHeight / 2  + 70
                 )
             }
-            .onAppear(perform: setMaxZIndex)
+            .onAppear(perform: setup)
     }
 }
 
@@ -189,6 +228,7 @@ struct Canvas_Previews: PreviewProvider {
     }
     
     struct PreviewWrapper: View {
+        @State var pkCanvas = PKCanvasView()
         @State var isDraw = true
         @State var isErase = false
         @State var color : Color = Color.black
@@ -201,7 +241,7 @@ struct Canvas_Previews: PreviewProvider {
             newCanvas.id = UUID()
             newCanvas.dateCreated = Date()
             
-            return CanvasView(canvasId: newCanvas.id, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            return CanvasView(canvasId: newCanvas.id, pkCanvas: $pkCanvas, isDraw : $isDraw, isErase : $isErase, color : $color, type: $type, savingDrawing: $savingDrawing).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
 }
