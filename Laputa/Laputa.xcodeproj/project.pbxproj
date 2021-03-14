@@ -34,9 +34,6 @@
 		585B34C825E370040095DD2C /* SelectCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585B34C725E370040095DD2C /* SelectCanvasView.swift */; };
 		589AC31025F48D8700405E20 /* Host+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */; };
 		589AC31125F48D8700405E20 /* Host+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */; };
-		58EBF01225FC9651008564C3 /* CustomTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EBF01125FC9651008564C3 /* CustomTabView.swift */; };
-		58EBF01725FCA5D1008564C3 /* AddCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EBF01625FCA5D1008564C3 /* AddCanvasView.swift */; };
-		58EBF01C25FCB0FB008564C3 /* AddHostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EBF01B25FCB0FB008564C3 /* AddHostView.swift */; };
 		75652E9B25E9D6580069FF0B /* PencilKitDrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */; };
 		759EA4FC25D4C5BD00560D98 /* SSHTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */; };
 		759EA50125D4C68400560D98 /* DataStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759EA50025D4C68400560D98 /* DataStructs.swift */; };
@@ -110,9 +107,6 @@
 		585B34C725E370040095DD2C /* SelectCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCanvasView.swift; sourceTree = "<group>"; };
 		589AC30E25F48D8700405E20 /* Host+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Host+CoreDataClass.swift"; path = "Laputa/CoreData/Host+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		589AC30F25F48D8700405E20 /* Host+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Host+CoreDataProperties.swift"; path = "Laputa/CoreData/Host+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
-		58EBF01125FC9651008564C3 /* CustomTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabView.swift; sourceTree = "<group>"; };
-		58EBF01625FCA5D1008564C3 /* AddCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCanvasView.swift; sourceTree = "<group>"; };
-		58EBF01B25FCB0FB008564C3 /* AddHostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHostView.swift; sourceTree = "<group>"; };
 		75652E9A25E9D6580069FF0B /* PencilKitDrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PencilKitDrawingView.swift; sourceTree = "<group>"; };
 		759EA4FB25D4C5BD00560D98 /* SSHTerminalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SSHTerminalViewController.swift; path = Laputa/View/Terminal/SSHTerminalViewController.swift; sourceTree = SOURCE_ROOT; };
 		759EA50025D4C68400560D98 /* DataStructs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataStructs.swift; path = Laputa/Model/DataStructs.swift; sourceTree = SOURCE_ROOT; };
@@ -282,7 +276,6 @@
 		584E47B125D39A3D005EDC0E /* View */ = {
 			isa = PBXGroup;
 			children = (
-				58EBF01025FC9640008564C3 /* Utils */,
 				9CD65BA225F9AD4200089E91 /* Sheets */,
 				1A83264625EF2FD300C03A2C /* CodeCardTerminal */,
 				1A39DACE25E49D3700AAB8E0 /* Terminal */,
@@ -315,14 +308,6 @@
 				584E47F225E209AF005EDC0E /* SessionPageView.swift */,
 			);
 			path = SessionPage;
-			sourceTree = "<group>";
-		};
-		58EBF01025FC9640008564C3 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				58EBF01125FC9651008564C3 /* CustomTabView.swift */,
-			);
-			path = Utils;
 			sourceTree = "<group>";
 		};
 		6F275419BE29A3178A353E96 /* Pods */ = {
@@ -359,8 +344,6 @@
 				584E47D925DCDC0A005EDC0E /* EntityInputView.swift */,
 				584E47E125DCEFEC005EDC0E /* InputHostView.swift */,
 				584E47E625DCF523005EDC0E /* InputCanvasView.swift */,
-				58EBF01625FCA5D1008564C3 /* AddCanvasView.swift */,
-				58EBF01B25FCB0FB008564C3 /* AddHostView.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -627,7 +610,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				58EBF01C25FCB0FB008564C3 /* AddHostView.swift in Sources */,
 				9CEDEB7225E23DFA00F0E380 /* CanvasDebugView.swift in Sources */,
 				9C488E3225D1081C00662F1E /* CodeCardView.swift in Sources */,
 				9C7B160625F4951000E88B09 /* CanvasList.swift in Sources */,
@@ -655,10 +637,8 @@
 				1A64C89825CA2EE80082FEA7 /* Laputa.xcdatamodeld in Sources */,
 				584E47C825D6382C005EDC0E /* MainPageColumnView.swift in Sources */,
 				589AC31125F48D8700405E20 /* Host+CoreDataProperties.swift in Sources */,
-				58EBF01225FC9651008564C3 /* CustomTabView.swift in Sources */,
 				585B34C825E370040095DD2C /* SelectCanvasView.swift in Sources */,
 				584E47E225DCEFEC005EDC0E /* InputHostView.swift in Sources */,
-				58EBF01725FCA5D1008564C3 /* AddCanvasView.swift in Sources */,
 				589AC31025F48D8700405E20 /* Host+CoreDataClass.swift in Sources */,
 				9C7B159125F1901D00E88B09 /* Canvas+CoreDataProperties.swift in Sources */,
 				584E47E725DCF523005EDC0E /* InputCanvasView.swift in Sources */,

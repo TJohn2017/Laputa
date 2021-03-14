@@ -41,18 +41,10 @@ struct SelectCanvasView: View {
             ZStack {
                 Color("CanvasMain")
                 VStack {
-                    if (selectedHost != nil) {
-                        (Text("Choose a canvas to use with ") + Text("\(selectedHost!.name)").bold())
-                            .foregroundColor(.white)
-                            .font(.largeTitle)
-                            .padding(.top, 50)
-                    } else {
-                        Text("Choose a canvas to add")
-                            .foregroundColor(.white)
-                            .font(.largeTitle)
-                            .padding(.top, 50)
-                    }
-
+                    (Text("Choose a canvas to use with ") + Text("\(selectedHost!.name)").bold())
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .padding(.top, 50)
                     
                     // Add a new canvas
                     ZStack {

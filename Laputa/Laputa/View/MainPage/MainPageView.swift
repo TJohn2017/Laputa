@@ -9,23 +9,10 @@ import SwiftUI
 
 // different sheets that can be active on the main page
 enum ActiveSheet: Identifiable {
-    // inputSheet: sheet to be used when creating or editing host or canvas info.
-    case inputSheet
-    
-    // selectCanvas: sheet to be used when selecting a single canvas from a list of
-    //               canvases in tandem with a single selected host.
-    case selectCanvas
-    
-    // selectHost: sheet to be used when selecting a single host from a list of hosts
-    //             in tandem with a single selected canvas.
-    case selectHost
-    
-    // addCanvas: sheet to be used when selecting a canvas to append to a list of
-    //            of canvases.
-    case addCanvas
-    
-    // addHost: sheet to be used when selecting a hos to append to a list of hosts.
-    case addHost
+    // inputSheet: creating or editing host/canvas info
+    // selectCanvas: choosing a canvas to use in tandem with a selected host
+    // selectHost: choosing a host to use in tandem with a selected canvas
+    case inputSheet, selectCanvas, selectHost
     
     var id: Int {
         hashValue
@@ -36,9 +23,11 @@ struct MainPageView: View {
     @State private var displayHosts: Bool = true
     @State private var showingInputSheet: Bool = false
     
+    @State var canvas: Canvas? = nil
+    @State var host: Host? = nil
+    
     @State var selectedCanvas: Canvas? = nil
     @State var selectedHost: Host? = nil
-    
     
     @State var activeSheet: ActiveSheet?
     @State var navToSessionActive: Bool = false
@@ -94,8 +83,6 @@ struct MainPageView: View {
                         navToSessionActive: $navToSessionActive,
                         activeSheet: $activeSheet
                     )
-                default:
-                    EmptyView()
                 }
             }
             
@@ -104,10 +91,7 @@ struct MainPageView: View {
             // SelectCanvas and SelectHost sheets
             .background(
                 NavigationLink(
-                    destination: SessionPageView(
-                        startHost: selectedHost,
-                        startCanvas: selectedCanvas
-                    ),
+                    destination: SessionPageView(host: selectedHost, canvas: selectedCanvas),
                     isActive: $navToSessionActive
                 ) {
                     EmptyView()
