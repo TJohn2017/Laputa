@@ -35,14 +35,16 @@ struct CustomTabView<Content : View>: View {
                 Button("\(tab.name)") {
                     self.selectedTab = tab
                 }
-                    .padding()
-                    .foregroundColor(self.selectedTab == tab ? Color.red : Color.gray)
-                    .background(Color(.purple))
+                .font(.title3)
+                .padding()
+                .frame(height: self.numberOfTabs <= 1 ? 0 : 45)
+                .foregroundColor(self.selectedTab == tab ? Color("HostMain") : Color.gray)
+                .background(Color("TabBarBackground"))
             }
         }
         .frame(maxWidth: self.numberOfTabs <= 1 ? 0 : .infinity)
-        .frame(height: self.numberOfTabs <= 1 ? 0 : nil)
-        .background(Color(.purple))
+        .frame(height: self.numberOfTabs <= 1 ? 0 : 45)
+        .background(Color("TabBarBackground"))
         .onChange(
             of: tabs,
             perform: { value in
