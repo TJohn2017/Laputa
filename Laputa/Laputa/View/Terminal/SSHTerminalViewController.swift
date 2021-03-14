@@ -318,7 +318,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // TODO change button origins to match (i.e. either use self.view.frame or self.terminalView!.frame
     // Setup the ketboard button UI and behavior
     private func initializeKeyboardButton(t: TerminalView) {
-//        print("SSHLOG: initialize keyboard button according to terminal")
         keyboardButton.frame = CGRect(x: t.frame.width - 100,
                                       y: t.frame.height - 100,
                                       width: 50,
