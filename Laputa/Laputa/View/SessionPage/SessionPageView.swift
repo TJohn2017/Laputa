@@ -55,7 +55,7 @@ struct SessionPageView: View {
     // clamps where the user can drag the split screen separator
     // so that it doesn't get lost off-screen
     func getBoundedFrac(frac: CGFloat) -> CGFloat {
-        let maxFrac: CGFloat = 0.75
+        let maxFrac: CGFloat = 0.7
         let minFrac: CGFloat = 0.1
         return max(min(frac, maxFrac), minFrac)
     }
@@ -79,6 +79,10 @@ struct SessionPageView: View {
     
     // returns a drag handle with offset based on geometry reader height
     func getResizeDragger(geoHeight: CGFloat) -> some View {
+        var origin_y = (getBoundedFrac(frac: (splitFrac + (dragState.height / geoHeight))) - 0.5) * geoHeight
+        if (hosts.count > 1) {
+            origin_y -= 20
+        }
         return ZStack {
             if isResizingSplit {
                 // line showing split, only visible on resize action
@@ -105,7 +109,7 @@ struct SessionPageView: View {
         }
         .offset(
             x: .zero,
-            y: (getBoundedFrac(frac: (splitFrac + (dragState.height / geoHeight))) - 0.5) * geoHeight
+            y: origin_y
         )
         .gesture(getResizeGesture(geoHeight: geoHeight))
     }
@@ -178,6 +182,7 @@ struct SessionPageView: View {
                     }
                )
             )
+            
         case .canvasOnly:
             return AnyView (
                 GeometryReader { geometry in
@@ -267,8 +272,12 @@ struct SessionPageView: View {
     }
     
     func setSplitScreenHeight(_ geometry: GeometryProxy) -> some View {
+        var height = geometry.size.height * (1 - splitFrac)
+        if (hosts.count > 1) {
+            height -= 45
+        }
         DispatchQueue.main.async {
-            self.splitScreenHeight = geometry.size.height * (1 - splitFrac)
+            self.splitScreenHeight = height
         }
         return EmptyView()
     }
