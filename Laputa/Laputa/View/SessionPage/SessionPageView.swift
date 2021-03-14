@@ -10,21 +10,21 @@ import UIKit
 import PencilKit
 
 enum SessionState: String {
-    case terminalOnlyConnected      // A terminal-only session w/ active connection.
-    case terminalOnlyNotConnected   // A terminal-only session w/ non-active connection.
-    case canvasOnly                 // A canvas-only session.
-    case splitConnected             // A connected terminal and canvas session.
-    case splitNotConnected          // A non-connected terminal and canvas session.
+    case terminalOnly         // A terminal(s)-only session.
+    case canvasOnly           // A canvas-only session.
+    case splitSession         // A terminal(s) and canvas session.
     case error
 }
 
 struct SessionPageView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.undoManager) private var undoManager
+
+    @State var currCanvas: Canvas?
+    @State var canvases: [Canvas?] = []
+    @State var hosts: [Host?] = []
+    @State var connections: [SSHConnection] = []
     
-    @State var host: Host?
-    @State var canvas: Canvas?
-    @State var session: SSHConnection?
     @State var activeSheet: ActiveSheet?
     
     // State vars for PKDrawingView
@@ -44,10 +44,18 @@ struct SessionPageView: View {
     @State var splitFrac: CGFloat = 0.5
     @State var isResizingSplit: Bool = false
     
+    init(startHost: Host? = nil, startCanvas: Canvas? = nil) {
+        _currCanvas = State(initialValue: startCanvas)
+        
+        _hosts = State(initialValue: (startHost != nil && hosts.count == 0) ? [startHost] : [])
+        _connections = State(initialValue: (startHost != nil && connections.count == 0) ? [SSHConnection(host: startHost!.host, andUsername: startHost!.username)] : [])
+        _canvases = State(initialValue: (startCanvas != nil && canvases.count == 0) ? [startCanvas] : [])
+    }
+
     // clamps where the user can drag the split screen separator
     // so that it doesn't get lost off-screen
     func getBoundedFrac(frac: CGFloat) -> CGFloat {
-        let maxFrac: CGFloat = 0.75
+        let maxFrac: CGFloat = 0.7
         let minFrac: CGFloat = 0.1
         return max(min(frac, maxFrac), minFrac)
     }
@@ -71,6 +79,10 @@ struct SessionPageView: View {
     
     // returns a drag handle with offset based on geometry reader height
     func getResizeDragger(geoHeight: CGFloat) -> some View {
+        var origin_y = (getBoundedFrac(frac: (splitFrac + (dragState.height / geoHeight))) - 0.5) * geoHeight
+        if (hosts.count > 1) {
+            origin_y -= 20
+        }
         return ZStack {
             if isResizingSplit {
                 // line showing split, only visible on resize action
@@ -97,7 +109,7 @@ struct SessionPageView: View {
         }
         .offset(
             x: .zero,
-            y: (getBoundedFrac(frac: (splitFrac + (dragState.height / geoHeight))) - 0.5) * geoHeight
+            y: origin_y
         )
         .gesture(getResizeGesture(geoHeight: geoHeight))
     }
@@ -116,20 +128,17 @@ struct SessionPageView: View {
                 )
                 .sheet(item: $activeSheet) { item in
                     switch item {
-                    // Choosing canvas to use with a host.
-                    case .selectCanvas:
-                        SelectCanvasView(
-                            selectedHost: $host,
-                            selectedCanvas: $canvas,
-                            navToSessionActive: .constant(false),
+                    // Choosing canvas to add.
+                    case .addCanvas:
+                        AddCanvasView(
+                            canvas: $currCanvas,
+                            selectedCanvases: $canvases,
                             activeSheet: $activeSheet
                         )
-                    // Choosing host to use with a canvas.
-                    case .selectHost:
-                        SelectHostView(
-                            selectedHost: $host,
-                            selectedCanvas: $canvas,
-                            navToSessionActive: .constant(false),
+                    case .addHost:
+                        AddHostView(
+                            hosts: $hosts,
+                            connections: $connections,
                             activeSheet: $activeSheet
                         )
                     default:
@@ -144,26 +153,42 @@ struct SessionPageView: View {
         let sessionState = self.getSessionState()
         
         switch sessionState {
-        case .terminalOnlyConnected:
+        case .terminalOnly:
             return AnyView(
-                SwiftUITerminal(
-                    canvas: $canvas,
-                    connection: $session,
-                    modifyTerminalHeight: false,
-                    splitScreenHeight: $splitScreenHeight
-                )
+               CustomTabView(
+                    tabBarPosition: TabBarPosition.top,
+                    numberOfElems: hosts.count
+               ) {
+                ForEach((0..<hosts.count), id: \.self) {
+                        SwiftUITerminal(
+                            canvas: $currCanvas,
+                            connections: $connections,
+                            connectionIdx: $0,
+                            modifyTerminalHeight: false,
+                            splitScreenHeight: $splitScreenHeight,
+                            id: $0
+                        )
+                        .customTab(
+                            name: "\(hosts[$0]!.name)",
+                            tabNumber: $0
+                        )
+                    }
+                }
+               .onAppear(perform: establishConnection)
+               .onChange(
+                    of: self.connections,
+                    perform: { _ in
+                        self.establishConnection()
+                    }
+               )
             )
-        case .terminalOnlyNotConnected:
-            return AnyView(
-                Text("Not connected.")
-                    .onAppear(perform: establishConnection)
-            )
+            
         case .canvasOnly:
-            return AnyView(
+            return AnyView (
                 GeometryReader { geometry in
                     VStack {
                         CanvasView(
-                            canvasId: canvas!.id,
+                            canvasId: currCanvas!.id,
                             height: geometry.size.height,
                             width: geometry.size.width,
                             pkCanvas: $pkCanvas,
@@ -180,14 +205,14 @@ struct SessionPageView: View {
                     }
                 }
             )
-        case .splitConnected:
+        case .splitSession:
             return AnyView(
                 GeometryReader { geometry in
                     self.setSplitScreenHeight(geometry)
                     ZStack {
                         VStack {
                             CanvasView(
-                                canvasId: canvas!.id,
+                                canvasId: currCanvas!.id,
                                 height: geometry.size.height * splitFrac,
                                 width: geometry.size.width,
                                 pkCanvas: $pkCanvas,
@@ -203,55 +228,40 @@ struct SessionPageView: View {
                             )
                             ZStack {
                                 Color.black
-                                SwiftUITerminal(
-                                    canvas: $canvas,
-                                    connection: $session,
-                                    modifyTerminalHeight: true,
-                                    splitScreenHeight: $splitScreenHeight
+                                CustomTabView(
+                                    tabBarPosition: TabBarPosition.top,
+                                    numberOfElems: hosts.count
+                                ) {
+                                    ForEach((0..<hosts.count), id: \.self) {
+                                        SwiftUITerminal(
+                                            canvas: $currCanvas,
+                                            connections: $connections,
+                                            connectionIdx: $0,
+                                            modifyTerminalHeight: true,
+                                            splitScreenHeight: $splitScreenHeight,
+                                            id: $0
+                                        )
+                                        .frame(
+                                            width: geometry.size.width,
+                                            height: geometry.size.height * (1 - splitFrac)
+                                        )
+                                        .customTab(
+                                            name: "\(hosts[$0]!.name)",
+                                            tabNumber: $0
+                                        )
+                                    }
+                                }
+                                .onAppear(perform: establishConnection)
+                                .onChange(
+                                    of: self.connections,
+                                    perform: { _ in
+                                        self.establishConnection()
+                                    }
                                 )
                             }
-                            .frame(
-                                width: geometry.size.width,
-                                height: geometry.size.height * (1 - splitFrac)
-                            )
                         }
                         getResizeDragger(geoHeight: geometry.size.height)
                     }
-                }
-            )
-        case .splitNotConnected:
-            return AnyView(
-                GeometryReader { geometry in
-                    ZStack {
-                        VStack {
-                            CanvasView(
-                                canvasId: canvas!.id,
-                                height: geometry.size.height * splitFrac,
-                                width: geometry.size.width,
-                                pkCanvas: $pkCanvas,
-                                isDraw: $isDraw,
-                                isErase: $isErase,
-                                color: $color,
-                                type: $type,
-                                savingDrawing: $backButtonPressed
-                            )
-                            .frame(
-                                width: geometry.size.width,
-                                height: geometry.size.height * splitFrac
-                            )
-                            ZStack {
-                                Color.black
-                                Text("Not connected.")
-                                    .foregroundColor(.white)
-                            }
-                            .frame(
-                                width: geometry.size.width,
-                                height: geometry.size.height * (1 - splitFrac)
-                            )
-                        }
-                        getResizeDragger(geoHeight: geometry.size.height)
-                    }
-                    .onAppear(perform: establishConnection)
                 }
             )
         default:
@@ -262,24 +272,27 @@ struct SessionPageView: View {
     }
     
     func setSplitScreenHeight(_ geometry: GeometryProxy) -> some View {
+        var height = geometry.size.height * (1 - splitFrac)
+        if (hosts.count > 1) {
+            height -= 45
+        }
         DispatchQueue.main.async {
-            self.splitScreenHeight = geometry.size.height * (1 - splitFrac)
+            self.splitScreenHeight = height
         }
         return EmptyView()
     }
     
     func getSessionState() -> SessionState {
-        if (self.host != nil && self.session != nil && self.canvas == nil) {
-            return SessionState.terminalOnlyConnected
-        } else if (host != nil && session == nil && canvas == nil) {
-            return SessionState.terminalOnlyNotConnected
-        } else if (host == nil && canvas != nil) {
+        if (hosts.count >= 1 && currCanvas == nil) {
+            return SessionState.terminalOnly
+        }
+        else if (hosts.count == 0 && currCanvas != nil) {
             return SessionState.canvasOnly
-        } else if (host != nil && session != nil && canvas != nil) {
-            return SessionState.splitConnected
-        } else if (host != nil && session == nil && canvas != nil) {
-            return SessionState.splitNotConnected
-        } else {
+        }
+        else if (hosts.count >= 1 && currCanvas != nil) {
+            return SessionState.splitSession
+        }
+        else {
             return SessionState.error
         }
     }
@@ -287,16 +300,12 @@ struct SessionPageView: View {
     func getNavigationBarTitle() -> String {
         let sessionState = self.getSessionState()
         switch sessionState {
-        case SessionState.terminalOnlyConnected:
-            return "\(host!.name)"
-        case SessionState.terminalOnlyNotConnected:
-            return "\(host!.name)"
+        case SessionState.terminalOnly:
+            return ""
         case SessionState.canvasOnly:
-            return "\(canvas!.wrappedTitle)"
-        case SessionState.splitConnected:
-            return "\(canvas!.wrappedTitle)  |  \(host!.name)"
-        case SessionState.splitNotConnected:
-            return "\(canvas!.wrappedTitle)  |  \(host!.name)"
+            return "\(currCanvas!.wrappedTitle)"
+        case SessionState.splitSession:
+            return "\(currCanvas!.wrappedTitle)"
         default:
             return ""
         }
@@ -307,10 +316,13 @@ struct SessionPageView: View {
             Button(action: {
                 self.backButtonPressed.toggle()
                 
-                // Disconnect from session, if connected.
-                if (self.session != nil) {
-                    self.session?.disconnect()
+                // Disconnect from each connection, if connected.
+                for conn in self.connections {
+                    conn.disconnect()
                 }
+                
+                // Remove all cached terminal session states.
+                SwiftUITerminal.dismantleAllSessionStates()
                 
                 self.presentationMode.wrappedValue.dismiss()
             }) {
@@ -325,8 +337,7 @@ struct SessionPageView: View {
         let sessionState = self.getSessionState()
         let canvasIsActive: Bool = (
             sessionState == SessionState.canvasOnly
-                || sessionState == SessionState.splitConnected
-                || sessionState == SessionState.splitNotConnected
+            || sessionState == SessionState.splitSession
         )
         
         return HStack(spacing: 15) {
@@ -401,23 +412,28 @@ struct SessionPageView: View {
             
             Menu {
                 // Add canvas to session.
-                Button(action: {
-                    // TODO: add more than one canvas.
-                    if (!canvasIsActive) {
-                        self.activeSheet = ActiveSheet.selectCanvas
+                if (!canvasIsActive) {
+                    Button(action: {
+                        self.activeSheet = ActiveSheet.addCanvas
+                    }) {
+                        Label {
+                            Text("Add Canvas")
+                            
+                        } icon : { Image(systemName: "rectangle")}
                     }
-                }) {
-                    Label {
-                        Text("Add Canvas")
-                        
-                    } icon : { Image(systemName: "rectangle")}
                 }
                 
                 // Add terminal to session.
                 Button(action: {
-                    // TODO: add more than one terminal.
-                    if (sessionState == SessionState.canvasOnly) {
-                        self.activeSheet = ActiveSheet.selectHost
+                    switch sessionState {
+                    case SessionState.terminalOnly:
+                        self.activeSheet = ActiveSheet.addHost
+                    case SessionState.canvasOnly:
+                        self.activeSheet = ActiveSheet.addHost
+                    case SessionState.splitSession:
+                        self.activeSheet = ActiveSheet.addHost
+                    default:
+                        break
                     }
                 }) {
                     Label {
@@ -433,8 +449,18 @@ struct SessionPageView: View {
     
     // This function should be run on the appearance of any of the above views which have a terminal.
     // It is used to establish the ssh connection for the terminal from the given host data.
-    private func establishConnection() {
-        if (self.host != nil) {
+    func establishConnection() {
+        for (index, conn) in self.connections.enumerated() {
+            if conn.isConnected() {
+                continue
+            }
+            
+            let host = self.hosts[index]
+            
+            if host == nil {
+                continue
+            }
+            
             let host_info = HostInfo(
                 alias: host!.name,
                 username: host!.username,
@@ -445,19 +471,14 @@ struct SessionPageView: View {
                 privateKey: host!.privateKey,
                 privateKeyPassword: host!.privateKeyPassword
             )
-            
-            // We haven't established our connection yet. That must be done for a working terminal view
-            if (self.session == nil) {
-                self.session = SSHConnection(host: host_info.hostname, andUsername: host_info.username)
-                do {
-                    try self.session?.connect(hostInfo: host_info)
-                } catch SSHSessionError.authorizationFailed {
-                    // TODO TJ how should we show these errors to users?
-                    let error = SSHSessionError.authorizationFailed
-                    print("[SSHSessionError] \(error)")
-                } catch {
-                    print("[SSHSessionError] \(error)")
-                }
+
+            do {
+                try conn.connect(hostInfo: host_info)
+            } catch SSHSessionError.authorizationFailed {
+                let error = SSHSessionError.authorizationFailed
+                print("SessionPageView - establishConnection: \(error)")
+            } catch {
+                print("SessionPageView - establishConnection: \(error)")
             }
         }
     }
@@ -488,8 +509,8 @@ struct SessionPageView_Previews: PreviewProvider {
             newCanvas.title = "Test Canvas"
             
             return SessionPageView(
-                host: newHost,
-                canvas: newCanvas
+                startHost: newHost,
+                startCanvas: newCanvas
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
