@@ -199,14 +199,14 @@ struct CanvasView: View {
                         Image(systemName: "pencil")
                         .padding()
                         .font(.title)
-                        .background(Color("TabBarBackground"))
                         .foregroundColor(Color.white)
+                        .background(Color.black)
                         :
                         Image(systemName: "pencil.slash")
                         .padding()
                         .font(.title)
-                        .background(Color("TabBarBackground"))
                         .foregroundColor(Color.white)
+                        .background(Color.black)
                 }
                 .cornerRadius(20)
                 .offset(

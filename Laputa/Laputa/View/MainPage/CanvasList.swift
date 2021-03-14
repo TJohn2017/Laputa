@@ -41,7 +41,7 @@ struct CanvasList: View {
                 ForEach(canvases) { canvas in
                     HStack {
                         NavigationLink(
-                            destination: SessionPageView(startCanvas: canvas)
+                            destination: SessionPageView(canvas: canvas)
                         ) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10)

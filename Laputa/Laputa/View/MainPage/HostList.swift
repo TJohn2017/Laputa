@@ -33,7 +33,7 @@ struct HostList: View {
                 HStack {
                     Spacer()
                     NavigationLink(
-                        destination: SessionPageView(startHost: host)
+                        destination: SessionPageView(host: host)
                     ) {
                         ZStack(alignment: Alignment(horizontal: .leading, vertical: .center)) {
                             RoundedRectangle(cornerRadius: 10)

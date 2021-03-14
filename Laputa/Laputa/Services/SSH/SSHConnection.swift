@@ -16,13 +16,8 @@ enum SSHSessionError: Error {
     case authorizationFailed
 }
 
-class SSHConnection: Equatable {
-    static func == (lhs: SSHConnection, rhs: SSHConnection) -> Bool {
-        lhs.id == rhs.id
-    }
-    
+class SSHConnection {
     var session: NMSSHSession // This is the underlying SSH connection managed by NMSSH
-    var id = UUID()
     
     init(host: String, andUsername: String) {
         session = NMSSHSession(host: host, andUsername: andUsername)
