@@ -47,7 +47,7 @@ struct SessionPageView: View {
     // clamps where the user can drag the split screen separator
     // so that it doesn't get lost off-screen
     func getBoundedFrac(frac: CGFloat) -> CGFloat {
-        let maxFrac: CGFloat = 0.9
+        let maxFrac: CGFloat = 0.75
         let minFrac: CGFloat = 0.1
         return max(min(frac, maxFrac), minFrac)
     }
