@@ -57,8 +57,11 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     func makeFrame (keyboardDelta: CGFloat, keyboardWillHide: Bool) -> CGRect
     {
         var view_height = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
-        if (keyboardWillHide && previous_height != nil) { // set height to be the previous terminal view height before the keyboard appeared
-            view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top//- navigationBarHeight//30 // WEIRD OFFSET
+        if (!modifyTerminalHeight && keyboardDelta > 0) {
+            view_height += 22
+        // set height to be the previous terminal view height before the keyboard appeared
+        } else if (keyboardWillHide && previous_height != nil) {
+            view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top
         } else if (view_height < 5) { // if view height too small, set minimum height of 50
             view_height = 50
         }
@@ -67,7 +70,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         if (origin_y > navigationBarHeight) {
             origin_y = navigationBarHeight
         }
-        print("FRAME: height = \(view_height)")
         return CGRect (
             x: view.safeAreaInsets.left,
             y: origin_y,
@@ -79,15 +81,14 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         if (terminalView != nil) {
             if (height != terminalView!.frame.height) {
                 if (keyboardButton.isHidden) {
-                    print("     FRAME: update with keyboard, keyboardDelta = \(keyboardDelta)")
                     self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: height - 10)
                     self.terminalView!.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: height - 10)
                     UIView.animate(withDuration: 0.2, animations: {
                         self.outputCatchButton.frame = CGRect(
                             x: self.terminalView!.frame.width - 100,
                             y: self.terminalView!.frame.height - 100,
-                            width: 50, //self.terminalView!.frame.width/15,
-                            height: 50 //self.terminalView!.frame.width/15
+                            width: 50,
+                            height: 50
                         )
                     })
                    
@@ -98,15 +99,15 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                     keyboardButton.frame = CGRect(
                         x: self.view.frame.width - 100,
                         y: self.view.frame.height - 100,
-                        width: 50, //self.view.frame.width/15,
-                        height: 50 //self.view.frame.width/15
+                        width: 50,
+                        height: 50
                     )
                     UIView.animate(withDuration: 0.2, animations: {
                         self.outputCatchButton.frame = CGRect(
                             x: self.view.frame.width - 100,
                             y: self.view.frame.height - 180,
-                            width: 50, //self.view.frame.width/15,
-                            height: 50 //self.view.frame.width/15
+                            width: 50,
+                            height: 50
                         )
                     })
                 }
@@ -162,18 +163,16 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
             if (self.modifyTerminalHeight) {
                 outputCatchButton.frame = CGRect(x: terminalView!.frame.width - 100,
                                                  y: terminalView!.frame.height - 180,
-                                                 width: 50, //terminalView!.frame.width/15,
-                                                 height: 50 //terminalView!.frame.width/15
+                                                 width: 50,
+                                                 height: 50
                                                 )
             } else {
-//            if (!self.modifyTerminalHeight) {
-//                print("SSHLOG: keyboard hide will terminal view frame remade ")
                 terminalView!.frame = makeFrame(keyboardDelta: 0, keyboardWillHide: true)
             }
             keyboardButton.frame = CGRect(x: terminalView!.frame.width - 100,
                                           y: terminalView!.frame.height - 100,
-                                          width: 50, //terminalView!.frame.width/15,
-                                          height: 50 //terminalView!.frame.width/15
+                                          width: 50,
+                                          height: 50
                                          )
         }
         keyboardButton.isHidden = false
@@ -197,16 +196,12 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 keyboardDelta = 0
             }
             if (terminalView != nil) {
-                
-//                if (self.modifyTerminalHeight) { // update catch output button so it's above the keyboard
-                    outputCatchButton.frame = CGRect(x: terminalView!.frame.width - 100,
-                                                     y: terminalView!.frame.height - 100,
-                                                     width: 50, //terminalView!.frame.width/15,
-                                                     height: 50 //terminalView!.frame.width/15
-                                                    )
-//                } else {
+                outputCatchButton.frame = CGRect(x: terminalView!.frame.width - 100,
+                                                 y: terminalView!.frame.height - 100,
+                                                 width: 50,
+                                                 height: 50
+                                                )
                 if (!modifyTerminalHeight) {
-//                    print("SSHLOG: keyboard appears terminal view frame made")
                     terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
                 }
                 UIView.animate(
@@ -240,7 +235,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 width: size.width,
                 height: self.previous_height!
             )
-//            print("SSHLOG: view will transition view frame remade")
             
             if (self.connected) {
                 // reset terminal view frame
@@ -248,14 +242,14 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 // reset buttons in terminal view
                 self.keyboardButton.frame = CGRect(x: self.view.frame.width - 100,
                                                    y: self.view.frame.height - 100,
-                                                   width: 50, //self.view.frame.width/15,
-                                                   height: 50 //self.view.frame.width/15
+                                                   width: 50,
+                                                   height: 50
                                                     )
                 if (self.modifyTerminalHeight) { // TODO change button origins to match (i.e. either use self.view.frame or self.terminalView!.frame
                     self.outputCatchButton.frame = CGRect(x: self.terminalView!.frame.width - 100,
                                                           y: self.terminalView!.frame.height - 180,
-                                                          width: 50, //self.terminalView!.frame.width/15,
-                                                          height: 50 //self.terminalView!.frame.width/15
+                                                          width: 50,
+                                                          height: 50
                                                         )
                 }
             } else {
@@ -268,14 +262,13 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     override func loadView() {
         super.loadView()
         if (self.modifyTerminalHeight) {
-//            print("SSHLOG: load view changing view frame")
-//            previous_height = splitScreenHeight
-//            self.view.frame = CGRect(
-//                x: self.view.bounds.origin.x,
-//                y: self.view.bounds.origin.y,
-//                width: self.view.bounds.width,
-//                height: splitScreenHeight
-//            )
+            previous_height = splitScreenHeight
+            self.view.frame = CGRect(
+                x: self.view.bounds.origin.x,
+                y: self.view.bounds.origin.y,
+                width: self.view.bounds.width,
+                height: splitScreenHeight
+            )
         } else {
             previous_height = view.frame.height - navigationBarHeight
         }
@@ -286,9 +279,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         addKeyboard()
-        
-//        print("SSHLOG: view did load made frame")
-        
+                
         // start ssh session and add it ot the view
         let (terminalView, connected) = startSSHSession()
         self.connected = connected
@@ -330,8 +321,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 //        print("SSHLOG: initialize keyboard button according to terminal")
         keyboardButton.frame = CGRect(x: t.frame.width - 100,
                                       y: t.frame.height - 100,
-                                      width: 50, //t.frame.width/15,
-                                      height: 50 //t.frame.width/15
+                                      width: 50,
+                                      height: 50
                                     )
         keyboardButton.layer.cornerRadius = 15
         keyboardButton.layer.masksToBounds = true
@@ -351,8 +342,8 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     private func initializeOutputCatchButton(t: TerminalView) {
         outputCatchButton.frame = CGRect(x: t.frame.width - 100,
                                          y: t.frame.height - 180,
-                                         width: 50, //t.frame.width/15,
-                                         height: 50 //t.frame.width/15
+                                         width: 50,
+                                         height: 50
                                         )
         outputCatchButton.layer.cornerRadius = 15
         outputCatchButton.layer.masksToBounds = true
