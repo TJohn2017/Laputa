@@ -455,18 +455,38 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
 struct SwiftUITerminal: UIViewControllerRepresentable {
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var canvas: Canvas?
-    @Binding var connection: SSHConnection?
+    @Binding var connections: [SSHConnection]
+    @State var connectionIdx: Int
     @State var modifyTerminalHeight: Bool
+    @State var id: Int
+    static private var sshVCs = [Int: SSHTerminalViewController]()
     
     typealias UIViewControllerType = SSHTerminalViewController
     
-    func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        let viewController = SSHTerminalViewController (connection: connection, modifyTerminalHeight: modifyTerminalHeight, canvas: canvas, viewContext: viewContext)
+    func makeUIViewController(
+        context: UIViewControllerRepresentableContext<SwiftUITerminal>
+    ) -> SSHTerminalViewController {
+        guard SwiftUITerminal.sshVCs[id] == nil else {
+            return SwiftUITerminal.sshVCs[id]!
+        }
+        let connection = self.connections[connectionIdx]
+        let viewController = SSHTerminalViewController(
+            connection: connection,
+            modifyTerminalHeight: modifyTerminalHeight,
+            canvas: canvas,
+            viewContext: viewContext
+        )
+        
+        SwiftUITerminal.sshVCs[id] = viewController
+        
         return viewController
     }
     
     // Need for conformity
-    func updateUIViewController(_ uiViewController: SSHTerminalViewController, context: UIViewControllerRepresentableContext<SwiftUITerminal>) {}
+    func updateUIViewController(
+        _ uiViewController: SSHTerminalViewController,
+        context: UIViewControllerRepresentableContext<SwiftUITerminal>
+    ) {}
     
     // Coordinator will be used to share the canvas sheet toggle
     // variable with our parent views
@@ -482,8 +502,8 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
         Coordinator(parent: self)
     }
     
-    static func dismantleUIViewController(_ uiViewController: SSHTerminalViewController, coordinator: Coordinator) {
-//        uiViewController.terminalView?.ssh_session?.disconnect()
+    static func dismantleAllSessionStates() {
+        SwiftUITerminal.sshVCs.removeAll()
     }
 }
 
@@ -495,6 +515,7 @@ struct SwiftUITerminal_Preview: PreviewProvider {
     struct PreviewWrapper: View {
         @State var canvas: Canvas? = nil
         @State var session: SSHConnection? = nil
+        @State var connections: [SSHConnection] = [SSHConnection(host: "159.65.78.184", andUsername: "laputa")]
         
         var body: some View {
             // Establish laputa test connection
@@ -519,7 +540,13 @@ struct SwiftUITerminal_Preview: PreviewProvider {
                 print("[SSHSessionError] \(error)")
             }
 
-            return SwiftUITerminal(canvas: $canvas, connection: $session, modifyTerminalHeight: false)
+            return SwiftUITerminal(
+                canvas: $canvas,
+                connections: $connections,
+                connectionIdx: 0,
+                modifyTerminalHeight: false,
+                id: 0
+            )
         }
     }
 }

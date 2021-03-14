@@ -10,11 +10,9 @@ import UIKit
 import PencilKit
 
 enum SessionState: String {
-    case terminalOnlyConnected      // A terminal-only session w/ active connection.
-    case terminalOnlyNotConnected   // A terminal-only session w/ non-active connection.
-    case canvasOnly                 // A canvas-only session.
-    case splitConnected             // A connected terminal and canvas session.
-    case splitNotConnected          // A non-connected terminal and canvas session.
+    case terminalOnly         // A terminal(s)-only session.
+    case canvasOnly           // A canvas-only session.
+    case splitSession         // A terminal(s) and canvas session.
     case error
 }
 
@@ -22,9 +20,11 @@ struct SessionPageView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.undoManager) private var undoManager
 
-    @State var host: Host?
-    @State var canvas: Canvas?
-    @State var session: SSHConnection?
+    @State var currCanvas: Canvas?
+    @State var canvases: [Canvas?] = []
+    @State var hosts: [Host?] = []
+    @State var connections: [SSHConnection] = []
+    
     @State var activeSheet: ActiveSheet?
     
     // State vars for PKDrawingView
@@ -38,6 +38,14 @@ struct SessionPageView: View {
     // when it is toggled by the back button, the view will update and
     // save the current drawing.
     @State var backButtonPressed : Bool = false
+    
+    init(startHost: Host? = nil, startCanvas: Canvas? = nil) {
+        _currCanvas = State(initialValue: startCanvas)
+        
+        _hosts = State(initialValue: (startHost != nil && hosts.count == 0) ? [startHost] : [])
+        _connections = State(initialValue: (startHost != nil && connections.count == 0) ? [SSHConnection(host: startHost!.host, andUsername: startHost!.username)] : [])
+        _canvases = State(initialValue: (startCanvas != nil && canvases.count == 0) ? [startCanvas] : [])
+    }
     
     var body: some View {
         ZStack {
@@ -53,20 +61,17 @@ struct SessionPageView: View {
                 )
                 .sheet(item: $activeSheet) { item in
                     switch item {
-                    // Choosing canvas to use with a host.
-                    case .selectCanvas:
-                        SelectCanvasView(
-                            selectedHost: $host,
-                            selectedCanvas: $canvas,
-                            navToSessionActive: .constant(false),
+                    // Choosing canvas to add.
+                    case .addCanvas:
+                        AddCanvasView(
+                            canvas: $currCanvas,
+                            selectedCanvases: $canvases,
                             activeSheet: $activeSheet
                         )
-                    // Choosing host to use with a canvas.
-                    case .selectHost:
-                        SelectHostView(
-                            selectedHost: $host,
-                            selectedCanvas: $canvas,
-                            navToSessionActive: .constant(false),
+                    case .addHost:
+                        AddHostView(
+                            hosts: $hosts,
+                            connections: $connections,
                             activeSheet: $activeSheet
                         )
                     default:
@@ -80,25 +85,40 @@ struct SessionPageView: View {
         let sessionState = self.getSessionState()
         
         switch sessionState {
-        case .terminalOnlyConnected:
+        case .terminalOnly:
             return AnyView(
-                SwiftUITerminal(
-                    canvas: $canvas,
-                    connection: $session,
-                    modifyTerminalHeight: false
-                )
-            )
-        case .terminalOnlyNotConnected:
-            return AnyView(
-                Text("Not connected.")
-                    .onAppear(perform: establishConnection)
+               CustomTabView(
+                    tabBarPosition: TabBarPosition.top,
+                    numberOfElems: hosts.count
+               ) {
+                ForEach((0..<hosts.count), id: \.self) {
+                        SwiftUITerminal(
+                            canvas: $currCanvas,
+                            connections: $connections,
+                            connectionIdx: $0,
+                            modifyTerminalHeight: false,
+                            id: $0
+                        )
+                        .customTab(
+                            name: "\(hosts[$0]!.name)",
+                            tabNumber: $0
+                        )
+                    }
+                }
+               .onAppear(perform: establishConnection)
+               .onChange(
+                    of: self.connections,
+                    perform: { _ in
+                        self.establishConnection()
+                    }
+               )
             )
         case .canvasOnly:
             return AnyView(
                 GeometryReader { geometry in
                     VStack {
                         CanvasView(
-                            canvasId: canvas!.id,
+                            canvasId: currCanvas!.id,
                             height: geometry.size.height,
                             width: geometry.size.width,
                             pkCanvas: $pkCanvas,
@@ -115,12 +135,12 @@ struct SessionPageView: View {
                     }
                 }
             )
-        case .splitConnected:
+        case .splitSession:
             return AnyView(
                 GeometryReader { geometry in
                     VStack {
                         CanvasView(
-                            canvasId: canvas!.id,
+                            canvasId: currCanvas!.id,
                             height: geometry.size.height / 2,
                             width: geometry.size.width,
                             pkCanvas: $pkCanvas,
@@ -131,41 +151,36 @@ struct SessionPageView: View {
                             savingDrawing: $backButtonPressed
                         )
                         .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        SwiftUITerminal(
-                            canvas: $canvas,
-                            connection: $session,
-                            modifyTerminalHeight: true
-                        )
-                        .frame(
-                            width: geometry.size.width,
-                            height: geometry.size.height / 2
+                        CustomTabView(
+                            tabBarPosition: TabBarPosition.top,
+                             numberOfElems: hosts.count
+                        ) {
+                         ForEach((0..<hosts.count), id: \.self) {
+                                 SwiftUITerminal(
+                                     canvas: $currCanvas,
+                                     connections: $connections,
+                                     connectionIdx: $0,
+                                     modifyTerminalHeight: false,
+                                     id: $0
+                                 )
+                                 .frame(
+                                     width: geometry.size.width,
+                                     height: geometry.size.height / 2
+                                 )
+                                 .customTab(
+                                     name: "\(hosts[$0]!.name)",
+                                     tabNumber: $0
+                                 )
+                             }
+                         }
+                        .onAppear(perform: establishConnection)
+                        .onChange(
+                             of: self.connections,
+                             perform: { _ in
+                                 self.establishConnection()
+                             }
                         )
                     }
-                }
-            )
-        case .splitNotConnected:
-            return AnyView(
-                GeometryReader { geometry in
-                    VStack {
-                        CanvasView(
-                            canvasId: canvas!.id,
-                            height: geometry.size.height / 2,
-                            width: geometry.size.width,
-                            pkCanvas: $pkCanvas,
-                            isDraw: $isDraw,
-                            isErase: $isErase,
-                            color: $color,
-                            type: $type,
-                            savingDrawing: $backButtonPressed
-                        )
-                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        Text("Not connected.")
-                            .frame(
-                                width: geometry.size.width,
-                                height: geometry.size.height / 2
-                            )
-                    }
-                    .onAppear(perform: establishConnection)
                 }
             )
         default:
@@ -176,17 +191,16 @@ struct SessionPageView: View {
     }
 
     func getSessionState() -> SessionState {
-        if (self.host != nil && self.session != nil && self.canvas == nil) {
-            return SessionState.terminalOnlyConnected
-        } else if (host != nil && session == nil && canvas == nil) {
-            return SessionState.terminalOnlyNotConnected
-        } else if (host == nil && canvas != nil) {
+        if (hosts.count >= 1 && currCanvas == nil) {
+            return SessionState.terminalOnly
+        }
+        else if (hosts.count == 0 && currCanvas != nil) {
             return SessionState.canvasOnly
-        } else if (host != nil && session != nil && canvas != nil) {
-            return SessionState.splitConnected
-        } else if (host != nil && session == nil && canvas != nil) {
-            return SessionState.splitNotConnected
-        } else {
+        }
+        else if (hosts.count >= 1 && currCanvas != nil) {
+            return SessionState.splitSession
+        }
+        else {
             return SessionState.error
         }
     }
@@ -194,16 +208,12 @@ struct SessionPageView: View {
     func getNavigationBarTitle() -> String {
         let sessionState = self.getSessionState()
         switch sessionState {
-        case SessionState.terminalOnlyConnected:
-            return "\(host!.name)"
-        case SessionState.terminalOnlyNotConnected:
-            return "\(host!.name)"
+        case SessionState.terminalOnly:
+            return ""
         case SessionState.canvasOnly:
-            return "\(canvas!.wrappedTitle)"
-        case SessionState.splitConnected:
-            return "\(canvas!.wrappedTitle)  |  \(host!.name)"
-        case SessionState.splitNotConnected:
-            return "\(canvas!.wrappedTitle)  |  \(host!.name)"
+            return "\(currCanvas!.wrappedTitle)"
+        case SessionState.splitSession:
+            return "\(currCanvas!.wrappedTitle)"
         default:
             return ""
         }
@@ -214,10 +224,13 @@ struct SessionPageView: View {
             Button(action: {
                 self.backButtonPressed.toggle()
                 
-                // Disconnect from session, if connected.
-                if (self.session != nil) {
-                    self.session?.disconnect()
+                // Disconnect from each connection, if connected.
+                for conn in self.connections {
+                    conn.disconnect()
                 }
+                
+                // Remove all cached terminal session states.
+                SwiftUITerminal.dismantleAllSessionStates()
                 
                 self.presentationMode.wrappedValue.dismiss()
             }) {
@@ -232,8 +245,7 @@ struct SessionPageView: View {
         let sessionState = self.getSessionState()
         let canvasIsActive: Bool = (
             sessionState == SessionState.canvasOnly
-                || sessionState == SessionState.splitConnected
-                || sessionState == SessionState.splitNotConnected
+            || sessionState == SessionState.splitSession
         )
         
         return HStack(spacing: 15) {
@@ -311,7 +323,7 @@ struct SessionPageView: View {
                 Button(action: {
                     // TODO: add more than one canvas.
                     if (!canvasIsActive) {
-                        self.activeSheet = ActiveSheet.selectCanvas
+                        self.activeSheet = ActiveSheet.addCanvas
                     }
                 }) {
                     Label {
@@ -322,9 +334,15 @@ struct SessionPageView: View {
                 
                 // Add terminal to session.
                 Button(action: {
-                    // TODO: add more than one terminal.
-                    if (sessionState == SessionState.canvasOnly) {
-                        self.activeSheet = ActiveSheet.selectHost
+                    switch sessionState {
+                    case SessionState.terminalOnly:
+                        self.activeSheet = ActiveSheet.addHost
+                    case SessionState.canvasOnly:
+                        self.activeSheet = ActiveSheet.addHost
+                    case SessionState.splitSession:
+                        self.activeSheet = ActiveSheet.addHost
+                    default:
+                        break
                     }
                 }) {
                     Label {
@@ -340,8 +358,18 @@ struct SessionPageView: View {
     
     // This function should be run on the appearance of any of the above views which have a terminal.
     // It is used to establish the ssh connection for the terminal from the given host data.
-    private func establishConnection() {
-        if (self.host != nil) {
+    func establishConnection() {
+        for (index, conn) in self.connections.enumerated() {
+            if conn.isConnected() {
+                continue
+            }
+            
+            let host = self.hosts[index]
+            
+            if host == nil {
+                continue
+            }
+            
             let host_info = HostInfo(
                 alias: host!.name,
                 username: host!.username,
@@ -352,19 +380,14 @@ struct SessionPageView: View {
                 privateKey: host!.privateKey,
                 privateKeyPassword: host!.privateKeyPassword
             )
-            
-            // We haven't established our connection yet. That must be done for a working terminal view
-            if (self.session == nil) {
-                self.session = SSHConnection(host: host_info.hostname, andUsername: host_info.username)
-                do {
-                    try self.session?.connect(hostInfo: host_info)
-                } catch SSHSessionError.authorizationFailed {
-                    // TODO TJ how should we show these errors to users?
-                    let error = SSHSessionError.authorizationFailed
-                    print("[SSHSessionError] \(error)")
-                } catch {
-                    print("[SSHSessionError] \(error)")
-                }
+
+            do {
+                try conn.connect(hostInfo: host_info)
+            } catch SSHSessionError.authorizationFailed {
+                let error = SSHSessionError.authorizationFailed
+                print("SessionPageView - establishConnection: \(error)")
+            } catch {
+                print("SessionPageView - establishConnection: \(error)")
             }
         }
     }
@@ -395,8 +418,8 @@ struct SessionPageView_Previews: PreviewProvider {
             newCanvas.title = "Test Canvas"
             
             return SessionPageView(
-                host: newHost,
-                canvas: newCanvas
+                startHost: newHost,
+                startCanvas: newCanvas
             ).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
         }
     }
