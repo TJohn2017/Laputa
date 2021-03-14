@@ -141,7 +141,6 @@ struct CodeCardView: View {
                 }
                 .updating($resizeState) { value, state, transaction in
                     state = value.translation
-                    print("value.translation: \(value.translation)")
                 }
                 .onEnded() { value in
                     isResizing = false
@@ -151,7 +150,6 @@ struct CodeCardView: View {
                     maxZIndex += 1
                     
                     updateCardSize()
-                    print("LOG:  new width = \(width), new height = \(height)")
                 }
         }
         

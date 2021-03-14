@@ -60,7 +60,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         if (!modifyTerminalHeight && keyboardDelta > 0) {
             view_height += 22
         // set height to be the previous terminal view height before the keyboard appeared
-        } else if (keyboardWillHide && previous_height != nil) {
+        } else if (modifyTerminalHeight && keyboardDelta > 0) {
+            view_height = splitScreenHeight
+        }   else if (keyboardWillHide && previous_height != nil) {
             view_height = previous_height! - view.safeAreaInsets.bottom - view.safeAreaInsets.top
         } else if (view_height < 5) { // if view height too small, set minimum height of 50
             view_height = 50
@@ -81,19 +83,29 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         if (terminalView != nil) {
             if (height != terminalView!.frame.height) {
                 if (keyboardButton.isHidden) {
+                    splitScreenHeight = height - 10
                     self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: height - 10)
                     self.terminalView!.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: height - 10)
                     UIView.animate(withDuration: 0.2, animations: {
-                        self.outputCatchButton.frame = CGRect(
-                            x: self.terminalView!.frame.width - 100,
-                            y: self.terminalView!.frame.height - 100,
-                            width: 50,
-                            height: 50
-                        )
+                        if (height - 10 <= 100) {
+                            self.outputCatchButton.frame = CGRect(
+                                x: self.view.frame.width - 100,
+                                y: self.view.frame.height - 60,
+                                width: 50,
+                                height: 50
+                            )
+                        } else {
+                            self.outputCatchButton.frame = CGRect(
+                                x: self.view.frame.width - 100,
+                                y: self.view.frame.height - 100,
+                                width: 50,
+                                height: 50
+                            )
+                        }
                     })
                    
                 } else {
-                    print("     FRAME: update no keyboard, keyboardDelta = \(keyboardDelta)")
+                    splitScreenHeight = height + 15
                     self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: height + 15)
                     self.terminalView!.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: height + 15)
                     keyboardButton.frame = CGRect(
@@ -201,9 +213,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                                                  width: 50,
                                                  height: 50
                                                 )
-                if (!modifyTerminalHeight) {
+//                if (!modifyTerminalHeight) {
                     terminalView!.frame = makeFrame(keyboardDelta: keyboardDelta, keyboardWillHide: false)
-                }
+//                }
                 UIView.animate(
                     withDuration: duration,
                     delay: TimeInterval(0),
@@ -392,7 +404,15 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     
     // Gets the row indices for the start and end rows of the text we're highlighting
     private func getStartEndRowIndex (startPoint: CGPoint, translation: CGPoint, rows: Int) -> (startRowIndex: Int, endRowIndex: Int, rowHeightInPixels: CGFloat) {
-        let viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+        var viewHeight: CGFloat
+        if (modifyTerminalHeight) {
+            viewHeight = splitScreenHeight
+            if (keyboardButton.isHidden && viewHeight > 100) {
+                viewHeight -= 10
+            }
+        } else {
+            viewHeight = view.frame.height - view.safeAreaInsets.bottom - view.safeAreaInsets.top - keyboardDelta
+        }
         let rowHeightInPixels = viewHeight / CGFloat(rows)
         let startRowIndex = Int((startPoint.y / rowHeightInPixels).rounded(.down))
         let endRowIndex = Int(((startPoint.y + translation.y) / rowHeightInPixels).rounded(.down))
@@ -449,9 +469,9 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 let origin_y = CGFloat(startRowIndex)*rowHeightInPixels
                 
                 if (highlightView != nil && highlightView!.isDescendant(of: view)) {
-                    highlightView!.frame = CGRect(x: view.safeAreaInsets.left, y: origin_y + 4, width: view.frame.width, height: CGFloat(numRows)*rowHeightInPixels)
+                    highlightView!.frame = CGRect(x: view.safeAreaInsets.left, y: origin_y /*+ 4*/, width: view.frame.width, height: CGFloat(numRows)*rowHeightInPixels)
                 } else if (numRows > 0){
-                    highlightView = UIView(frame: CGRect(x: view.safeAreaInsets.left, y: origin_y + 4, width: view.frame.width, height: CGFloat(numRows)*rowHeightInPixels))
+                    highlightView = UIView(frame: CGRect(x: view.safeAreaInsets.left, y: origin_y /*+ 4*/, width: view.frame.width, height: CGFloat(numRows)*rowHeightInPixels))
                     highlightView!.backgroundColor = .white
                     highlightView!.alpha = 0.25
                     view.addSubview(highlightView!)
@@ -544,14 +564,12 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SwiftUITerminal>) -> SSHTerminalViewController {
-        print ("FRAME: make ui view controller")
         let viewController = SSHTerminalViewController (connection: connection, modifyTerminalHeight: modifyTerminalHeight, splitScreenHeight: splitScreenHeight, canvas: canvas, viewContext: viewContext)
         return viewController
     }
     
     // Need for conformity
     func updateUIViewController(_ uiViewController: SSHTerminalViewController, context: UIViewControllerRepresentableContext<SwiftUITerminal>) {
-        print("FRAME: update ui view controller")
         if (modifyTerminalHeight) {
             uiViewController.updateSplitTerminalFrame(height: splitScreenHeight)
         }

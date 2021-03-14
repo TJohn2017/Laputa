@@ -30,7 +30,6 @@ struct InputCanvasView: View {
         // creating a new canvas
         if selectedCanvas == nil {
             selectedCanvas = Canvas(context: viewContext)
-            print("LOG: selectedCanvas = \(selectedCanvas != nil)")
             selectedCanvas!.id = UUID()
             selectedCanvas!.dateCreated = Date()
         }
