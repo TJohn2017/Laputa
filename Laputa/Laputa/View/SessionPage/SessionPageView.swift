@@ -39,12 +39,75 @@ struct SessionPageView: View {
     // save the current drawing.
     @State var backButtonPressed : Bool = false
     
+    // states for dragging up or down to resize split pane
+    @GestureState var dragState = CGSize.zero
+    @State var splitFrac: CGFloat = 0.5
+    @State var isResizingSplit: Bool = false
+    
     init(startHost: Host? = nil, startCanvas: Canvas? = nil) {
         _currCanvas = State(initialValue: startCanvas)
         
         _hosts = State(initialValue: (startHost != nil && hosts.count == 0) ? [startHost] : [])
         _connections = State(initialValue: (startHost != nil && connections.count == 0) ? [SSHConnection(host: startHost!.host, andUsername: startHost!.username)] : [])
         _canvases = State(initialValue: (startCanvas != nil && canvases.count == 0) ? [startCanvas] : [])
+    }
+
+    // clamps where the user can drag the split screen separator
+    // so that it doesn't get lost off-screen
+    func getBoundedFrac(frac: CGFloat) -> CGFloat {
+        let maxFrac: CGFloat = 0.75
+        let minFrac: CGFloat = 0.1
+        return max(min(frac, maxFrac), minFrac)
+    }
+    
+    // returns a drag gesture that sets the new screen fractions
+    // based on geometry reader height
+    func getResizeGesture(geoHeight: CGFloat) -> some Gesture {
+        return DragGesture()
+            .onChanged() { _ in
+                isResizingSplit = true
+            }
+            .updating($dragState) { value, state, transaction in
+                state = value.translation
+            }
+            .onEnded() { value in
+                let frac = splitFrac + value.translation.height / geoHeight
+                splitFrac = getBoundedFrac(frac: frac)
+                isResizingSplit = false
+            }
+    }
+    
+    // returns a drag handle with offset based on geometry reader height
+    func getResizeDragger(geoHeight: CGFloat) -> some View {
+        return ZStack {
+            if isResizingSplit {
+                // line showing split, only visible on resize action
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(Color("HostMain"))
+            }
+            RoundedRectangle(cornerRadius: 8)
+                .frame(width: 100, height: 20)
+                .foregroundColor(Color.gray)
+            HStack {
+                Rectangle()
+                    .frame(width: 2, height: 12)
+                Spacer()
+                    .frame(width: 2)
+                Rectangle()
+                    .frame(width: 2, height: 12)
+                Spacer()
+                    .frame(width: 2)
+                Rectangle()
+                    .frame(width: 2, height: 12)
+            }
+            .foregroundColor(Color(white: 0, opacity: 0.3))
+        }
+        .offset(
+            x: .zero,
+            y: (getBoundedFrac(frac: (splitFrac + (dragState.height / geoHeight))) - 0.5) * geoHeight
+        )
+        .gesture(getResizeGesture(geoHeight: geoHeight))
     }
     
     var body: some View {
@@ -81,6 +144,7 @@ struct SessionPageView: View {
         }
     }
     
+    @State var splitScreenHeight: CGFloat = .zero
     var sessionInstance: some View {
         let sessionState = self.getSessionState()
         
@@ -97,6 +161,7 @@ struct SessionPageView: View {
                             connections: $connections,
                             connectionIdx: $0,
                             modifyTerminalHeight: false,
+                            splitScreenHeight: $splitScreenHeight,
                             id: $0
                         )
                         .customTab(
@@ -114,7 +179,7 @@ struct SessionPageView: View {
                )
             )
         case .canvasOnly:
-            return AnyView(
+            return AnyView (
                 GeometryReader { geometry in
                     VStack {
                         CanvasView(
@@ -138,48 +203,59 @@ struct SessionPageView: View {
         case .splitSession:
             return AnyView(
                 GeometryReader { geometry in
-                    VStack {
-                        CanvasView(
-                            canvasId: currCanvas!.id,
-                            height: geometry.size.height / 2,
-                            width: geometry.size.width,
-                            pkCanvas: $pkCanvas,
-                            isDraw: $isDraw,
-                            isErase: $isErase,
-                            color: $color,
-                            type: $type,
-                            savingDrawing: $backButtonPressed
-                        )
-                        .frame(width: geometry.size.width, height: geometry.size.height / 2)
-                        CustomTabView(
-                            tabBarPosition: TabBarPosition.top,
-                             numberOfElems: hosts.count
-                        ) {
-                         ForEach((0..<hosts.count), id: \.self) {
-                                 SwiftUITerminal(
-                                     canvas: $currCanvas,
-                                     connections: $connections,
-                                     connectionIdx: $0,
-                                     modifyTerminalHeight: true,
-                                     id: $0
-                                 )
-                                 .frame(
-                                     width: geometry.size.width,
-                                     height: geometry.size.height / 2
-                                 )
-                                 .customTab(
-                                     name: "\(hosts[$0]!.name)",
-                                     tabNumber: $0
-                                 )
-                             }
-                         }
-                        .onAppear(perform: establishConnection)
-                        .onChange(
-                             of: self.connections,
-                             perform: { _ in
-                                 self.establishConnection()
-                             }
-                        )
+                    self.setSplitScreenHeight(geometry)
+                    ZStack {
+                        VStack {
+                            CanvasView(
+                                canvasId: currCanvas!.id,
+                                height: geometry.size.height * splitFrac,
+                                width: geometry.size.width,
+                                pkCanvas: $pkCanvas,
+                                isDraw: $isDraw,
+                                isErase: $isErase,
+                                color: $color,
+                                type: $type,
+                                savingDrawing: $backButtonPressed
+                            )
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height * splitFrac
+                            )
+                            ZStack {
+                                Color.black
+                                CustomTabView(
+                                    tabBarPosition: TabBarPosition.top,
+                                    numberOfElems: hosts.count
+                                ) {
+                                    ForEach((0..<hosts.count), id: \.self) {
+                                        SwiftUITerminal(
+                                            canvas: $currCanvas,
+                                            connections: $connections,
+                                            connectionIdx: $0,
+                                            modifyTerminalHeight: true,
+                                            splitScreenHeight: $splitScreenHeight,
+                                            id: $0
+                                        )
+                                        .frame(
+                                            width: geometry.size.width,
+                                            height: geometry.size.height * (1 - splitFrac)
+                                        )
+                                        .customTab(
+                                            name: "\(hosts[$0]!.name)",
+                                            tabNumber: $0
+                                        )
+                                    }
+                                }
+                                .onAppear(perform: establishConnection)
+                                .onChange(
+                                    of: self.connections,
+                                    perform: { _ in
+                                        self.establishConnection()
+                                    }
+                                )
+                            }
+                        }
+                        getResizeDragger(geoHeight: geometry.size.height)
                     }
                 }
             )
@@ -189,7 +265,14 @@ struct SessionPageView: View {
             )
         }
     }
-
+    
+    func setSplitScreenHeight(_ geometry: GeometryProxy) -> some View {
+        DispatchQueue.main.async {
+            self.splitScreenHeight = geometry.size.height * (1 - splitFrac)
+        }
+        return EmptyView()
+    }
+    
     func getSessionState() -> SessionState {
         if (hosts.count >= 1 && currCanvas == nil) {
             return SessionState.terminalOnly
