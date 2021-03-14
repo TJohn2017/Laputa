@@ -39,24 +39,45 @@ struct SessionPageView: View {
     // save the current drawing.
     @State var backButtonPressed : Bool = false
     
-    // gesture to drag split pane up or down
+    // states for dragging up or down to resize split pane
     @GestureState var dragState = CGSize.zero
     @State var splitFrac: CGFloat = 0.5
-    @State var height: CGFloat = UIScreen.main.bounds.height
-//    var updateDragState = true
-    var endDragStateHeight : CGFloat?
+    @State var isResizingSplit: Bool = false
+    
+    // clamps where the user can drag the split screen separator
+    // so that it doesn't get lost off-screen
+    func getBoundedFrac(frac: CGFloat) -> CGFloat {
+        let maxFrac: CGFloat = 0.9
+        let minFrac: CGFloat = 0.1
+        return max(min(frac, maxFrac), minFrac)
+    }
+    
+    // returns a drag gesture that sets the new screen fractions
+    // based on geometry reader height
     func getResizeGesture(geoHeight: CGFloat) -> some Gesture {
         return DragGesture()
+            .onChanged() { _ in
+                isResizingSplit = true
+            }
             .updating($dragState) { value, state, transaction in
-//                state = value.translation
+                state = value.translation
             }
             .onEnded() { value in
-                splitFrac += value.translation.height / geoHeight
+                let frac = splitFrac + value.translation.height / geoHeight
+                splitFrac = getBoundedFrac(frac: frac)
+                isResizingSplit = false
             }
     }
     
+    // returns a drag handle with offset based on geometry reader height
     func getResizeDragger(geoHeight: CGFloat) -> some View {
         return ZStack {
+            if isResizingSplit {
+                // line showing split, only visible on resize action
+                Rectangle()
+                    .frame(height: 1)
+                    .foregroundColor(Color("HostMain"))
+            }
             RoundedRectangle(cornerRadius: 8)
                 .frame(width: 100, height: 20)
                 .foregroundColor(Color.gray)
@@ -76,7 +97,7 @@ struct SessionPageView: View {
         }
         .offset(
             x: .zero,
-            y: (splitFrac + (dragState.height / geoHeight) - 0.5) * geoHeight
+            y: (getBoundedFrac(frac: (splitFrac + (dragState.height / geoHeight))) - 0.5) * geoHeight
         )
         .gesture(getResizeGesture(geoHeight: geoHeight))
     }
@@ -118,14 +139,7 @@ struct SessionPageView: View {
         }
     }
     
-//    var ResizeDragger: some View {
-//        return RoundedRectangle(cornerRadius: 10)
-//            .frame(width: 100, height: 20)
-//            .foregroundColor(.red)
-//            .offset(x: .zero, y: -(0.5 - splitFrac - (dragState.height / UIScreen.main.bounds.height)) * UIScreen.main.bounds.height)
-//            .gesture(resizeSplit)
-//    }
-    @State var splitScreenHeight: CGFloat = -1.0
+    @State var splitScreenHeight: CGFloat = .zero
     var sessionInstance: some View {
         let sessionState = self.getSessionState()
         
@@ -174,7 +188,7 @@ struct SessionPageView: View {
                         VStack {
                             CanvasView(
                                 canvasId: canvas!.id,
-                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height)),
+                                height: geometry.size.height * splitFrac,
                                 width: geometry.size.width,
                                 pkCanvas: $pkCanvas,
                                 isDraw: $isDraw,
@@ -185,17 +199,20 @@ struct SessionPageView: View {
                             )
                             .frame(
                                 width: geometry.size.width,
-                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height))
+                                height: geometry.size.height * splitFrac
                             )
-                            SwiftUITerminal(
-                                canvas: $canvas,
-                                connection: $session,
-                                modifyTerminalHeight: true,
-                                splitScreenHeight: $splitScreenHeight
-                            )
+                            ZStack {
+                                Color.black
+                                SwiftUITerminal(
+                                    canvas: $canvas,
+                                    connection: $session,
+                                    modifyTerminalHeight: true,
+                                    splitScreenHeight: $splitScreenHeight
+                                )
+                            }
                             .frame(
                                 width: geometry.size.width,
-                                height: geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
+                                height: geometry.size.height * (1 - splitFrac)
                             )
                         }
                         getResizeDragger(geoHeight: geometry.size.height)
@@ -209,7 +226,7 @@ struct SessionPageView: View {
                         VStack {
                             CanvasView(
                                 canvasId: canvas!.id,
-                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height)),
+                                height: geometry.size.height * splitFrac,
                                 width: geometry.size.width,
                                 pkCanvas: $pkCanvas,
                                 isDraw: $isDraw,
@@ -220,13 +237,17 @@ struct SessionPageView: View {
                             )
                             .frame(
                                 width: geometry.size.width,
-                                height: geometry.size.height * (splitFrac + (dragState.height / geometry.size.height))
+                                height: geometry.size.height * splitFrac
                             )
-                            Text("Not connected.")
-                                .frame(
-                                    width: geometry.size.width,
-                                    height: geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
-                                )
+                            ZStack {
+                                Color.black
+                                Text("Not connected.")
+                                    .foregroundColor(.white)
+                            }
+                            .frame(
+                                width: geometry.size.width,
+                                height: geometry.size.height * (1 - splitFrac)
+                            )
                         }
                         getResizeDragger(geoHeight: geometry.size.height)
                     }
@@ -241,9 +262,8 @@ struct SessionPageView: View {
     }
     
     func setSplitScreenHeight(_ geometry: GeometryProxy) -> some View {
-        print("SSHLOG: setting split screen height to: \(geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height))))")
         DispatchQueue.main.async {
-            self.splitScreenHeight = geometry.size.height * (1 - (splitFrac + (dragState.height / geometry.size.height)))
+            self.splitScreenHeight = geometry.size.height * (1 - splitFrac)
         }
         return EmptyView()
     }
@@ -256,7 +276,6 @@ struct SessionPageView: View {
         } else if (host == nil && canvas != nil) {
             return SessionState.canvasOnly
         } else if (host != nil && session != nil && canvas != nil) {
-//            splitScreenHeight = UIScreen.main.bounds.height * (1 - (splitFrac + (dragState.height / UIScreen.main.bounds.height)))
             return SessionState.splitConnected
         } else if (host != nil && session == nil && canvas != nil) {
             return SessionState.splitNotConnected
