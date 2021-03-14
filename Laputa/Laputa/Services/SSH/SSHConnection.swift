@@ -23,12 +23,27 @@ class SSHConnection {
         session = NMSSHSession(host: host, andUsername: andUsername)
     }
     
+    deinit {
+        disconnect()
+    }
+    
     // TODO TJ comment
-    func connect(withAuth:Bool, password: String?) throws {
+    func connect(hostInfo: HostInfo) throws {
         if (session.connect()) {
             // Must authenticate before getting a terminal
-            if (withAuth) {
-                session.authenticate(byPassword: password ?? "") // If they did not provide a password try none.
+            if (hostInfo.authType != AuthenticationType.none) {
+                
+                if (hostInfo.authType == AuthenticationType.password) {
+                    session.authenticate(byPassword: hostInfo.password) // If they did not provide a password, try none.
+                } else {
+                    // authType == Authenticationtype.publicPrivateKey
+                    session.authenticateBy(
+                        inMemoryPublicKey: hostInfo.publicKey,
+                        privateKey: hostInfo.privateKey,
+                        andPassword: hostInfo.privateKeyPassword
+                    )
+                }
+                
                 if (!session.isAuthorized) {
                     session.disconnect()
                     throw SSHSessionError.authorizationFailed
@@ -66,13 +81,17 @@ class SSHConnection {
         let letter = String(bytes: data, encoding: .utf8)
         if (letter != nil) {
             let new_data = Data(letter!.utf8)
-            try session.channel.write(new_data)
+            try session.channel.write(new_data) // TODO TJ should this be in the sync dispatch queue?
         }
     }
     
     // TODO TJ comment
     func requestTerminalSize(width: UInt, height: UInt) -> Bool {
         return session.channel.requestSizeWidth(width, height: height)
+    }
+    
+    func isConnected() -> Bool {
+        return session.isConnected
     }
 }
 

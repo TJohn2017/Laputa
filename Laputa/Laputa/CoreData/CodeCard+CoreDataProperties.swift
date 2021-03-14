@@ -17,12 +17,14 @@ extension CodeCard {
     }
 
     @NSManaged public var id: UUID
-    @NSManaged public var dateCreated: Date?
+    @NSManaged public var dateCreated: Date
     @NSManaged public var locX: Double
     @NSManaged public var locY: Double
     @NSManaged public var zIndex: Double
     @NSManaged public var text: String?
     @NSManaged public var origin: Canvas?
+    @NSManaged public var width: Float
+    @NSManaged public var height: Float
     
     public var wrappedText: String {
         text ?? ""

@@ -27,15 +27,15 @@ class LaputaTests: XCTestCase {
     
     // TODO TJ Actually write this like a unit test. Assert things
     func testSimpleConnection() throws {
-        let connection = SSHConnection(host: "myth.stanford.edu", andUsername: "tjohn21")
-        do {
-            try connection.connect(withAuth: true, password: "") // Write in your password to test
-            let result = connection.executeCommand(command: "ls")
-            print(result)
-            connection.disconnect()
-        } catch SSHSessionError.authorizationFailed {
-            print("Authorization failed")
-        }
+//        let connection = SSHConnection(host: "myth.stanford.edu", andUsername: "tjohn21")
+//        do {
+//            try connection.connect(withAuth: true, password: "") // Write in your password to test
+//            let result = connection.executeCommand(command: "ls")
+//            print(result)
+//            connection.disconnect()
+//        } catch SSHSessionError.authorizationFailed {
+//            print("Authorization failed")
+//        }
     }
     
     // END -- SSH Connection Tests.

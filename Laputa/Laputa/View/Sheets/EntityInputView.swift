@@ -1,48 +1,38 @@
 //
-//  MainPageList.swift
+//  EntityInputView.swift
 //  Laputa
 //
-//  Created by Daniel Guillen on 2/9/21.
+//  Created by Daniel Guillen on 2/16/21.
 //
 
 import SwiftUI
 
-struct MainPageList: View {
-    @Environment(\.managedObjectContext) private var viewContext
-    
+struct EntityInputView: View {
     @Binding var displayHosts: Bool
-    // the currently active sheet over MainPageView
     @Binding var activeSheet: ActiveSheet?
-    
-    // passed up to MainPageView where editing host/canvas info sheet is located
     @Binding var selectedHost: Host?
     @Binding var selectedCanvas: Canvas?
     
     var body: some View {
-        return ScrollView {
-            VStack {
-                if (displayHosts) {
-                    HostList(activeSheet: $activeSheet, selectedHost: $selectedHost)
-                } else {
-                    CanvasList(activeSheet: $activeSheet, selectedCanvas: $selectedCanvas)
-                }
-            }
+        if (displayHosts) {
+            InputHostView(activeSheet: $activeSheet, parentActiveSheet: .constant(nil), selectedHost: $selectedHost)
+        } else {
+            InputCanvasView(activeSheet: $activeSheet, parentActiveSheet: .constant(nil), selectedCanvas: $selectedCanvas)
         }
     }
-    
 }
 
-struct MainPageList_Previews: PreviewProvider {
+struct EntityInputView_Previews: PreviewProvider {
     static var previews: some View {
         PreviewWrapper()
     }
     
     struct PreviewWrapper: View {
         @State private var displayHosts: Bool = false
-        @State private var activeSheet: ActiveSheet?
+        @State var activeSheet: ActiveSheet?
         
         var body: some View {
-            MainPageList(
+            EntityInputView(
                 displayHosts: $displayHosts,
                 activeSheet: $activeSheet,
                 selectedHost: .constant(nil),

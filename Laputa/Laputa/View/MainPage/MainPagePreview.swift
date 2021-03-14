@@ -20,14 +20,14 @@ struct MainPagePreview: View {
         
         if (host != nil) {
             return VStack {
-                Text("\(host!.name!)")
+                Text("\(host!.name)")
                     .frame(width: 400.0, height: 200.0)
                     .padding()
                     .background(Color.red)
                     .foregroundColor(Color.black)
                     .cornerRadius(10.0)
                     .font(.largeTitle)
-                Text("\(host!.host!) | \(host!.username!)")
+                Text("\(host!.host) | \(host!.username)")
                     .foregroundColor(Color.white)
             }.padding()
         } else {
@@ -39,7 +39,7 @@ struct MainPagePreview: View {
                     .foregroundColor(Color.black)
                     .cornerRadius(10.0)
                     .font(.largeTitle)
-                Text("Created: \(dateFormatter.string(from: canvas!.wrappedDate))")
+                Text("Created: \(dateFormatter.string(from: canvas!.dateCreated))")
                     .foregroundColor(Color.white)
             }.padding()
         }
