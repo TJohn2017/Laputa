@@ -412,16 +412,15 @@ struct SessionPageView: View {
             
             Menu {
                 // Add canvas to session.
-                Button(action: {
-                    // TODO: add more than one canvas.
-                    if (!canvasIsActive) {
+                if (!canvasIsActive) {
+                    Button(action: {
                         self.activeSheet = ActiveSheet.addCanvas
+                    }) {
+                        Label {
+                            Text("Add Canvas")
+                            
+                        } icon : { Image(systemName: "rectangle")}
                     }
-                }) {
-                    Label {
-                        Text("Add Canvas")
-                        
-                    } icon : { Image(systemName: "rectangle")}
                 }
                 
                 // Add terminal to session.
