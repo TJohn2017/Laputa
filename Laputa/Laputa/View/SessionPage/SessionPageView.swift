@@ -160,7 +160,7 @@ struct SessionPageView: View {
                                      canvas: $currCanvas,
                                      connections: $connections,
                                      connectionIdx: $0,
-                                     modifyTerminalHeight: false,
+                                     modifyTerminalHeight: true,
                                      id: $0
                                  )
                                  .frame(

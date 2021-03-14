@@ -459,16 +459,25 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     @State var connectionIdx: Int
     @State var modifyTerminalHeight: Bool
     @State var id: Int
-    static private var sshVCs = [Int: SSHTerminalViewController]()
+    static private var sshVCsNormal = [Int: SSHTerminalViewController]()
+    static private var sshVCsSplit = [Int: SSHTerminalViewController]()
     
     typealias UIViewControllerType = SSHTerminalViewController
     
     func makeUIViewController(
         context: UIViewControllerRepresentableContext<SwiftUITerminal>
     ) -> SSHTerminalViewController {
-        guard SwiftUITerminal.sshVCs[id] == nil else {
-            return SwiftUITerminal.sshVCs[id]!
+        if (modifyTerminalHeight) {
+            // If Normal -> Split (will clear screen when adding canvas).
+            guard SwiftUITerminal.sshVCsSplit[id] == nil else {
+                return SwiftUITerminal.sshVCsSplit[id]!
+            }
+        } else {
+            guard SwiftUITerminal.sshVCsNormal[id] == nil else {
+                return SwiftUITerminal.sshVCsNormal[id]!
+            }
         }
+
         let connection = self.connections[connectionIdx]
         let viewController = SSHTerminalViewController(
             connection: connection,
@@ -477,7 +486,11 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
             viewContext: viewContext
         )
         
-        SwiftUITerminal.sshVCs[id] = viewController
+        if (modifyTerminalHeight) {
+            SwiftUITerminal.sshVCsSplit[id] = viewController
+        } else {
+            SwiftUITerminal.sshVCsNormal[id] = viewController
+        }
         
         return viewController
     }
@@ -503,7 +516,8 @@ struct SwiftUITerminal: UIViewControllerRepresentable {
     }
     
     static func dismantleAllSessionStates() {
-        SwiftUITerminal.sshVCs.removeAll()
+        SwiftUITerminal.sshVCsNormal.removeAll()
+        SwiftUITerminal.sshVCsSplit.removeAll()
     }
 }
 
