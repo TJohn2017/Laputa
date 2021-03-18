@@ -16,9 +16,6 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     // Class variables
     var ssh_session: SSHConnection?
     var command_buffer = [UInt8]()
-    // TODO TJ take these out if we can't use them
-//    var shouldCatchResponse: Bool = false
-//    var lastResponse: String = ""
     
     init(connection: SSHConnection?, frame: CGRect) {
         super.init(frame: frame) // init function of TerminalView
@@ -58,7 +55,7 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
         do {
             try ssh_session?.write(data: data)
         } catch {
-            // TODO TJ figure out what error types we need to account for here
+            print("Failed to write to ssh conneciton.") // TODO improve error handling
         }
     }
     

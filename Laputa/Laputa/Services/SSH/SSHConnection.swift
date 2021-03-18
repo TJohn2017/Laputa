@@ -41,7 +41,6 @@ class SSHConnection: Equatable {
                 if (hostInfo.authType == AuthenticationType.password) {
                     session.authenticate(byPassword: hostInfo.password) // If they did not provide a password, try none.
                 } else {
-                    // authType == Authenticationtype.publicPrivateKey
                     session.authenticateBy(
                         inMemoryPublicKey: hostInfo.publicKey,
                         privateKey: hostInfo.privateKey,
@@ -56,15 +55,14 @@ class SSHConnection: Equatable {
             }
 
             session.channel.requestPty = true // Request a pseudo-terminal before command execution
-            // TODO TJ we could opt to not hardcode this in order to let user's dictate
-            session.channel.ptyTerminalType = NMSSHChannelPtyTerminal.xterm // Request that our pseuo-terminal is xterm
+            session.channel.ptyTerminalType = NMSSHChannelPtyTerminal.xterm // Request that our pseuo-terminal is xterm so that it works with SwiftTerm emulation
             
             // If we ever want to establish multiple shells at one time on one connection we will likely need to
             // abstract this and put it in its own function
             try session.channel.startShell()
-        } // TODO TJ. If we fail authentication do we need to manually disconnect?
+        }
         else {
-            print("connect failed")
+            print("Connect failed")
         }
     }
     
@@ -86,7 +84,7 @@ class SSHConnection: Equatable {
         let letter = String(bytes: data, encoding: .utf8)
         if (letter != nil) {
             let new_data = Data(letter!.utf8)
-            try session.channel.write(new_data) // TODO TJ should this be in the sync dispatch queue?
+            try session.channel.write(new_data) // TODO should this be in the sync dispatch queue? Might be a small bug b/c sessions don't support multithreading
         }
     }
     
