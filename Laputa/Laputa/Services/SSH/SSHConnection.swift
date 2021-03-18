@@ -14,6 +14,7 @@ import NMSSH
 
 enum SSHSessionError: Error {
     case authorizationFailed
+    case connectFailed
 }
 
 class SSHConnection: Equatable {
@@ -32,7 +33,9 @@ class SSHConnection: Equatable {
         disconnect()
     }
     
-    // TODO TJ comment
+    // Given a populated host info object attempts to open an ssh connection with the specified host.
+    // Then attempts to authenticate the connection using the provided auth data. If authentication or
+    // connection fails throws an error.
     func connect(hostInfo: HostInfo) throws {
         if (session.connect()) {
             // Must authenticate before getting a terminal
@@ -55,14 +58,14 @@ class SSHConnection: Equatable {
             }
 
             session.channel.requestPty = true // Request a pseudo-terminal before command execution
-            session.channel.ptyTerminalType = NMSSHChannelPtyTerminal.xterm // Request that our pseuo-terminal is xterm so that it works with SwiftTerm emulation
+            session.channel.ptyTerminalType = NMSSHChannelPtyTerminal.xterm // Request that our pseudo-terminal is xterm so that it works with SwiftTerm emulation
             
             // If we ever want to establish multiple shells at one time on one connection we will likely need to
             // abstract this and put it in its own function
             try session.channel.startShell()
         }
         else {
-            print("Connect failed")
+            throw SSHSessionError.connectFailed
         }
     }
     

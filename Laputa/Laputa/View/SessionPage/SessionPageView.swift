@@ -477,6 +477,9 @@ struct SessionPageView: View {
             } catch SSHSessionError.authorizationFailed {
                 let error = SSHSessionError.authorizationFailed
                 print("SessionPageView - establishConnection: \(error)")
+            } catch SSHSessionError.connectFailed {
+                let error = SSHSessionError.connectFailed
+                print("SessionPageView - establishConnection: \(error)")
             } catch {
                 print("SessionPageView - establishConnection: \(error)")
             }
