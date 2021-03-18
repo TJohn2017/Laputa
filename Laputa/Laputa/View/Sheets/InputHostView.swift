@@ -67,7 +67,6 @@ struct InputHostView: View {
         // Save the created host.
         do {
             try viewContext.save()
-            print("Host w/ name: \(self.name) saved.")
             activeSheet = nil
             parentActiveSheet = nil
         } catch {

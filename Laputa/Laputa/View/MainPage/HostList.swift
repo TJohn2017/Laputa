@@ -75,7 +75,6 @@ struct HostList: View {
                             do {
                                 try viewContext.save()
                                 showDeleteAlert.toggle()
-                                print("Host \"\(deletedName)\" deleted.")
                             } catch {
                                 print(error.localizedDescription)
                             }

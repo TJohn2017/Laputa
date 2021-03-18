@@ -76,7 +76,6 @@ struct CanvasList: View {
                                 do {
                                     try viewContext.save()
                                     showDeleteAlert.toggle()
-                                    print("Canvas \"\(deletedName)\" deleted.")
                                 } catch {
                                     print(error.localizedDescription)
                                 }

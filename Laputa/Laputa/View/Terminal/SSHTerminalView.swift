@@ -45,8 +45,7 @@ public class SSHTerminalView: TerminalView, TerminalViewDelegate, NMSSHChannelDe
     public func setTerminalTitle(source: TerminalView, title: String) {}
     
     public func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
-        let resizeSuccess = ssh_session?.requestTerminalSize(width: UInt(newCols), height: UInt(newRows))
-        print(resizeSuccess ?? "Resized terminal.")
+        _ = ssh_session?.requestTerminalSize(width: UInt(newCols), height: UInt(newRows))
     }
     
     public func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {}
