@@ -40,7 +40,6 @@ struct InputCanvasView: View {
             activeSheet = nil
             parentActiveSheet = nil
             try viewContext.save()
-            print("Canvas w/ name: \(self.name) saved.")
         } catch {
             print(error.localizedDescription)
         }

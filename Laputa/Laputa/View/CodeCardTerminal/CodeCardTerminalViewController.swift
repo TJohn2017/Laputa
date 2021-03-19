@@ -41,6 +41,7 @@ class CodeCardTerminalViewController: UIViewController {
         self.width = newWidth
         self.height = newHeight
         self.view.frame = self.makeFrame()
+        // Make a branch new terminal view and replace the old one with it
         self.terminalView? = createDummyTerminal()!
         view.subviews.forEach({ $0.removeFromSuperview() })
         view.addSubview(self.terminalView!)

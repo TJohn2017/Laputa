@@ -10,7 +10,7 @@ import SwiftTerm
 
 public class CodeCardTerminalView: TerminalView, TerminalViewDelegate {    
     // TODO:
-    // - How can we handle scrolling in the dummy view? As things are these aren't interactable at all
+    // - How can we handle scrolling in the dummy view? As things are these need to fit the entire piece of content on screen
     
     // Class variables
     var command_buffer = [UInt8]()
@@ -19,7 +19,7 @@ public class CodeCardTerminalView: TerminalView, TerminalViewDelegate {
         super.init(frame: frame) // init function of TerminalView
         terminalDelegate = self
         // Give it the static content
-        self.feed(text: "\n")
+        self.feed(text: "\n") // Give us a row at top for space
         self.feed(text: content)
     }
     
@@ -52,17 +52,9 @@ struct CodeCardTerminal: UIViewControllerRepresentable {
         return viewController
     }
     
-    // Need for conformity
+    // Use to  allow for resizing
     func updateUIViewController(_ uiViewController: CodeCardTerminalViewController, context: UIViewControllerRepresentableContext<CodeCardTerminal>) {
         // Tell the view controller to update its size in case of a resize
         uiViewController.updateDimensions(newWidth: width, newHeight: height)
     }
 }
-
-//struct CodeCardTerminal_Previews: PreviewProvider {
-//    @Binding var width : CGFloat
-//    @Binding var height : CGFloat
-//    static var previews: some View {
-//        CodeCardTerminal(content: "PREVIEW", width: $width, height: $height)
-//    }
-//}
