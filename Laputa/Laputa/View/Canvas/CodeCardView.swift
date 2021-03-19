@@ -192,7 +192,6 @@ struct CodeCardView: View {
                             viewContext.delete(codeCard)
                             do {
                                 try viewContext.save()
-                                print("Code card deleted.")
                             } catch {
                                 print(error.localizedDescription)
                             }

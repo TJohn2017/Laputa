@@ -42,9 +42,6 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         self.connected = false
         self.viewContext = viewContext
         self.errorView = UIView()
-        if (canvas != nil) {
-            print("CANVAS: We have a canvas")
-        }
         super.init(nibName:nil, bundle:nil)
     }
     
@@ -86,49 +83,46 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
     // updates the terminal frame when updateUIViewController is called
     func updateTerminalFrame(splitHeight: CGFloat) {
         if (terminalView != nil) {
-//            if (splitHeight != terminalView!.frame.height) {
-                if (keyboardButton.isHidden && splitHeight - 10 != terminalView!.frame.height) {
-                    splitScreenHeight = splitHeight - 10
-                    self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: splitScreenHeight)
-                    self.terminalView!.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: splitScreenHeight)
-                    UIView.animate(withDuration: 0.2, animations: {
-                        if (self.splitScreenHeight <= 100) {
-                            self.outputCatchButton.frame = CGRect(
-                                x: self.view.frame.width - 100,
-                                y: self.view.frame.height - 60,
-                                width: 50,
-                                height: 50
-                            )
-                        } else {
-                            self.outputCatchButton.frame = CGRect(
-                                x: self.view.frame.width - 100,
-                                y: self.view.frame.height - 100,
-                                width: 50,
-                                height: 50
-                            )
-                        }
-                    })
-                   
-                } else if (!keyboardButton.isHidden && splitHeight + 10 != terminalView!.frame.height){
-                    splitScreenHeight = splitHeight + 15
-                    self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: splitScreenHeight)
-                    self.terminalView!.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: splitScreenHeight)
-                    keyboardButton.frame = CGRect(
-                        x: self.view.frame.width - 100,
-                        y: self.view.frame.height - 100,
-                        width: 50,
-                        height: 50
-                    )
-                    UIView.animate(withDuration: 0.2, animations: {
+            if (keyboardButton.isHidden && splitHeight - 10 != terminalView!.frame.height) {
+                splitScreenHeight = splitHeight - 10
+                self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: splitScreenHeight)
+                self.terminalView!.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: splitScreenHeight)
+                UIView.animate(withDuration: 0.2, animations: {
+                    if (self.splitScreenHeight <= 100) {
                         self.outputCatchButton.frame = CGRect(
                             x: self.view.frame.width - 100,
-                            y: self.view.frame.height - 180,
+                            y: self.view.frame.height - 60,
                             width: 50,
                             height: 50
                         )
-                    })
-                }
-//            }
+                    } else {
+                        self.outputCatchButton.frame = CGRect(
+                            x: self.view.frame.width - 100,
+                            y: self.view.frame.height - 100,
+                            width: 50,
+                            height: 50
+                        )
+                    }
+                })
+            } else if (!keyboardButton.isHidden && splitHeight + 10 != terminalView!.frame.height){
+                splitScreenHeight = splitHeight + 15
+                self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: splitScreenHeight)
+                self.terminalView!.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: splitScreenHeight)
+                keyboardButton.frame = CGRect(
+                    x: self.view.frame.width - 100,
+                    y: self.view.frame.height - 100,
+                    width: 50,
+                    height: 50
+                )
+                UIView.animate(withDuration: 0.2, animations: {
+                    self.outputCatchButton.frame = CGRect(
+                        x: self.view.frame.width - 100,
+                        y: self.view.frame.height - 180,
+                        width: 50,
+                        height: 50
+                    )
+                })
+            }
         } else {
             // reposition error image
             errorView.subviews[0].center = CGPoint(
@@ -320,6 +314,7 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
                 initializeOutputCatchButton(t: t)
                 view.addSubview(outputCatchButton)
             }
+            
             // initiate keyboard button
             initializeKeyboardButton(t: t)
             view.addSubview(keyboardButton)
@@ -426,12 +421,13 @@ class SSHTerminalViewController: UIViewController, NMSSHChannelDelegate {
         return (startRowIndex, endRowIndex, rowHeightInPixels)
     }
     
-    // Bollean to determine if we should be scrolling.
+    // Boolean to determine if we should be scrolling.
     // Allows less sensitivity when pan gesture is recognized so that we only scroll
     // up or down 1 line every other time didPan is called for scrolling.
     var shouldScroll: Bool = false
     var lastScrollPoint : CGPoint?
     var highlightView: UIView?
+    
     // Handles the pan gesture. Used when we are in output catching mode to capture
     // the rows from the terminal that the user crossed in their pan gesture and save
     // their content to a new code card on the current canvas. If not in output catching mode
